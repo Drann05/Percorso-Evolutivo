@@ -56,8 +56,3 @@ class Player:
     def get_position(self):
         return self._position
 
-if __name__ == "__main__":
-    player = Player("Player 1", (2,3))
-    print(player.get_position())
-    player.move_to("N")
-    print(player.get_position())
