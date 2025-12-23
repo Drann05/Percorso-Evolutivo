@@ -1,0 +1,12 @@
+# Cartelle di PyCharm
+.idea/
+
+# File Python compilati
+__pycache__/
+*.pyc
+
+# File di log
+*.log
+
+# Virtual environment
+venv/
