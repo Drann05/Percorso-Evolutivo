@@ -25,19 +25,33 @@ class Player:
 
         :param direction: String con la direzione (N, S, E, W)
         """
+
         row, col = self._position
         self._moves += 1
 
         match direction:
             case "N":
-
-                self._position[0] += 1
+                row -= 1
             case "S":
-                self._position[0] -= 1
+                row += 1
             case "E":
-                self._position[1] += 1
+                col += 1
             case "W":
-                self._position[1] -= 1
+                col -= 1
+
+        self._position = (row, col)
+
+    def add_score(self, value):
+        self._score += value
+
+    def subtract_score(self, value):
+        self._score -= value
+
+    def use_remove_wall(self):
+        self._remove_wall_available = False
+
+    def use_convert_trap(self):
+        self._convert_trap_available = False
 
     def get_position(self):
         return self._position
