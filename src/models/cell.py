@@ -1,11 +1,26 @@
 class Cell:
+    """
+    Rappresenta una singola cella della griglia (Grid)
+
+    Verifica se la cella è attraversabile o meno tramite
+    la funzione is_walkalble().
+
+    Definisce il colore e il tipo di cella:
+    - O: Obiettivo
+    - P: Punto iniziale
+    - X: Muro
+    - T: Trappola
+    - R: Risorsa
+    - .: Cella vuota
+    """
 
     CELL_TYPES = {
-        'O': 'green',
-        'P': 'blue',
-        'X': 'black',
-        'T': 'red',
-        'R': 'white'
+        'O': 'green',   # Obiettivo
+        'P': 'blue',    # Punto iniziale
+        'X': 'black',   # Muro
+        'T': 'red',     # Trappola
+        'R': 'yellow',  # Risorsa
+        '.': 'white'    # Cella vuota
     }
 
 
@@ -25,3 +40,6 @@ class Cell:
             raise ValueError("Il tipo deve essere uno tra: 'O', 'P', 'X', 'T', 'R'")
         else:
             self._type = type
+
+    def get_type(self):
+        return self._type
