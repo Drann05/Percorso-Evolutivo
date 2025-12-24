@@ -65,6 +65,15 @@ class Grid:
         place_cells("R", risorse_count)
         place_cells("T", trappole_count)
 
+
+    def get_cell(self, position):
+        row, col = position
+        return self._cells[col][row].get_type()
+
+    def is_valid_movement(self, position):
+        row, col = position
+        return self._cells[col][row].is_walkable()
+
     def get_grid_dimension(self):
         return self._width * self._height
 
