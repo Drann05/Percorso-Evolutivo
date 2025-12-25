@@ -1,4 +1,4 @@
-from views import Views
+from .views import Views
 
 class StartScreen(Views):
     def __init__(self, parent):
