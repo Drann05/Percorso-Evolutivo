@@ -12,7 +12,7 @@ class Cell:
         'X': 'black',   # Muro (non attraversabile)
         'T': 'red',     # Trappola
         'R': 'yellow',  # Risorsa
-        '.': 'white'    # Cella libera
+        '.': 'white'    # Cella vuota
     }
 
 
@@ -34,7 +34,7 @@ class Cell:
 
     def set_type(self, type):
         if type not in self.CELL_TYPES.keys():
-            raise ValueError("Il tipo deve essere uno tra: 'O', 'P', 'X', 'T', 'R'")
+            raise ValueError("Il tipo deve essere uno tra: 'O', 'P', 'X', 'T', 'R', '.'")
         else:
             self._type = type
 
