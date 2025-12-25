@@ -5,5 +5,5 @@ from .views.game_view import GameView
 
 class MainApp:
     def __init__(self):
-        self.app = MainApp()
+        pass
         

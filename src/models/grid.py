@@ -1,5 +1,4 @@
-from cell import Cell
-from player import Player
+from .cell import Cell
 from random import randint
 
 class Grid:
