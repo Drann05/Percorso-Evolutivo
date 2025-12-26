@@ -29,7 +29,7 @@ class GameView(Views):
             r, c = kwargs.get("row"), kwargs.get("col")
             self.game.special_move(r, c)
 
-        self.update_view()
+        self.update()
 
     def update(self):
         self.lbl_points["text"] = f"Points: {len(self.game.points)}"
