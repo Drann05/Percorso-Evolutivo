@@ -65,6 +65,13 @@ class Grid:
         place_cells("R", risorse_count)
         place_cells("T", trappole_count)
 
+    def get_spawn_position(self):
+        """
+            Restituisce la posizione dello spawn point
+
+            TODO: implementare logica di spawn
+        """
+        return (0,0)
 
     def get_cell(self, position):
         row, col = position
