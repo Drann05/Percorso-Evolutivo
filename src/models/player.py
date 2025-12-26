@@ -53,6 +53,9 @@ class Player:
     def use_convert_trap(self):
         self._convert_trap_available = False
 
+    def get_score(self):
+        return self._score
+    
     def get_position(self):
         return self._position
 
