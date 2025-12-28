@@ -27,5 +27,7 @@ class Views(EasyFrame, ABC):
         for c in range(column):
             self.columnconfigure(c, weight=1)
 
+    def error_label(self):
+        pass
 
 
