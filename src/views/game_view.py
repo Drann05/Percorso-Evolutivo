@@ -9,7 +9,7 @@ class GameView(Views):
     def build_ui(self):
         """Costruisce la griglia e i controlli"""
         self.header=self.addPanel(row=0, column=0, columnspan=4)
-        self.lbl_points= self.createLabel(self.header, "Points:", 0, 0)
+        self.lbl_points= self.create_label(self.header, "Points:", 0, 0)
 
         self.grid_panel=self.addPanel(row=1, column=0, columnspan=4)
         self.create_grid_view()
