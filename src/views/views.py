@@ -22,10 +22,13 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
     def handle_events(self, event_type, **kwargs):
         pass
 
-    def create_label(self, container, text, row, column, sticky="NSEW"):
-        return container.addLabel(text=text, row=row, column=column, sticky=sticky)
-
     def clear(self):
         for widget in self.winfo_children():
             widget.destroy()
+
+    def grid_init(self, row, column):
+        for r in range(row):
+            self.rowconfigure(r, weight=1)
+        for c in range(column):
+            self.columnconfigure(c, weight=1)
 

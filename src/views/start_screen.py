@@ -13,6 +13,7 @@ class StartScreen(Views):
         self.quit_button = None
         self.start_button = None
         self.nickname_field = None
+        self.difficulty=None
         self.parent = parent
         self.widgets = []
         self.grid_init(12,12)
@@ -109,7 +110,15 @@ class StartScreen(Views):
 
     def get_difficulty(self):
         """Passaggio alla fase successiva: selezione difficoltà."""
-        pass
+        dialog = DifficultyDialog(self)
+
+        if dialog.choice:
+            self.difficulty = dialog.choice
+            print(f"Hai scelto la difficoltà: {self.difficulty}")
+            self.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
+        else:
+            self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
+            self.error_label.grid()
 
 class DifficultyDialog(EasyDialog):
     def __init__(self, parent):
