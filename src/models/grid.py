@@ -97,10 +97,6 @@ class Grid:
                 visited.add((nx, ny))
                 stack.append((nx, ny))
 
-
-
-
-
     def get_spawn_position(self):
         """
             Restituisce la posizione dello spawn point
