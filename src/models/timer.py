@@ -1,5 +1,5 @@
 #Classe per la gestione del timer.
-#Utilizzo time per aggiornare il tempo trascorso ogni secondo.
+#Utilizza time per aggiornare il tempo trascorso ogni secondo.
 
 import time
 
