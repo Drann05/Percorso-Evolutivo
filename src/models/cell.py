@@ -16,10 +16,11 @@ class Cell:
     }
 
 
-    def __init__(self, posx, posy, type):
+    def __init__(self, posx, posy, cell_type):
         self._posx = posx
         self._posy = posy
-        self.set_type(type)
+        self._cell_type = None
+        self.set_type(cell_type)
 
     def is_walkable(self):
         """
@@ -27,16 +28,16 @@ class Cell:
 
             :return: False se la cella è un muro ('X'), True altrimenti
         """
-        if self._type == "X":
+        if self._cell_type == "X":
             return False
         else:
             return True
 
-    def set_type(self, type):
-        if type not in self.CELL_TYPES.keys():
+    def set_type(self, cell_type):
+        if cell_type not in self.CELL_TYPES.keys():
             raise ValueError("Il tipo deve essere uno tra: 'O', 'P', 'X', 'T', 'R', '.'")
         else:
-            self._type = type
+            self._cell_type = cell_type
 
     def get_type(self):
-        return self._type
+        return self._cell_type
