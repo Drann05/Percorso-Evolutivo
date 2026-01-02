@@ -19,15 +19,15 @@ class Game:
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
-        self._grid = Grid(20, 20)
+        self.grid = Grid(20, 20)
         self._player = None
         self._timer = Timer()
         self._started = False
 
     def start_game(self):
-        self._grid.generate_grid(self._difficulty)
+        self.grid.generate_grid(self._difficulty)
 
-        spawn_point = self._grid.get_spawn_position()
+        spawn_point = self.grid.get_spawn_position()
         self._player = Player(self._player_name, spawn_point)
 
         self._timer.start_timer()
@@ -43,7 +43,7 @@ class Game:
         self._player.move_to(direction)
 
         new_position = self._player.get_position()
-        cell_type = self._grid.get_cell(new_position)
+        cell_type = self.grid.get_cell(new_position)
 
         self.apply_cell_effect(cell_type)
 
@@ -72,5 +72,5 @@ class Game:
 
         position = (row, col)
 
-        return self._grid.is_valid_movement(position)
+        return self.grid.is_valid_movement(position)
 
