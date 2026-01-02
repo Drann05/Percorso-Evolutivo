@@ -20,3 +20,8 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
         for widget in self.winfo_children():
             widget.destroy()
 
+    def grid_init(self, row, column):
+        for r in range(row):
+            self.rowconfigure(r, weight=1)
+        for c in range(column):
+            self.columnconfigure(c, weight=1)
