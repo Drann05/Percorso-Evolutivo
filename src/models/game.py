@@ -20,7 +20,7 @@ class Game:
         self._player_name = player_name
         self._difficulty = difficulty
         self.grid = Grid(20, 20)
-        self._player = None
+        self.player = None
         self._timer = Timer()
         self._started = False
 
@@ -28,7 +28,7 @@ class Game:
         self.grid.generate_grid(self._difficulty)
 
         spawn_point = self.grid.spawn_position
-        self._player = Player(self._player_name, spawn_point)
+        self.player = Player(self._player_name, spawn_point)
 
         self._timer.start_timer()
 
@@ -36,13 +36,13 @@ class Game:
         if not self.is_reachable(direction):
             return
 
-        if self._player.get_moves_count() >= 30:
+        if self.player.get_moves_count() >= 30:
             self.end_game()
             return
 
-        self._player.move_to(direction)
+        self.player.move_to(direction)
 
-        new_position = self._player.get_position()
+        new_position = self.player.get_position()
         cell_data = self.grid.get_cell_view_data(new_position)
 
         self.apply_cell_effect(cell_data["type"])
@@ -58,7 +58,7 @@ class Game:
         self._timer.stop_timer()
 
     def is_reachable(self, direction):
-        row, col = self._player.get_position()
+        row, col = self.player.get_position()
 
         match direction:
             case "N":
