@@ -53,7 +53,7 @@ class Player:
     def use_convert_trap(self):
         self._convert_trap_available = False
 
-    def get_move_count(self):
+    def get_moves_count(self):
         return self._moves
 
     def get_score(self):
