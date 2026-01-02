@@ -75,6 +75,7 @@ class GameView(Views):
         self.special_btn["background"] = "Gold"
         self.special_btn["foreground"] = "Black"
 
+    def generate_grid_view(self):
         for row in range(20):
             for col in range(20):
                 cell_type = self.grid_logic.get_cell((row, col))
