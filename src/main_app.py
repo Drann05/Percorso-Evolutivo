@@ -7,11 +7,10 @@ from breezypythongui import EasyFrame
 
 class MainApp():
     def __init__(self):
-        pass
-        #self.leaderboard = LeaderboardView(self)
-        #self.start_screen = StartScreen(self)
-        #self.game_view = GameView(self)
-        #self.menu = Menu(self)
+        self.nickname = None
+        self.difficulty = None
+        self.game = Game(self)
+
 
     def run(self):
         """Funzione che avvia il programma"""
@@ -22,7 +21,7 @@ class MainApp():
         pass
 
     def show_game(self):
-        pass
+        self.game_view = GameView()
 
     def show_leaderboard(self):
         pass
