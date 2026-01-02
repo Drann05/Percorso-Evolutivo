@@ -1,28 +1,18 @@
 from .views import Views
 
 class GameView(Views):
-    def __init__(self, parent, title, width, height, nickname, difficulty):
+    CELL_COLORS = {
+        'X': "black",
+        'R': "yellow",
+        'T': "red",
+        'O': "green",
+        '.': "white",
+        'P': "blue"
+    }
+
+    def __init__(self, game, title, width=500, height=500):
         super().__init__(title, width, height)
-        self.parent = parent
-        self.nickname = nickname
-        self.difficulty = difficulty
-        self.player = Player()
-
-        self.grid_logic = Grid(20, 20)
-        self.grid_logic.generate_grid(self.difficulty)
-
-        self.COLORS = {
-            'X': "black",
-            'R': "green",
-            'T': "red",
-            'O': "yellow",
-            '.': "white",
-            'P': "blue"
-        }
-
-        self.score = 0
-        self.moves = 20
-        self.timer = 60
+        self.game = game
 
         self.MAIN_FONT = ("Arial", 12, "bold")
         self.ACCENT_COLOR = "White"
@@ -52,10 +42,12 @@ class GameView(Views):
         self.game_box = self.addPanel(row=2, column=1, columnspan=23, rowspan=15)
         self.game_box["background"] = "black"
 
+        self.generate_grid_view()
+
         row_stats = 18
-        self.label_score = self.addLabel(text=f"Score: {self.score}", row=row_stats, column=2)
-        self.label_moves = self.addLabel(text=f"Moves: {self.moves}", row=row_stats, column=11)
-        self.label_timer = self.addLabel(text=f"Timer: {self.timer}s", row=row_stats, column=20)
+        self.label_score = self.addLabel(text=f"Score: {self.game.player.score}", row=row_stats, column=2)
+        self.label_moves = self.addLabel(text=f"Moves: {self.game.player.moves}", row=row_stats, column=11)
+        self.label_timer = self.addLabel(text=f"Timer: {self.game.timer}s", row=row_stats, column=20)
 
         for lbl in [self.label_score, self.label_moves, self.label_timer]:
             self.style(lbl)
@@ -76,25 +68,28 @@ class GameView(Views):
         self.special_btn["foreground"] = "Black"
 
     def generate_grid_view(self):
-        for row in range(20):
-            for col in range(20):
-                cell_type = self.grid_logic.get_cell((row, col))
-                color = self.COLORS.get(cell_type, "white")           #label per ogni cella della griglia
+        rows, cols = self.game.grid.get_grid_dimension()
+        for row in range(rows):
+            for col in range(cols):
+                cell_data = self.game.grid.get_cell_view_data((row, col))
+                color = self.CELL_COLORS.get(cell_data["type"])          #label per ogni cella della griglia
 
-                lbl = self.game_box.addLabel(text=" ", row=row, column=col,
+                cell_widget = self.game_box.addLabel(text=" ", row=row, column=col,
                                              sticky="NSEW")
-                lbl["background"] = color
-                lbl["width"] = 2  # rende le celle quadrate
+                cell_widget["background"] = color
+                cell_widget["width"] = 2  # rende le celle quadrate
 
-                self.grid_widgets[(row, col)] = lbl
+                self.grid_widgets[(row, col)] = cell_widget
+
 
     def update_grid_display(self):
         """sincronizza la GUI con lo stato attuale della griglia."""
-        for row in range(self.grid_logic._height):
-            for col in range(self.grid_logic._width):
-                cell_type = self.grid_logic.get_cell((row, col))
+        rows, cols = self.game.grid.get_grid_dimension()
+        for row in range(rows):
+            for col in range(cols):
+                cell_data = self.game.grid.get_cell_view_data((row, col))
 
-                color = Cell.CELL_TYPES.get(cell_type, "white")
+                color = self.CELL_COLORS.get(cell_data["type"])
 
                 self.grid_widgets[(row, col)]["background"] = color
 
