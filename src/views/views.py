@@ -13,14 +13,6 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
         """Metodo astratto obbligatorio per costruire l'interfaccia"""
         pass
 
-    @abstractmethod
-    def update(self):
-        """Metodo astratto obbligatorio per aggiornare i widget"""
-        pass
-
-    @abstractmethod
-    def handle_events(self, event_type):
-        pass
 
     def create_label(self, container, text, row, column, sticky="NSEW"):
         return container.addLabel(text=text, row=row, column=column, sticky=sticky)
