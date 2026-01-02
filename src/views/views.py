@@ -1,25 +1,15 @@
 from abc import ABC, abstractmethod
-from breezypythongui import EasyCanvas, EasyFrame, EasyCanvas, EasyDialog
+from breezypythongui import EasyCanvas, EasyFrame, EasyDialog
 
 
 class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
     """Classe base astratta per tutte le schermate dell'applicazione"""
     def __init__(self, title, width, height):
         EasyFrame.__init__(self, title=title, width=width, height=height)
-        self.build_ui()
 
     @abstractmethod
     def build_ui(self):
         """Metodo astratto obbligatorio per costruire l'interfaccia"""
-        pass
-
-    @abstractmethod
-    def update(self):
-        """Metodo astratto obbligatorio per aggiornare i widget"""
-        pass
-
-    @abstractmethod
-    def handle_events(self, event_type):
         pass
 
     def clear(self):
