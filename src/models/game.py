@@ -27,7 +27,7 @@ class Game:
     def start_game(self):
         self.grid.generate_grid(self._difficulty)
 
-        spawn_point = self.grid.get_spawn_position()
+        spawn_point = self.grid.spawn_position
         self._player = Player(self._player_name, spawn_point)
 
         self._timer.start_timer()
@@ -43,9 +43,9 @@ class Game:
         self._player.move_to(direction)
 
         new_position = self._player.get_position()
-        cell_type = self.grid.get_cell(new_position)
+        cell_data = self.grid.get_cell_view_data(new_position)
 
-        self.apply_cell_effect(cell_type)
+        self.apply_cell_effect(cell_data["type"])
 
     def apply_cell_effect(self, cell_type):
         """
