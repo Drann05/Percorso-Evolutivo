@@ -179,7 +179,7 @@ class Grid:
                     counter += 1
         return counter
 
-    def get_cell(self, position):
+    def get_cell_type(self, position):
         row, col = position
         return self.grid[row][col].get_type()
 
