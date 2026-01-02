@@ -211,7 +211,7 @@ class Grid:
         return self._grid[row][col].is_walkable()
 
     def get_grid_dimension(self):
-        return self._width * self._height
+        return self._width, self._height
 
     def print_grid(self):
         for i in range(0, self._height):
