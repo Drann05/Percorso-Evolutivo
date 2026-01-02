@@ -101,14 +101,14 @@ class StartScreen(Views):
             valid_name = self.check_user()
             self.nickname = valid_name
 
-            self.get_difficulty()
+            self.set_difficulty()
         except ValueError as e:
             if str(e) == "USERNAME_VUOTO":
                 self.error_label["text"] = "Errore: Inserisci un nome!"
             elif str(e) == "USERNAME_NON_VALIDO":
                 self.error_label["text"] = "Errore: Nome troppo lungo (max 20)!"
 
-    def get_difficulty(self):
+    def set_difficulty(self):
         """Passaggio alla fase successiva: selezione difficoltà."""
         dialog = DifficultyDialog(self)
 
