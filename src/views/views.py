@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from breezypythongui import EasyCanvas, EasyFrame
+from breezypythongui import EasyCanvas, EasyFrame, EasyCanvas, EasyDialog
 
-class Views(EasyFrame, ABC):
+
+class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
     """Classe base astratta per tutte le schermate dell'applicazione"""
     def __init__(self, title, width, height):
         EasyFrame.__init__(self, title=title, width=width, height=height)
