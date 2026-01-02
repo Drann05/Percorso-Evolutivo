@@ -11,8 +11,8 @@ class Player:
     def __init__(self, name, position):
         self._name = name
         self._position = position
-        self._score = 0
-        self._moves = 0
+        self.score = 0
+        self.moves = 0
         self._remove_wall_available = True
         self._convert_trap_available = True
 
@@ -27,7 +27,7 @@ class Player:
         """
 
         row, col = self._position
-        self._moves += 1
+        self.moves += 1
 
         match direction:
             case "N":
@@ -42,10 +42,10 @@ class Player:
         self._position = (row, col)
 
     def add_score(self, value):
-        self._score += value
+        self.score += value
 
     def subtract_score(self, value):
-        self._score -= value
+        self.score -= value
 
     def use_remove_wall(self):
         self._remove_wall_available = False
@@ -54,10 +54,10 @@ class Player:
         self._convert_trap_available = False
 
     def get_move_count(self):
-        return self._moves
+        return self.moves
 
     def get_score(self):
-        return self._score
+        return self.score
     
     def get_position(self):
         return self._position
