@@ -9,6 +9,7 @@ class GameView(Views):
         '.': "white",
         'P': "blue"
     }
+    PLAYER_COLOR = "Pink"
 
     def __init__(self, game, title, width=500, height=500):
         super().__init__(title, width, height)
@@ -39,10 +40,9 @@ class GameView(Views):
         titolo = self.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25)
         self.style(titolo)
 
-        self.game_box = self.addPanel(row=2, column=1, columnspan=23, rowspan=15)
-        self.game_box["background"] = "black"
 
-        self.generate_grid_view()
+        self.draw_grid()
+
 
         row_stats = 18
         self.label_score = self.addLabel(text=f"Score: {self.game.player.score}", row=row_stats, column=2)
@@ -67,46 +67,61 @@ class GameView(Views):
         self.special_btn["background"] = "Gold"
         self.special_btn["foreground"] = "Black"
 
-    def generate_grid_view(self):
-        rows, cols = self.game.grid.get_grid_dimension()
-        for row in range(rows):
-            for col in range(cols):
+    def draw_grid(self):
+        self.grid_size = 20
+        self.cell_pixel_size = 30
+        canvas_width = self.grid_size * self.cell_pixel_size
+        canvas_height = self.grid_size * self.cell_pixel_size
+
+        self.canvas = self.addCanvas(row=2, column=1,
+                                     columnspan=23, rowspan=15,
+                                     width=canvas_width,
+                                     height=canvas_height)
+        self.canvas["background"] = "white"
+
+        for row in range(self.grid_size):
+            for col in range(self.grid_size):
+                x1 = col * self.cell_pixel_size
+                y1 = row * self.cell_pixel_size
+                x2 = x1 + self.cell_pixel_size
+                y2 = y1 + self.cell_pixel_size
+
                 cell_data = self.game.grid.get_cell_view_data((row, col))
-                color = self.CELL_COLORS.get(cell_data["type"])          #label per ogni cella della griglia
+                color = self.CELL_COLORS[cell_data["type"]]
 
-                cell_widget = self.game_box.addLabel(text=" ", row=row, column=col,
-                                             sticky="NSEW")
-                cell_widget["background"] = color
-                cell_widget["width"] = 2  # rende le celle quadrate
+                self.grid_widgets[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-                self.grid_widgets[(row, col)] = cell_widget
+            """ 
+            p_row, p_col = self._position
+    
+            cx1 = p_col * self.cell_pixel_size + 5  # margine di 5px
+            cy1 = p_row * self.cell_pixel_size + 5
+            cx2 = cx1 + self.cell_pixel_size - 10
+            cy2 = cy1 + self.cell_pixel_size - 10
+    
+            self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
+            """
 
-
-    def update_grid_display(self):
-        """sincronizza la GUI con lo stato attuale della griglia."""
-        rows, cols = self.game.grid.get_grid_dimension()
-        for row in range(rows):
-            for col in range(cols):
-                cell_data = self.game.grid.get_cell_view_data((row, col))
-
-                color = self.CELL_COLORS.get(cell_data["type"])
-
-                self.grid_widgets[(row, col)]["background"] = color
 
     def handle_move(self, direction):
-        # recupera la posizione precedente, prima del movimento
-        old_pos = (self.player.get_row(), self.player.get_col())
+        """sposta il giocatore"""
+        old_pos = self.player._position
+        new_row, new_col = old_pos
 
-        self.player.move_to(direction)
+        if direction == "N":
+            new_row -= 1
+        elif direction == "S":
+            new_row += 1
+        elif direction == "E":
+            new_col += 1
+        elif direction == "W":
+            new_col -= 1
 
-        # recupera la nuova posizione
-        new_pos = (self.player.get_row(), self.player.get_col())
+        if self.grid_logic.is_valid_movement((new_row, new_col)):
+            self.player.move_to(direction)
 
-        self.grid_logic.set_cell(old_pos, '.')
-        self.grid_logic.set_cell(new_pos, 'P')
-
-        self.update_grid_display()
-        self.update_stats()
+            self.draw_grid()
+            self.update_stats()
 
     def special_move(self):
         """Esegue la mossa speciale."""
