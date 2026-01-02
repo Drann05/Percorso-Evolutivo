@@ -1,25 +1,20 @@
 from .views import Views
 from breezypythongui import EasyDialog
-class StartScreen(Views):
 
+class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
     ACCENT_COLOR = "Pink"
     BACKGROUND_COLOR = "Purple"
 
     def __init__(self, parent, title, width, height):
         super().__init__(title, width, height)
-        self.correct_label = None
-        self.error_label = None
-        self.quit_button = None
-        self.start_button = None
-        self.nickname_field = None
-        self.difficulty=None
+        self._difficulty=None
         self.parent = parent
         self.widgets = []
         self.grid_init(12,12)
 
         self.build_ui()
-        self.nickname = None
+        self._nickname = None
 
     def style(self, widget):
         widget["font"]=self.MAIN_FONT
@@ -77,7 +72,7 @@ class StartScreen(Views):
 
     def save_name(self):
         if self.check_user():
-            self.nickname = self.nickname_field.getText()
+            self._nickname = self.nickname_field.getText()
             self.correct_label["text"] = "Nome salvato con successo"
             self.correct_label.grid()
 
@@ -97,9 +92,10 @@ class StartScreen(Views):
         """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
         self.error_label.grid_remove()
         self.correct_label.grid_remove()
+
         try:
             valid_name = self.check_user()
-            self.nickname = valid_name
+            self._nickname = valid_name
 
             self.set_difficulty()
         except ValueError as e:
@@ -113,12 +109,20 @@ class StartScreen(Views):
         dialog = DifficultyDialog(self)
 
         if dialog.choice:
-            self.difficulty = dialog.choice
+            self._difficulty = dialog.choice
             print(f"Hai scelto la difficoltà: {self.difficulty}")
             self.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
         else:
             self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
             self.error_label.grid()
+
+    @property
+    def difficulty(self):
+        return self._difficulty
+
+    @property
+    def nickname(self):
+        return self._nickname
 
 class DifficultyDialog(EasyDialog):
     def __init__(self, parent):
