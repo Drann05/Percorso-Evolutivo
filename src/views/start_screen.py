@@ -6,15 +6,15 @@ class StartScreen(Views):
     ACCENT_COLOR = "Pink"
     BACKGROUND_COLOR = "Purple"
 
-    def __init__(self, parent, title, width, height):
+    def __init__(self, parent, title, width=500, height=500):
         super().__init__(title, width, height)
+        self._widgets = []
+        self._parent = parent
         self._difficulty=None
-        self.parent = parent
-        self.widgets = []
-        self.grid_init(12,12)
-
-        self.build_ui()
         self._nickname = None
+        self.grid_init(12,12)
+        self.build_ui()
+
 
     def style(self, widget):
         widget["font"]=self.MAIN_FONT
@@ -26,25 +26,25 @@ class StartScreen(Views):
         title["foreground"]="white"
         title["background"]="Pink"
         title["font"]=self.MAIN_FONT
-        self.widgets.append(title)
+        self._widgets.append(title)
 
         user=self.addLabel(text="Inserisci un nickname ( massimo 20 caratteri)", row = 3, column=4, columnspan=2)
         user["foreground"]="white"
         user["background"]=self.BACKGROUND_COLOR
         user["font"]=self.MAIN_FONT
-        self.widgets.append(user)
+        self._widgets.append(user)
 
         self.nickname_field=self.addTextField(text="", row = 4, column=4, columnspan=2)
         self.nickname_field["font"]=self.MAIN_FONT
-        self.widgets.append(self.nickname_field)
+        self._widgets.append(self.nickname_field)
 
         self.start_button=self.addButton(text="Start game", row=5, column=4, columnspan=2, command=self.handle_start_btn)
         self.style(self.start_button)
-        self.widgets.append(self.start_button)
+        self._widgets.append(self.start_button)
 
-        self.quit_button=self.addButton(text="Quit game", row=6, column=4, columnspan=2, command=self.destroy)
+        self.quit_button=self.addButton(text="Quit game", row=6, column=4, columnspan=2, command=self.quit)
         self.style(self.quit_button)
-        self.widgets.append(self.quit_button)
+        self._widgets.append(self.quit_button)
 
         self.error_label = self.addLabel(
             text="Messaggio di errore",
@@ -99,10 +99,15 @@ class StartScreen(Views):
 
             self.set_difficulty()
         except ValueError as e:
+
             if str(e) == "USERNAME_VUOTO":
                 self.error_label["text"] = "Errore: Inserisci un nome!"
+
             elif str(e) == "USERNAME_NON_VALIDO":
                 self.error_label["text"] = "Errore: Nome troppo lungo (max 20)!"
+
+            self.error_label.grid()
+
 
     def set_difficulty(self):
         """Passaggio alla fase successiva: selezione difficoltà."""
