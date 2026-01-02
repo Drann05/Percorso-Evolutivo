@@ -179,9 +179,13 @@ class Grid:
                     counter += 1
         return counter
 
-    def get_cell_type(self, position):
-        row, col = position
-        return self.grid[row][col].get_type()
+
+    def get_cell_view_data(self, position):
+        cell = self.grid[position[0]][position[1]]
+        return {
+            "type": cell.get_type(),
+            "walkable": cell.is_walkable()
+        }
 
     def set_cell(self, position, cell_type):
         row, col = position
@@ -192,7 +196,7 @@ class Grid:
         return self.grid[row][col].is_walkable()
 
     def get_grid_dimension(self):
-        return self._width, self._height
+        return self._height, self._width
 
     def print_grid(self):
         for i in range(0, self._height):
