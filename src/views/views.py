@@ -19,7 +19,7 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
         pass
 
     @abstractmethod
-    def handle_events(self, event_type, **kwargs):
+    def handle_events(self, event_type):
         pass
 
     def clear(self):
