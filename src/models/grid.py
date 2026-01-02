@@ -16,9 +16,9 @@ class Grid:
     """
 
     DIFFICULTY = {
-        "Facile": {"Muri": 15, "Risorse": 12, "Trappole": 3},
-        "Medio": {"Muri": 20, "Risorse": 10, "Trappole": 5},
-        "Difficile": {"Muri": 25, "Risorse": 8, "Trappole": 7}
+        "facile": {"Muri": 15, "Risorse": 12, "Trappole": 3},
+        "medio": {"Muri": 20, "Risorse": 10, "Trappole": 5},
+        "difficile": {"Muri": 25, "Risorse": 8, "Trappole": 7}
     }
 
     MURO = 'X'
@@ -55,7 +55,7 @@ class Grid:
         - Medio: 20% Muri, 10% Risorse, 5% Trappole
         - Difficile: 25% Muri, 8% Risorse, 7% Trappole
         """
-
+        difficulty = difficulty.lower()
         self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
 
         muri_count = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100) - self.cell_count(self.MURO)
