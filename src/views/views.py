@@ -18,7 +18,7 @@ class Views(EasyFrame, ABC):
         pass
 
     @abstractmethod
-    def handle_events(self, event_type, **kwargs):
+    def handle_events(self, event_type):
         pass
 
     def create_label(self, container, text, row, column, sticky="NSEW"):
