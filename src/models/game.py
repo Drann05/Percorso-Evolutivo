@@ -21,7 +21,7 @@ class Game:
         self._difficulty = difficulty
         self.grid = Grid(20, 20)
         self.player = None
-        self._timer = Timer()
+        self.timer = Timer()
         self._started = False
 
     def start_game(self):
@@ -30,7 +30,7 @@ class Game:
         spawn_point = self.grid.spawn_position
         self.player = Player(self._player_name, spawn_point)
 
-        self._timer.start_timer()
+        self.timer.start_timer()
 
     def move_player(self, direction):
         if not self.is_reachable(direction):
@@ -55,7 +55,7 @@ class Game:
         """
 
     def end_game(self):
-        self._timer.stop_timer()
+        self.timer.stop_timer()
 
     def is_reachable(self, direction):
         row, col = self.player.get_position()
