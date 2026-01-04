@@ -112,21 +112,19 @@ class GameView(Views):
 
                 self.rects[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-            """ 
-            p_row, p_col = self._position
-    
-            cx1 = p_col * self.cell_pixel_size + 5  # margine di 5px
-            cy1 = p_row * self.cell_pixel_size + 5
-            cx2 = cx1 + self.cell_pixel_size - 10
-            cy2 = cy1 + self.cell_pixel_size - 10
-    
+            p_row, p_col = self.game.player.position
+
+            cx1 = p_col * self.CELL_PIXEL_SIZE + 5  # margine di 5px
+            cy1 = p_row * self.CELL_PIXEL_SIZE + 5
+            cx2 = cx1 + self.CELL_PIXEL_SIZE - 10
+            cy2 = cy1 + self.CELL_PIXEL_SIZE - 10
+
             self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
-            """
 
 
     def handle_move(self, direction):
         """sposta il giocatore"""
-        old_pos = self.player._position
+        old_pos = self.game.player._position
         new_row, new_col = old_pos
 
         if direction == "N":
@@ -139,7 +137,7 @@ class GameView(Views):
             new_col -= 1
 
         if self.grid_logic.is_valid_movement((new_row, new_col)):
-            self.player.move_to(direction)
+            self.game.player.move_to(direction)
 
             self.draw_grid()
             self.update_stats()
@@ -154,3 +152,10 @@ class GameView(Views):
 
     def reset_game(self):
         pass
+
+    def update_cell_display(self, position):
+        """serve a modificare la cella su cui il giocatore si sposta nella view"""
+        x, y = position
+        cell_type = self.game.grid.get_cell_view_data(x, y)["type"]
+        new_color = self.CELL_COLORS[cell_type]
+        self.canvas.itemconfig(position[x,y], fill=new_color)
