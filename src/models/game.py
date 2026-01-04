@@ -49,9 +49,9 @@ class Game:
         self.player.move_to(direction)
 
         new_position = self.player.position
-        cell_data = self.grid.get_cell_view_data(new_position)
+        cell_data = self.grid.get_cell_data(new_position)
 
-        self.apply_cell_effect(cell_data["type"])
+        self.apply_cell_effect(cell_data)
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
