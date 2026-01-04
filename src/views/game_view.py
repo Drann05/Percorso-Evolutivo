@@ -110,7 +110,7 @@ class GameView(Views):
                 x2 = x1 + self.CELL_PIXEL_SIZE
                 y2 = y1 + self.CELL_PIXEL_SIZE
 
-                cell_data = self._controller.game.grid.get_cell_view_data((row, col))
+                cell_data = self._controller.game.grid.get_cell_data((row, col))
                 color = self.CELL_COLORS[cell_data["type"]]
 
                 self.rects[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
@@ -139,9 +139,9 @@ class GameView(Views):
     def update_cell_display(self, position):
         """serve a modificare la cella su cui il giocatore si sposta nella view"""
         x, y = position
-        cell_type = self._controller.game.grid.get_cell_view_data(x, y)["type"]
+        cell_type = self._controller.game.grid.get_cell_data((x, y))["type"]
         new_color = self.CELL_COLORS[cell_type]
-        self.canvas.itemconfig(position[x,y], fill=new_color)
+        self.canvas.itemconfig(self.rects[(x,y)], fill=new_color)
 
     def update_player_position_display(self):
         self.canvas.delete(self.player_display_id)

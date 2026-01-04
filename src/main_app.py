@@ -29,8 +29,9 @@ class MainApp():
 
     def handle_movement(self, direction):
         self.game.move_player(direction)
+        new_pos = self.game.player.position
         self.game_view.update_player_position_display()
-        self.game_view.update_cell_display()
+        self.game_view.update_cell_display(new_pos)
 
 
 if __name__ == '__main__':
