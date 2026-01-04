@@ -8,10 +8,13 @@ from .views.menu import Menu
 
 class MainApp():
     def __init__(self):
-        self.main_view = MainView(self)
+
         self.start_screen = None
         self.game = None
         self.game_view = None
+
+        self.main_view = MainView(self)
+        self.main_view.mainloop()
 
 
     def init_menu(self):
