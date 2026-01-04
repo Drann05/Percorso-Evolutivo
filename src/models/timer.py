@@ -10,9 +10,6 @@ class Timer:
         self._starting_time = 0
         self._elapsed = 0
         self._running = False
-        self._starting_time = 0
-        self._elapsed = 0
-        self._running = False
 
     def start_timer(self): 
         """
