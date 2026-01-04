@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from breezypythongui import EasyCanvas, EasyFrame, EasyCanvas, EasyDialog
+from breezypythongui import EasyCanvas, EasyFrame, EasyDialog
 
 
 class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
@@ -12,10 +12,6 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
         """Metodo astratto obbligatorio per costruire l'interfaccia"""
         pass
 
-
-    def create_label(self, container, text, row, column, sticky="NSEW"):
-        return container.addLabel(text=text, row=row, column=column, sticky=sticky)
-
     def clear(self):
         for widget in self.winfo_children():
             widget.destroy()
@@ -25,3 +21,4 @@ class Views(EasyFrame, EasyCanvas, EasyDialog, ABC):
             self.rowconfigure(r, weight=1)
         for c in range(column):
             self.columnconfigure(c, weight=1)
+
