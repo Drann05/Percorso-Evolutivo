@@ -141,20 +141,12 @@ class DifficultyDialog(EasyDialog):
         """Crea il corpo della finestra di dialogo."""
         self.addLabel(master, text="Seleziona il livello di sfida:", row=0, column=0, columnspan=3)
 
-        self.addButton(master, text="Facile", row=1, column=0, command=self.set_easy)
-        self.addButton(master, text="Medio", row=1, column=1, command=self.set_medium)
-        self.addButton(master, text="Difficile", row=1, column=2, command=self.set_hard)
+        self.addButton(master, text="Facile", row=1, column=0, command=self.set_difficulty("Facile"))
+        self.addButton(master, text="Medio", row=1, column=1, command=self.set_difficulty("Medio"))
+        self.addButton(master, text="Difficile", row=1, column=2, command=self.set_difficulty("Difficile"))
 
-    def set_easy(self):
-        self.choice = "Facile"
-        self.apply()
-
-    def set_medium(self):
-        self.choice = "Medio"
-        self.apply()
-
-    def set_hard(self):
-        self.choice = "Difficile"
+    def set_difficulty(self, difficulty):
+        self.choice = difficulty
         self.apply()
 
     def apply(self):
