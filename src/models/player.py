@@ -41,11 +41,9 @@ class Player:
 
         self._position = (row, col)
 
-    def add_score(self, value):
+    def change_score(self, value):
+        """Aggiunge o sottrae punti al punteggio del giocatore"""
         self._score += value
-
-    def subtract_score(self, value):
-        self._score -= value
 
     def use_remove_wall(self):
         self._remove_wall_available = False
