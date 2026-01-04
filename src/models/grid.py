@@ -1,5 +1,4 @@
 from .cell import Cell
-from .player import Player
 import random
 from random import randint
 
