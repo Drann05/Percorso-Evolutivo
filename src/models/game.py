@@ -60,7 +60,7 @@ class Game:
         cell_type = cell_type.upper()
 
         if cell_type in self.SCORES:
-            self.player.change_score(cell_type)
+            self.player.change_score(self.SCORES[cell_type])
 
 
 
