@@ -3,31 +3,23 @@ from .views.start_screen import StartScreen
 from .views.leaderboard_view import LeaderboardView
 from .views.game_view import GameView
 from .views.menu import Menu
-from breezypythongui import EasyFrame
+
 
 class MainApp():
     def __init__(self):
-        self.nickname = None
-        self.difficulty = None
-        self.game = Game(self)
-
-
-    def run(self):
-        """Funzione che avvia il programma"""
-        self.show_start_screen()
-        self._widget = []
-
-    def show_menu(self):
         pass
 
-    def show_game(self):
-        self.game_view = GameView()
-
-    def show_leaderboard(self):
+    def init_menu(self):
         pass
 
-    def show_start_screen(self):
+    def init_game(self):
         pass
 
+    def init_leaderboard(self):
+        pass
+
+    def init_start_screen(self):
+        pass
+    
 if __name__ == '__main__':
     app = MainApp()

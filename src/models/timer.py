@@ -1,31 +1,34 @@
-#Classe per la gestione del timer.
-#Utilizzo time per aggiornare il tempo trascorso ogni secondo.
+"""
+Classe per la gestione del timer.
+Utilizzo time per aggiornare il tempo trascorso ogni secondo.
+"""
 
 import time
 
 class Timer:
     def __init__ (self):
-        self.__starting_time = 0
-        self.__elapsed = None
-        self.__running = False
+        self._starting_time = 0
+        self._elapsed = 0
+        self._running = False
 
-    #incrementa il tempo trascorso ogni secondo e imposta lo stato a Vero
     def start_timer(self): 
-        self.__running = True             
-        while self.__running:
-            time.sleep(1)
-            self.__elapsed += 1
-
-    #ferma il timer quando richiamata       
+        """
+        incrementa il tempo trascorso ogni secondo e imposta lo stato a Vero
+        """
+        if not self._running:
+            self._starting_time = time.time()
+            self._running = True
+  
     def stop_timer(self):
-        self.__running = False
-
-    #azzera il tempo trascorso e imposta lo stato a Falso   
+        """
+        ferma il timer quando richiamata e aggiorna self._elapsed
+        """
+        self._elapsed = time.time() - self._starting_time
+        self._running = False
+   
     def reset_timer(self):
-        self.__elapsed = self.__starting_time
-        self.__running = False
+        self._elapsed = 0
+        self._running = False
 
-    #metodo get per ottenere il tempo trascorso
     def get_elapsed(self):
-        return self.__elapsed
-    
+        return self._elapsed
