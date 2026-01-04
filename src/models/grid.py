@@ -1,5 +1,4 @@
-from .cell import Cell
-from .player import Player
+from cell import Cell
 import random
 from random import randint
 
@@ -42,6 +41,7 @@ class Grid:
         self._grid_dimension = width * height
         self._safe_zone = []
         self._spawn_point = None
+        self._target_point = None
 
     def generate_grid(self, difficulty):
         """
@@ -92,6 +92,8 @@ class Grid:
                         col].get_type() == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
                         if cell_type == self.PUNTO_DI_PARTENZA:
                             self._spawn_point = (row, col)
+                        elif cell_type == self.OBIETTIVO:
+                            self._target_point = (row, col)
                         self.set_cell((row, col), cell_type)
                         placed += 1
 
@@ -100,6 +102,7 @@ class Grid:
         place_cells_randomly(self.TRAPPOLA, trappole_count)
         place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
         place_cells_randomly(self.OBIETTIVO, 1, 15)
+        print(self.is_reachable(self._spawn_point, self._target_point))
 
     def generative_dfs(self):
         """
@@ -140,7 +143,6 @@ class Grid:
         """
         Restituisce la posizione dello spawn point
         """
-
         return self._spawn_point
 
     def is_reachable(self, posizione_1: tuple, posizione_2: tuple):
@@ -150,25 +152,30 @@ class Grid:
         """
         to_visit = [(posizione_1)]
         visited = [(posizione_1)]
+        count_moves = 0
 
-        while len(to_visit) > 0:
-            current_x, current_y = to_visit.pop(0)
+        while len(to_visit) > 0 and count_moves <= 30:
+            current_level = len(to_visit)
+            
+            for _ in range(current_level):
+                current_x, current_y = to_visit.pop(0)
 
-            if (current_x, current_y) == (posizione_2):
-                return True
+                if (current_x, current_y) == (posizione_2):
+                    return True
 
-            neighbors = [
-                (current_x - 1, current_y),  # N
-                (current_x + 1, current_y),  # S
-                (current_x, current_y - 1),  # O
-                (current_x, current_y + 1)  # E
-            ]
+                neighbors = [
+                    (current_x - 1, current_y),  # N
+                    (current_x + 1, current_y),  # S
+                    (current_x, current_y - 1),  # O
+                    (current_x, current_y + 1)   # E
+                ]
 
-            for i, j in neighbors:
-                if 0 <= i < self._height and 0 <= j < self._width:
-                    if (self.grid[i][j].is_walkable()) and (i, j) not in visited:
-                        to_visit.append((i, j))
-                        visited.append((i, j))
+                for i, j in neighbors:
+                    if (0 <= i < self._height and 0 <= j < self._width):
+                        if (i, j) not in visited:
+                            to_visit.append((i, j))
+                            visited.append((i, j))
+            count_moves += 1
         return False
 
     def cell_count(self, cell_type):
@@ -180,10 +187,11 @@ class Grid:
         return counter
 
 
-    def get_cell_view_data(self, position):
+    def get_cell_data(self, position):
         cell = self.grid[position[0]][position[1]]
         return {
             "type": cell.get_type(),
+            "position": position,
             "walkable": cell.is_walkable()
         }
 
