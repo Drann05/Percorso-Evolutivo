@@ -1,4 +1,4 @@
-from src.main_app import MainApp
+from src.controller import MainApp
 
 if __name__ == "__main__":
   app = MainApp()
