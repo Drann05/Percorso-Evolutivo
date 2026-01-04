@@ -13,8 +13,8 @@ class Player:
         self._position = position
         self._score = 0
         self._moves = 0
-        self._remove_wall_available = True
-        self._convert_trap_available = True
+        self.remove_wall_available = True
+        self.convert_trap_available = True
 
     def move_to(self, direction):
         """
