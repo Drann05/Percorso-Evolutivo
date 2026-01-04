@@ -58,10 +58,11 @@ class Game:
         cell_position = cell_data["position"]
 
         cell_type = cell_type.upper()
-        if cell_type not in self.SCORES:
-            raise Exception('Tipo di cella non valido')
 
-        self.player.change_score(cell_type)
+        if cell_type in self.SCORES:
+            self.player.change_score(cell_type)
+
+
 
         if cell_type == "R":
             self.grid.set_cell(cell_position, '.')
