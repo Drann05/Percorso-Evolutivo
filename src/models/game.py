@@ -16,9 +16,15 @@ class Game:
     - Gestione fine gioco
     """
 
+    SCORES = {
+        "O": 20,    # Obiettivo
+        "R": 10,    # Risorsa
+        "T": -5     # Trappola
+    }
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
+
         self.grid = Grid(20, 20)
         self.player = None
         self.timer = Timer()
@@ -47,12 +53,19 @@ class Game:
 
         self.apply_cell_effect(cell_data["type"])
 
-    def apply_cell_effect(self, cell_type):
-        """
-        Applica l'effetto della cella su cui si trova il giocatore
+    def apply_cell_effect(self, cell_data):
+        cell_type = cell_data["type"]
+        cell_position = cell_data["position"]
 
-        TODO: implementare gli effetti di ciascuna cella
-        """
+        cell_type = cell_type.upper()
+        if cell_type not in self.SCORES:
+            raise Exception('Tipo di cella non valido')
+
+        self.player.change_score(cell_type)
+
+        if cell_type == "R":
+            self.grid.set_cell(cell_position, '.')
+
 
     def end_game(self):
         self.timer.stop_timer()
