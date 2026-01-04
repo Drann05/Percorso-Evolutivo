@@ -147,8 +147,6 @@ class DifficultyDialog(EasyDialog):
 
     def set_difficulty(self, difficulty):
         self.choice = difficulty
-        self.apply()
-
-    def apply(self):
-        """Metodo chiamato alla chiusura per confermare l'azione."""
         self.destroy()
+
+
