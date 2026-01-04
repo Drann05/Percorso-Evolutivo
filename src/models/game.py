@@ -30,7 +30,7 @@ class Game:
         spawn_point = self.grid.spawn_position
         self.player = Player(self._player_name, spawn_point)
 
-        self.timer.start_timer()
+        #self.timer.start_timer()
 
     def move_player(self, direction):
         if not self.is_reachable(direction):

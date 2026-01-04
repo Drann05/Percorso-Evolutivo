@@ -7,7 +7,7 @@ from .views.menu import Menu
 
 class MainApp():
     def __init__(self):
-        pass
+        self.show_game()
 
     def run(self):
         """Funzione che avvia il programma"""
@@ -18,7 +18,10 @@ class MainApp():
         pass
 
     def show_game(self):
-        pass
+        self.game = Game("Gioele", "facile")
+        self.game.start_game()
+        self.game_view = GameView(self.game,"Percorso Evolutivo")
+        self.game_view.mainloop()
 
     def show_leaderboard(self):
         pass

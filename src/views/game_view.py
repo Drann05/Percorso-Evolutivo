@@ -68,19 +68,18 @@ class GameView(Views):
         self.special_btn["foreground"] = "Black"
 
     def draw_grid(self):
-        self.grid_size = 20
+        rows, cols = self.game.grid.get_grid_dimension()
         self.cell_pixel_size = 30
-        canvas_width = self.grid_size * self.cell_pixel_size
-        canvas_height = self.grid_size * self.cell_pixel_size
-
+        canvas_width = rows * self.cell_pixel_size
+        canvas_height = cols * self.cell_pixel_size
         self.canvas = self.addCanvas(row=2, column=1,
-                                     columnspan=23, rowspan=15,
+                                     columnspan=25, rowspan=15,
                                      width=canvas_width,
                                      height=canvas_height)
         self.canvas["background"] = "white"
 
-        for row in range(self.grid_size):
-            for col in range(self.grid_size):
+        for row in range(rows):
+            for col in range(cols):
                 x1 = col * self.cell_pixel_size
                 y1 = row * self.cell_pixel_size
                 x2 = x1 + self.cell_pixel_size
