@@ -1,4 +1,4 @@
-from cell import Cell
+from .cell import Cell
 import random
 from random import randint
 
@@ -193,10 +193,11 @@ class Grid:
         return counter
 
 
-    def get_cell_view_data(self, position):
+    def get_cell_data(self, position):
         cell = self.grid[position[0]][position[1]]
         return {
             "type": cell.get_type(),
+            "position": position,
             "walkable": cell.is_walkable()
         }
 
