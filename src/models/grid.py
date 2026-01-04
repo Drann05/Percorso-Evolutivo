@@ -145,7 +145,7 @@ class Grid:
         """
         return self._spawn_point
 
-    def is_reachable(self, posizione_1: tuple, posizione_2: tuple):
+    def is_reachable(self, posizione_1: tuple, posizione_2: tuple, breakable_walls = 0):
         """
         Verifica se la cella obiettivo è raggiungibile dalla cella di spawn
         controllando le celle adiacenti in modo da vedere se esiste un percorso percorribile
@@ -172,10 +172,16 @@ class Grid:
 
                 for i, j in neighbors:
                     if (0 <= i < self._height and 0 <= j < self._width):
-                        if (i, j) not in visited:
-                            to_visit.append((i, j))
-                            visited.append((i, j))
-            count_moves += 1
+                        if breakable_walls >= 1:
+                            if (i, j) not in visited:
+                                to_visit.append((i, j))
+                                visited.append((i, j))
+                        else:
+                            if (i, j) not in visited and self.grid[i][j].is_walkable():
+                                to_visit.append((i, j))
+                                visited.append((i, j))
+                
+            count_moves += 1         
         return False
 
     def cell_count(self, cell_type):
