@@ -24,6 +24,8 @@ class GameView(Views):
         self.widgets = []
         self.grid_init(30, 25)
 
+        self.player_display_id = None
+
         # --- Statistiche di Gioco ---
         self.label_score = None
         self.label_moves = None
@@ -63,6 +65,7 @@ class GameView(Views):
 
 
         self.draw_grid()
+        self.player_display_id=self.draw_player()
 
 
         row_stats = 18
@@ -76,13 +79,13 @@ class GameView(Views):
         control_panel = self.addPanel(row=20, column=0, columnspan=25)
 
         self.btn_up = control_panel.addButton(text="▲", row=0, column=1,
-                                              command=lambda: self.handle_move("N"))
+                                              command=lambda: self._controller.handle_movement("N"))
         self.btn_left = control_panel.addButton(text="◀", row=1, column=0,
-                                                command=lambda: self.handle_move("W"))
+                                                command=lambda: self._controller.handle_movement("W"))
         self.btn_down = control_panel.addButton(text="▼", row=1, column=1,
-                                                command=lambda: self.handle_move("S"))
+                                                command=lambda: self._controller.handle_movement("S"))
         self.btn_right = control_panel.addButton(text="▶", row=1, column=2,
-                                                 command=lambda: self.handle_move("E"))
+                                                 command=lambda: self._controller.handle_movement("E"))
 
         self.special_move_btn = control_panel.addButton(text="MOSSA SPECIALE", row=1, column=4, command=self.special_move)
         self.special_move_btn["background"] = "Gold"
@@ -112,14 +115,15 @@ class GameView(Views):
 
                 self.rects[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-            p_row, p_col = self._controller.game.player.position
+    def draw_player(self):
+        p_row, p_col = self._controller.game.player.position
 
-            cx1 = p_col * self.CELL_PIXEL_SIZE + 5  # margine di 5px
-            cy1 = p_row * self.CELL_PIXEL_SIZE + 5
-            cx2 = cx1 + self.CELL_PIXEL_SIZE - 10
-            cy2 = cy1 + self.CELL_PIXEL_SIZE - 10
+        cx1 = p_col * self.CELL_PIXEL_SIZE + 5  # margine di 5px
+        cy1 = p_row * self.CELL_PIXEL_SIZE + 5
+        cx2 = cx1 + self.CELL_PIXEL_SIZE - 10
+        cy2 = cy1 + self.CELL_PIXEL_SIZE - 10
 
-            self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
+        return self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
 
     def special_move(self):
         """Esegue la mossa speciale."""
@@ -138,3 +142,7 @@ class GameView(Views):
         cell_type = self._controller.game.grid.get_cell_view_data(x, y)["type"]
         new_color = self.CELL_COLORS[cell_type]
         self.canvas.itemconfig(position[x,y], fill=new_color)
+
+    def update_player_position_display(self):
+        self.canvas.delete(self.player_display_id)
+        self.player_display_id = self.draw_player()
