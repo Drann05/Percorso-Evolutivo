@@ -102,7 +102,7 @@ class Grid:
         place_cells_randomly(self.TRAPPOLA, trappole_count)
         place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
         place_cells_randomly(self.OBIETTIVO, 1, 15)
-        print(self.is_reachable(self._spawn_point, self._target_point))
+        #print(self.is_reachable(self._spawn_point, self._target_point))
 
     def generative_dfs(self):
         """

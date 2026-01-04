@@ -26,7 +26,6 @@ class Controller:
         self.game = Game(nickname, difficulty)
         self.game.start_game()
 
-        self._main_view.show_game()
 
     def init_leaderboard(self):
         pass
