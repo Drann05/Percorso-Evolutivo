@@ -49,19 +49,20 @@ class Game:
         self.player.move_to(direction)
 
         new_position = self.player.position
-        cell_data = self.grid.get_cell_view_data(new_position)
+        cell_data = self.grid.get_cell_data(new_position)
 
-        self.apply_cell_effect(cell_data["type"])
+        self.apply_cell_effect(cell_data)
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
         cell_position = cell_data["position"]
 
         cell_type = cell_type.upper()
-        if cell_type not in self.SCORES:
-            raise Exception('Tipo di cella non valido')
 
-        self.player.change_score(cell_type)
+        if cell_type in self.SCORES:
+            self.player.change_score(cell_type)
+
+
 
         if cell_type == "R":
             self.grid.set_cell(cell_position, '.')
