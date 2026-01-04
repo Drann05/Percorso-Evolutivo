@@ -12,9 +12,10 @@ class GameView(Views):
     PLAYER_COLOR = "Pink"
     CELL_PIXEL_SIZE = 30
 
-    def __init__(self, controller, title, width=500, height=500):
+    def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
         self._controller = controller
+        self._parent_view = parent_view
 
         # --- Inizializzazione Interfaccia ---
         self.MAIN_FONT = ("Arial", 12, "bold")
@@ -22,7 +23,7 @@ class GameView(Views):
         self.BACKGROUND_COLOR = "Light Blue"
 
         self.widgets = []
-        self.grid_init(30, 25)
+        self._parent_view.grid_init(30, 25)
 
         self.player_display_id = None
 
@@ -54,13 +55,13 @@ class GameView(Views):
 
     def build_ui(self):
 
-        menu_bar = self.addMenuBar(row=0, column=0, columnspan=5)
+        menu_bar = self._parent_view.addMenuBar(row=0, column=0, columnspan=5)
         file_menu = menu_bar.addMenu("File")
         file_menu.addMenuItem("Nuova Partita", command=self.reset_game)
-        file_menu.addMenuItem("Esci", command=self.quit)
+        file_menu.addMenuItem("Esci", command=self._parent_view.quit)
 
 
-        titolo = self.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25)
+        titolo = self._parent_view.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25)
         self.style(titolo)
 
 
@@ -69,14 +70,14 @@ class GameView(Views):
 
 
         row_stats = 18
-        self.label_score = self.addLabel(text=f"Score: {self._controller.game.player.score}", row=row_stats, column=2)
-        self.label_moves = self.addLabel(text=f"Moves: {self._controller.game.player.moves}", row=row_stats, column=11)
-        self.label_timer = self.addLabel(text=f"Timer: {self._controller.game.timer}s", row=row_stats, column=20)
+        self.label_score = self._parent_view.addLabel(text=f"Score: {self._controller.game.player.score}", row=row_stats, column=2)
+        self.label_moves = self._parent_view.addLabel(text=f"Moves: {self._controller.game.player.moves}", row=row_stats, column=11)
+        self.label_timer = self._parent_view.addLabel(text=f"Timer: {self._controller.game.timer}s", row=row_stats, column=20)
 
         for lbl in [self.label_score, self.label_moves, self.label_timer]:
             self.style(lbl)
 
-        control_panel = self.addPanel(row=20, column=0, columnspan=25)
+        control_panel = self._parent_view.addPanel(row=20, column=0, columnspan=25)
 
         self.btn_up = control_panel.addButton(text="▲", row=0, column=1,
                                               command=lambda: self._controller.handle_movement("N"))
@@ -95,7 +96,7 @@ class GameView(Views):
         rows, cols = self._controller.game.grid.get_grid_dimension()
         canvas_width = rows * self.CELL_PIXEL_SIZE
         canvas_height = cols * self.CELL_PIXEL_SIZE
-        self.canvas = self.addCanvas(row=2, column=1,
+        self.canvas = self._parent_view.addCanvas(row=2, column=1,
                                      columnspan=25, rowspan=15,
                                      width=canvas_width,
                                      height=canvas_height
