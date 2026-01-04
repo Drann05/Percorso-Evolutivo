@@ -15,6 +15,7 @@ class GameView(Views):
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
         self._controller = controller
+        self._controller.init_game()
         self._parent_view = parent_view
 
         # --- Inizializzazione Interfaccia ---

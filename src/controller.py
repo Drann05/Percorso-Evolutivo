@@ -6,11 +6,11 @@ from .views.game_view import GameView
 from .views.menu import Menu
 
 
-class MainApp():
+class Controller:
     def __init__(self):
 
         self._start_screen = None
-        self._game = None
+        self.game = None
         self._game_view = None
 
         self._main_view = MainView(self)
@@ -21,10 +21,10 @@ class MainApp():
         pass
 
     def init_game(self):
-        nickname = self._start_screen.nickname
-        difficulty = self._start_screen.difficulty
-        self._game = Game(nickname, difficulty)
-        self._game.start_game()
+        nickname = self._main_view.start_screen.nickname
+        difficulty = self._main_view.start_screen.difficulty
+        self.game = Game(nickname, difficulty)
+        self.game.start_game()
 
         self._main_view.show_game()
 
@@ -35,10 +35,10 @@ class MainApp():
         self._main_view.show_start_screen()
 
     def handle_movement(self, direction):
-        self._game.move_player(direction)
-        new_pos = self._game.player.position
+        self.game.move_player(direction)
+        new_pos = self.game.player.position
         self._main_view.game_view.update_player_position_display()
         self._main_view.game_view.update_cell_display(new_pos)
 
 if __name__ == '__main__':
-    app = MainApp()
+    app = Controller()

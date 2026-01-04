@@ -113,12 +113,13 @@ class StartScreen(Views):
 
     def set_difficulty(self):
         """Passaggio alla fase successiva: selezione difficoltà."""
-        dialog = DifficultyDialog(self)
+        dialog = DifficultyDialog(self._parent_view)
 
         if dialog.choice:
             self._difficulty = dialog.choice
             print(f"Hai scelto la difficoltà: {self.difficulty}")
             self._parent_view.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
+            self._parent_view.show_game()
         else:
             self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
             self.error_label.grid()
