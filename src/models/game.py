@@ -36,13 +36,13 @@ class Game:
         if not self.is_reachable(direction):
             return
 
-        if self.player.get_moves_count() >= 30:
+        if self.player.moves >= 30:
             self.end_game()
             return
 
         self.player.move_to(direction)
 
-        new_position = self.player.get_position()
+        new_position = self.player.position
         cell_data = self.grid.get_cell_view_data(new_position)
 
         self.apply_cell_effect(cell_data["type"])
@@ -58,7 +58,7 @@ class Game:
         self.timer.stop_timer()
 
     def is_reachable(self, direction):
-        row, col = self.player.get_position()
+        row, col = self.player.position
 
         match direction:
             case "N":
