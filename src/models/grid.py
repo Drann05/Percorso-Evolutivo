@@ -183,6 +183,7 @@ class Grid:
         cell = self.grid[position[0]][position[1]]
         return {
             "type": cell.get_type(),
+            "position": position,
             "walkable": cell.is_walkable()
         }
 
