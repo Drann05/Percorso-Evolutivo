@@ -10,18 +10,39 @@ class GameView(Views):
         'P': "blue"
     }
     PLAYER_COLOR = "Pink"
+    CELL_PIXEL_SIZE = 30
 
     def __init__(self, game, title, width=500, height=500):
         super().__init__(title, width, height)
-        self.game = game
+        self.game = game    # Prende come parametro lo stato del gioco dal modello Game
 
+        # --- Inizializzazione Interfaccia ---
         self.MAIN_FONT = ("Arial", 12, "bold")
         self.ACCENT_COLOR = "White"
         self.BACKGROUND_COLOR = "Light Blue"
 
         self.widgets = []
-        self.grid_widgets = {}
         self.grid_init(30, 25)
+
+        # --- Statistiche di Gioco ---
+        self.label_score = None
+        self.label_moves = None
+        self.label_timer = None
+
+        # --- Pulsanti Giocatore ---
+        self.btn_up = None
+        self.btn_left = None
+        self.btn_down = None
+        self.btn_right = None
+
+        self.special_move_btn = None
+
+        # --- Canvas ---
+        self.rects = {}
+        self.canvas = None
+
+
+        # Costruzione UI
         self.build_ui()
 
     def style(self, widget):
@@ -63,32 +84,32 @@ class GameView(Views):
         self.btn_right = control_panel.addButton(text="▶", row=1, column=2,
                                                  command=lambda: self.handle_move("E"))
 
-        self.special_btn = control_panel.addButton(text="MOSSA SPECIALE", row=1, column=4, command=self.special_move)
-        self.special_btn["background"] = "Gold"
-        self.special_btn["foreground"] = "Black"
+        self.special_move_btn = control_panel.addButton(text="MOSSA SPECIALE", row=1, column=4, command=self.special_move)
+        self.special_move_btn["background"] = "Gold"
+        self.special_move_btn["foreground"] = "Black"
 
     def draw_grid(self):
         rows, cols = self.game.grid.get_grid_dimension()
-        self.cell_pixel_size = 30
-        canvas_width = rows * self.cell_pixel_size
-        canvas_height = cols * self.cell_pixel_size
+        canvas_width = rows * self.CELL_PIXEL_SIZE
+        canvas_height = cols * self.CELL_PIXEL_SIZE
         self.canvas = self.addCanvas(row=2, column=1,
                                      columnspan=25, rowspan=15,
                                      width=canvas_width,
-                                     height=canvas_height)
+                                     height=canvas_height
+                                     )
         self.canvas["background"] = "white"
 
         for row in range(rows):
             for col in range(cols):
-                x1 = col * self.cell_pixel_size
-                y1 = row * self.cell_pixel_size
-                x2 = x1 + self.cell_pixel_size
-                y2 = y1 + self.cell_pixel_size
+                x1 = col * self.CELL_PIXEL_SIZE
+                y1 = row * self.CELL_PIXEL_SIZE
+                x2 = x1 + self.CELL_PIXEL_SIZE
+                y2 = y1 + self.CELL_PIXEL_SIZE
 
                 cell_data = self.game.grid.get_cell_view_data((row, col))
                 color = self.CELL_COLORS[cell_data["type"]]
 
-                self.grid_widgets[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
+                self.rects[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
             """ 
             p_row, p_col = self._position
