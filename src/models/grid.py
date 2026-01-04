@@ -1,4 +1,4 @@
-from cell import Cell
+from .cell import Cell
 import random
 from random import randint
 
