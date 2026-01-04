@@ -12,9 +12,9 @@ class GameView(Views):
     PLAYER_COLOR = "Pink"
     CELL_PIXEL_SIZE = 30
 
-    def __init__(self, game, title, width=500, height=500):
+    def __init__(self, controller, title, width=500, height=500):
         super().__init__(title, width, height)
-        self.game = game    # Prende come parametro lo stato del gioco dal modello Game
+        self._controller = controller
 
         # --- Inizializzazione Interfaccia ---
         self.MAIN_FONT = ("Arial", 12, "bold")
@@ -66,9 +66,9 @@ class GameView(Views):
 
 
         row_stats = 18
-        self.label_score = self.addLabel(text=f"Score: {self.game.player.score}", row=row_stats, column=2)
-        self.label_moves = self.addLabel(text=f"Moves: {self.game.player.moves}", row=row_stats, column=11)
-        self.label_timer = self.addLabel(text=f"Timer: {self.game.timer}s", row=row_stats, column=20)
+        self.label_score = self.addLabel(text=f"Score: {self._controller.game.player.score}", row=row_stats, column=2)
+        self.label_moves = self.addLabel(text=f"Moves: {self._controller.game.player.moves}", row=row_stats, column=11)
+        self.label_timer = self.addLabel(text=f"Timer: {self._controller.game.timer}s", row=row_stats, column=20)
 
         for lbl in [self.label_score, self.label_moves, self.label_timer]:
             self.style(lbl)
@@ -89,7 +89,7 @@ class GameView(Views):
         self.special_move_btn["foreground"] = "Black"
 
     def draw_grid(self):
-        rows, cols = self.game.grid.get_grid_dimension()
+        rows, cols = self._controller.game.grid.get_grid_dimension()
         canvas_width = rows * self.CELL_PIXEL_SIZE
         canvas_height = cols * self.CELL_PIXEL_SIZE
         self.canvas = self.addCanvas(row=2, column=1,
@@ -107,12 +107,12 @@ class GameView(Views):
                 x2 = x1 + self.CELL_PIXEL_SIZE
                 y2 = y1 + self.CELL_PIXEL_SIZE
 
-                cell_data = self.game.grid.get_cell_view_data((row, col))
+                cell_data = self._controller.game.grid.get_cell_view_data((row, col))
                 color = self.CELL_COLORS[cell_data["type"]]
 
                 self.rects[(row, col)]=self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-            p_row, p_col = self.game.player.position
+            p_row, p_col = self._controller.game.player.position
 
             cx1 = p_col * self.CELL_PIXEL_SIZE + 5  # margine di 5px
             cy1 = p_row * self.CELL_PIXEL_SIZE + 5
@@ -120,27 +120,6 @@ class GameView(Views):
             cy2 = cy1 + self.CELL_PIXEL_SIZE - 10
 
             self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
-
-
-    def handle_move(self, direction):
-        """sposta il giocatore"""
-        old_pos = self.game.player._position
-        new_row, new_col = old_pos
-
-        if direction == "N":
-            new_row -= 1
-        elif direction == "S":
-            new_row += 1
-        elif direction == "E":
-            new_col += 1
-        elif direction == "W":
-            new_col -= 1
-
-        if self.grid_logic.is_valid_movement((new_row, new_col)):
-            self.game.player.move_to(direction)
-
-            self.draw_grid()
-            self.update_stats()
 
     def special_move(self):
         """Esegue la mossa speciale."""
@@ -156,6 +135,6 @@ class GameView(Views):
     def update_cell_display(self, position):
         """serve a modificare la cella su cui il giocatore si sposta nella view"""
         x, y = position
-        cell_type = self.game.grid.get_cell_view_data(x, y)["type"]
+        cell_type = self._controller.game.grid.get_cell_view_data(x, y)["type"]
         new_color = self.CELL_COLORS[cell_type]
         self.canvas.itemconfig(position[x,y], fill=new_color)
