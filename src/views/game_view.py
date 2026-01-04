@@ -55,7 +55,7 @@ class GameView(Views):
         menu_bar = self.addMenuBar(row=0, column=0, columnspan=5)
         file_menu = menu_bar.addMenu("File")
         file_menu.addMenuItem("Nuova Partita", command=self.reset_game)
-        file_menu.addMenuItem("Esci", command=self.destroy)
+        file_menu.addMenuItem("Esci", command=self.quit)
 
 
         titolo = self.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25)
