@@ -97,6 +97,7 @@ class GameView(Views):
                                      width=canvas_width,
                                      height=canvas_height
                                      )
+        self.canvas.grid_configure(sticky="")
         self.canvas["background"] = "white"
 
         for row in range(rows):
