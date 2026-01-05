@@ -29,8 +29,11 @@ class Game:
         self.player = None
         self.timer = Timer()
         self._started = False
+        self._game_over = False
 
     def start_game(self):
+        self._started = True
+
         self.grid.generate_grid(self._difficulty)
 
         spawn_point = self.grid.spawn_position
@@ -62,8 +65,6 @@ class Game:
         if cell_type in self.SCORES:
             self.player.change_score(self.SCORES[cell_type])
 
-
-
         if cell_type == "R":
             self.grid.set_cell(cell_position, '.')
 
@@ -72,6 +73,9 @@ class Game:
         self.timer.stop_timer()
 
     def is_reachable(self, direction):
+        return self.grid.is_valid_movement(self.next_position(direction))
+
+    def next_position(self, direction):
         row, col = self.player.position
 
         match direction:
@@ -83,8 +87,3 @@ class Game:
                 col += 1
             case "W":
                 col -= 1
-
-        position = (row, col)
-
-        return self.grid.is_valid_movement(position)
-
