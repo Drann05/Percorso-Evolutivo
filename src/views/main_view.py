@@ -1,5 +1,6 @@
 from breezypythongui import EasyFrame, EasyCanvas
-from .start_screen import StartScreen, DifficultyDialog
+from .start_screen import StartScreen
+from .difficulty_dialog import DifficultyDialog
 from .leaderboard_view import LeaderboardView
 from .game_view import GameView
 from .menu import Menu
