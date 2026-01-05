@@ -35,3 +35,10 @@ class MainView(EasyFrame):
             self.rowconfigure(r, weight=1)
         for c in range(column):
             self.columnconfigure(c, weight=1)
+
+    def update_game(self, game_state):
+        pass
+
+
+    def show_error(self):
+        pass

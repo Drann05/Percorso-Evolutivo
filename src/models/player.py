@@ -51,6 +51,12 @@ class Player:
     def use_convert_trap(self):
         self._convert_trap_available = False
 
+    def is_remove_wall_available(self):
+        pass
+
+    def is_convert_trap_available(self):
+        pass
+
     @property
     def moves(self):
         return self._moves

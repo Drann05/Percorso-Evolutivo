@@ -54,13 +54,14 @@ class Controller:
                 #    GAME    #
                 #------------#
     def get_game_state(self):
+        print(self.game.grid.serialize())
         return {
             "grid": self.game.grid.serialize(),
             "player_position": self.game.player.position,
             "stats": {
                 "score": self.game.player.score,
                 "moves": self.game.player.moves,
-                "timer": self.game.player.timer
+                "timer": self.game.timer.get_elapsed()
             },
             "special_moves": {
                 "remove_wall": self.game.player.is_remove_wall_available(),
