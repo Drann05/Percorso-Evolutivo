@@ -44,7 +44,7 @@ class Game:
 
         if self.player.moves >= 30:
             self.end_game()
-            return {'moved': False, 'new_position': self.player.get_position(), 'cell_data': None, 'game_over': True}
+            return {'moved': False, 'new_position': self.player.position, 'cell_data': None, 'game_over': True}
 
         self.player.move_to(direction)
 
@@ -52,7 +52,7 @@ class Game:
         cell_data = self.grid.get_cell_data(new_position)
         self.apply_cell_effect(cell_data)
 
-        return {'moved': True, 'new_position': self.player.get_position(), 'cell_data': cell_data, 'game_over': False}
+        return {'moved': True, 'new_position': self.player.position, 'cell_data': cell_data, 'game_over': False}
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
