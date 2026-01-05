@@ -18,11 +18,14 @@ class Controller:
         self._game_view = None
 
         self._main_view = MainView(self)
+
+
+
+    def start(self):
         self._main_view.mainloop()
 
-
     def init_menu(self):
-        pass
+        raise NotImplementedError("Menu non ancora implementato")
 
     def init_game(self):
         """Inizializza il gioco passando all'istanza gli attributi
@@ -34,16 +37,24 @@ class Controller:
 
 
     def init_leaderboard(self):
-        pass
+        raise NotImplementedError("Menu non ancora implementato")
 
     def init_start_screen(self):
-        """Mostra la schermata iniziale"""
+        """Imposta lo stato iniziale dell'app e mostra
+        la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
 
     def handle_movement(self, direction):
         """Gestisce il movimento del giocatore e aggiorna
         l'interfaccia grafica di GameView"""
-        self.game.move_player(direction)
+
+        if not self.game:
+            return
+
+        moved = self.game.move_player(direction)
+        if not moved:
+            return
+
         new_pos = self.game.player.position
         self._main_view.game_view.update_player_position_display()
         self._main_view.game_view.update_cell_display(new_pos)
