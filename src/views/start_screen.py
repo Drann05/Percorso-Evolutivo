@@ -1,5 +1,4 @@
 from .views import Views
-from breezypythongui import EasyDialog
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
@@ -90,12 +89,6 @@ class StartScreen(Views):
 
         self.correct_label.grid_remove()
 
-    def save_name(self):
-        if self.check_user():
-            self._nickname = self.nickname_field.getText()
-            self.correct_label["text"] = "Nome salvato con successo"
-            self.correct_label.grid()
-
     def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
         name = self.nickname_field.getText().strip()
@@ -108,25 +101,23 @@ class StartScreen(Views):
 
         return True, name
 
-    def handle_start_btn(self):
-        """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
+    def show_error(self, result):
+        self.error_label.grid_remove()
+        self.error_label["text"] = result
+        self.error_label.grid()
+
+    def clear_messages(self):
         self.error_label.grid_remove()
         self.correct_label.grid_remove()
 
-        try:
-            valid_name = self.check_user()
-            self._nickname = valid_name
+    def handle_start_btn(self):
+        """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
+        valid, result = self.validate_nickname()
+        if not valid:
+            self.show_error(result)
+            return
 
-            self.set_difficulty()
-        except ValueError as e:
-
-            if str(e) == "USERNAME_VUOTO":
-                self.error_label["text"] = "Errore: Inserisci un nome!"
-
-            elif str(e) == "USERNAME_NON_VALIDO":
-                self.error_label["text"] = "Errore: Nome troppo lungo (max 20)!"
-
-            self.error_label.grid()
+        self._controller.start_game_request(result)
 
     @property
     def difficulty(self):
