@@ -1,5 +1,4 @@
 from .views import Views
-from breezypythongui import EasyDialog
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
@@ -13,7 +12,6 @@ class StartScreen(Views):
         self._controller = controller
 
         self._widgets = []  # Lista di tutti i widgets di start_screen
-
 
         # --- Widgets ---
         self.nickname_field = None
@@ -87,12 +85,6 @@ class StartScreen(Views):
 
         self.correct_label.grid_remove()
 
-    def save_name(self):
-        if self.validate_nickname():
-            self._nickname = self.nickname_field.getText()
-            self.correct_label["text"] = "Nome salvato con successo"
-            self.correct_label.grid()
-
     def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
         name = self.nickname_field.getText().strip()
@@ -105,15 +97,6 @@ class StartScreen(Views):
 
         return True, name
 
-    def handle_start_btn(self):
-        """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
-        valid, result = self.validate_nickname()
-        if not valid:
-            self.show_error(result)
-            return
-
-        self._controller.start_game_request(result)
-
     def show_error(self, result):
         self.error_label.grid_remove()
         self.error_label["text"] = result
@@ -123,46 +106,12 @@ class StartScreen(Views):
         self.error_label.grid_remove()
         self.correct_label.grid_remove()
 
-    def set_difficulty(self):
-        """Passaggio alla fase successiva: selezione difficoltà."""
-        dialog = DifficultyDialog(self._parent_view)
+    def handle_start_btn(self):
+        """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
+        valid, result = self.validate_nickname()
+        if not valid:
+            self.show_error(result)
+            return
 
-        if dialog.choice:
-            self._difficulty = dialog.choice
-            print(f"Hai scelto la difficoltà: {self.difficulty}")
-            self._parent_view.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
-            self._controller.init_game(self.nickname, self.difficulty)
-            self._parent_view.show_game()
-        else:
-            self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
-            self.error_label.grid()
-
-    @property
-    def difficulty(self):
-        return self._difficulty
-
-    @property
-    def nickname(self):
-        return self._nickname
-
-class DifficultyDialog(EasyDialog):
-    def __init__(self, parent, controller):
-        self._controller = controller
-        self.choice = None
-        super().__init__(parent, title="Selezione Difficoltà")
-
-    def body(self, master):
-        """Crea il corpo della finestra di dialogo."""
-        self.addLabel(master, text="Seleziona il livello di sfida:", row=0, column=0, columnspan=3)
-
-        self.addButton(master, text="Facile", row=1, column=0, command=lambda: self.set_difficulty("Facile"))
-        self.addButton(master, text="Medio", row=1, column=1, command=lambda: self.set_difficulty("Medio"))
-        self.addButton(master, text="Difficile", row=1, column=2, command=lambda: self.set_difficulty("Difficile"))
-
-    def set_difficulty(self, difficulty):
-        self._controller.on_difficulty_selected(difficulty)
-        self.choice = difficulty
-        self.destroy()
-
-
+        self._controller.start_game_request(result)
 
