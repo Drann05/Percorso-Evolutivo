@@ -49,6 +49,9 @@ class Game:
             self.end_game()
             return
 
+        if self._game_over:
+            return
+
         self.player.move_to(direction)
 
         new_position = self.player.position
@@ -65,11 +68,13 @@ class Game:
         if cell_type in self.SCORES:
             self.player.change_score(self.SCORES[cell_type])
 
-        if cell_type == "R":
+        if cell_type == self.grid.RISORSA:
             self.grid.set_cell(cell_position, '.')
-
+        elif cell_type == self.grid.OBIETTIVO:
+            self.end_game()
 
     def end_game(self):
+        self._game_over = True
         self.timer.stop_timer()
 
     def is_reachable(self, direction):
