@@ -15,7 +15,6 @@ class GameView(Views):
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
         self._controller = controller
-        self._controller.init_game()
         self._parent_view = parent_view
 
         # --- Inizializzazione Interfaccia ---
@@ -148,3 +147,9 @@ class GameView(Views):
     def update_player_position_display(self):
         self.canvas.delete(self.player_display_id)
         self.player_display_id = self.draw_player()
+
+    """ 
+    def update_game_view(self):
+        self.update_player_position_display()
+        self.update_cell_display()
+    """
