@@ -50,8 +50,7 @@ class Game:
             return {'moved': False, 'new_position': self.player.position, 'cell_data': None, 'game_over': True}
 
         if self._game_over:
-            return
-
+            return {'moved': False, 'new_position': self.player.position, 'cell_data': None, 'game_over': True}
 
         self.player.move_to(direction)
 
@@ -71,15 +70,15 @@ class Game:
         if cell_type in self.SCORES:
             self.player.change_score(self.SCORES[cell_type])
 
-
-
-        if cell_type == "R":
+        if cell_type == self.grid.RISORSA:
             self.grid.set_cell(cell_position, '.')
-
+        elif cell_type == self.grid.OBIETTIVO:
+            self.end_game()
 
     def end_game(self):
         self._game_over = True
         self.timer.stop_timer()
+
 
     def is_reachable(self, direction):
         return self.grid.is_valid_movement(self.next_position(direction))
@@ -99,5 +98,5 @@ class Game:
 
         position = (row, col)
 
-        return self.grid.is_valid_movement(position)
+        return position
 
