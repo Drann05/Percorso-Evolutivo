@@ -37,8 +37,11 @@ class MainView(EasyFrame):
             self.columnconfigure(c, weight=1)
 
     def update_game(self, game_state):
-        pass
-
+        if not self.game_view:
+            return
+        else:
+            self.game_view.game_state = game_state
+            self.game_view.update_game_view()
 
     def show_error(self):
         pass

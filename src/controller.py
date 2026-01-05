@@ -54,7 +54,6 @@ class Controller:
                 #    GAME    #
                 #------------#
     def get_game_state(self):
-        print(self.game.grid.serialize())
         return {
             "grid": self.game.grid.serialize(),
             "player_position": self.game.player.position,

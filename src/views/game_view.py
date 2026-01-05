@@ -129,8 +129,10 @@ class GameView(Views):
         return self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
 
     def update_stats(self):
-        """Aggiorna i testi delle label a video."""
-        pass
+        stats = self.game_state["stats"]
+        self.label_score["text"] = f"Score: {stats['score']}"
+        self.label_moves["text"] = f"Moves: {stats['moves']}"
+        self.label_timer["text"] = f"Timer: {stats['timer']}s"
 
     def reset_game(self):
         pass
@@ -146,8 +148,19 @@ class GameView(Views):
         self.canvas.delete(self.player_display_id)
         self.player_display_id = self.draw_player()
 
-    """ 
     def update_game_view(self):
         self.update_player_position_display()
-        self.update_cell_display()
-    """
+        self.refresh_grid_display()
+        self.update_stats()
+
+    def refresh_grid_display(self):
+        grid_info = self.game_state["grid"]
+        grid_matrix = grid_info["grid"]
+
+        for row in range(grid_info["rows"]):
+            for col in range(grid_info["cols"]):
+                cell_type = grid_matrix[row][col]
+                color = self.CELL_COLORS[cell_type]
+
+                self.canvas.itemconfig(self.rects[(row, col)], fill=color)
+
