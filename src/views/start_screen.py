@@ -13,10 +13,6 @@ class StartScreen(Views):
 
         self._widgets = []  # Lista di tutti i widgets di start_screen
 
-        # --- Variabili di Gioco ---
-        self._difficulty = None
-        self._nickname = None
-
         # --- Widgets ---
         self.nickname_field = None
         self.start_button = None
@@ -119,10 +115,3 @@ class StartScreen(Views):
 
         self._controller.start_game_request(result)
 
-    @property
-    def difficulty(self):
-        return self._difficulty
-
-    @property
-    def nickname(self):
-        return self._nickname
