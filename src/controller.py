@@ -27,12 +27,7 @@ class Controller:
     def init_menu(self):
         raise NotImplementedError("Menu non ancora implementato")
 
-    def init_game(self, nickname, difficulty):
-        """Inizializza il gioco passando all'istanza gli attributi
-        nickname e difficulty, ottenuti dalla classe Start Screen"""
 
-        self.game = Game(nickname, difficulty)
-        self.game.start_game()
 
 
     def init_leaderboard(self):
@@ -43,6 +38,18 @@ class Controller:
         la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
 
+    def start_game_request(self, nickname):
+        self.pending_nickname = nickname
+        self._main_view.show_difficulty_dialog()
+
+    def on_difficulty_selected(self, difficulty):
+        """Inizializza il gioco passando all'istanza gli attributi
+        nickname e difficulty, ottenuti dalla classe Start Screen"""
+
+        self.game = Game(self.pending_nickname, difficulty)
+        self.game.start_game()
+        self._main_view.show_game()
+
     def handle_movement(self, direction):
         """Gestisce il movimento del giocatore e aggiorna
         l'interfaccia grafica di GameView"""
@@ -51,7 +58,7 @@ class Controller:
             return
 
         moved = self.game.move_player(direction)
-        
+
         if not moved:
             return
 
