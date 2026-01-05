@@ -14,9 +14,6 @@ class StartScreen(Views):
 
         self._widgets = []  # Lista di tutti i widgets di start_screen
 
-        # --- Variabili di Gioco ---
-        self._difficulty = None
-        self._nickname = None
 
         # --- Widgets ---
         self.nickname_field = None
@@ -91,43 +88,40 @@ class StartScreen(Views):
         self.correct_label.grid_remove()
 
     def save_name(self):
-        if self.check_user():
+        if self.validate_nickname():
             self._nickname = self.nickname_field.getText()
             self.correct_label["text"] = "Nome salvato con successo"
             self.correct_label.grid()
 
-    def check_user(self):
+    def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
         name = self.nickname_field.getText().strip()
 
         if not name:
-            raise ValueError("USERNAME_VUOTO")
+            return False, "Inserisci un nome!"
 
         if len(name) > 20:
-            raise ValueError("USERNAME_NON_VALIDO")
+            return False, "Nome troppo lungo (max 20)"
 
-        return name
+        return True, name
 
     def handle_start_btn(self):
         """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
+        valid, result = self.validate_nickname()
+        if not valid:
+            self.show_error(result)
+            return
+
+        self._controller.start_game_request(result)
+
+    def show_error(self, result):
+        self.error_label.grid_remove()
+        self.error_label["text"] = result
+        self.error_label.grid()
+
+    def clear_messages(self):
         self.error_label.grid_remove()
         self.correct_label.grid_remove()
-
-        try:
-            valid_name = self.check_user()
-            self._nickname = valid_name
-
-            self.set_difficulty()
-        except ValueError as e:
-
-            if str(e) == "USERNAME_VUOTO":
-                self.error_label["text"] = "Errore: Inserisci un nome!"
-
-            elif str(e) == "USERNAME_NON_VALIDO":
-                self.error_label["text"] = "Errore: Nome troppo lungo (max 20)!"
-
-            self.error_label.grid()
-
 
     def set_difficulty(self):
         """Passaggio alla fase successiva: selezione difficoltà."""
@@ -137,6 +131,7 @@ class StartScreen(Views):
             self._difficulty = dialog.choice
             print(f"Hai scelto la difficoltà: {self.difficulty}")
             self._parent_view.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
+            self._controller.init_game(self.nickname, self.difficulty)
             self._parent_view.show_game()
         else:
             self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
@@ -151,7 +146,8 @@ class StartScreen(Views):
         return self._nickname
 
 class DifficultyDialog(EasyDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
+        self._controller = controller
         self.choice = None
         super().__init__(parent, title="Selezione Difficoltà")
 
@@ -164,7 +160,9 @@ class DifficultyDialog(EasyDialog):
         self.addButton(master, text="Difficile", row=1, column=2, command=lambda: self.set_difficulty("Difficile"))
 
     def set_difficulty(self, difficulty):
+        self._controller.on_difficulty_selected(difficulty)
         self.choice = difficulty
         self.destroy()
+
 
 
