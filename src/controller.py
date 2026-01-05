@@ -27,9 +27,6 @@ class Controller:
     def init_menu(self):
         raise NotImplementedError("Menu non ancora implementato")
 
-
-
-
     def init_leaderboard(self):
         raise NotImplementedError("Menu non ancora implementato")
 
@@ -37,6 +34,10 @@ class Controller:
         """Imposta lo stato iniziale dell'app e mostra
         la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
+
+            #--------------------#
+            #    START SCREEN    #
+            #--------------------#
 
     def start_game_request(self, nickname):
         self.pending_nickname = nickname
@@ -48,6 +49,28 @@ class Controller:
 
         self.game = Game(self.pending_nickname, difficulty)
         self.game.start_game()
+        self._main_view.show_game()
+
+                #------------#
+                #    GAME    #
+                #------------#
+    def game_state(self):
+        return {
+            "grid": self.game.grid,
+            "player_position": self.game.player.position,
+            "stats": {
+                "score": self.game.player.score,
+                "moves": self.game.player.moves,
+                "timer": self.game.player.timer
+            },
+            "special_moves": {
+                "remove_wall": self.game.player.is_remove_wall_available(),
+                "convert_trap": self.game.player.is_convert_trap_available()
+            }
+        }
+
+    def request_new_game(self):
+        self.game.restart_game()
         self._main_view.show_game()
 
     def handle_movement(self, direction):
@@ -65,6 +88,7 @@ class Controller:
         new_pos = self.game.player.position
         self._main_view.game_view.update_player_position_display()
         self._main_view.game_view.update_cell_display(new_pos)
+
 
 if __name__ == '__main__':
     app = Controller()
