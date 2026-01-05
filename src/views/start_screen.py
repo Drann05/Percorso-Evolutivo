@@ -96,17 +96,17 @@ class StartScreen(Views):
             self.correct_label["text"] = "Nome salvato con successo"
             self.correct_label.grid()
 
-    def check_user(self):
+    def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
         name = self.nickname_field.getText().strip()
 
         if not name:
-            raise ValueError("USERNAME_VUOTO")
+            return False, "Inserisci un nome!"
 
         if len(name) > 20:
-            raise ValueError("USERNAME_NON_VALIDO")
+            return False, "Nome troppo lungo (max 20)"
 
-        return name
+        return True, name
 
     def handle_start_btn(self):
         """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
