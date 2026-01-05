@@ -40,18 +40,19 @@ class Game:
 
     def move_player(self, direction):
         if not self.is_reachable(direction):
-            return
+            return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
 
         if self.player.moves >= 30:
             self.end_game()
-            return
+            return {'moved': False, 'new_position': self.player.get_position(), 'cell_data': None, 'game_over': True}
 
         self.player.move_to(direction)
 
         new_position = self.player.position
         cell_data = self.grid.get_cell_data(new_position)
-
         self.apply_cell_effect(cell_data)
+
+        return {'moved': True, 'new_position': self.player.get_position(), 'cell_data': cell_data, 'game_over': False}
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
@@ -61,8 +62,6 @@ class Game:
 
         if cell_type in self.SCORES:
             self.player.change_score(self.SCORES[cell_type])
-
-
 
         if cell_type == "R":
             self.grid.set_cell(cell_position, '.')
