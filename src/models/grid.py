@@ -37,11 +37,11 @@ class Grid:
 
         self._width = width
         self._height = height
-        self.grid = [[Cell(col, row, self.MURO) for col in range(self._width)] for row in range(self._height)]
+        self.grid = [[Cell(row, col, self.MURO) for row in range(self._height)] for col in range(self._width)]
         self._grid_dimension = width * height
         self._safe_zone = []
-        self._spawn_point = None
-        self._target_point = None
+        self._spawn_position = None
+        self._target_position = None
 
     def generate_grid(self, difficulty):
         """
@@ -66,7 +66,7 @@ class Grid:
             """
             Inserisce 'count' numero di celle di tipo 'cell_type' randomicamente.
             Può essere modificata una distanza minima dallo spawn (min_distance_from_spawn).
-            ma se lo spawn_point non è definito, verrà ignorata.
+            ma se lo spawn_position non è definito, verrà ignorata.
             """
             distance = 0
 
@@ -78,7 +78,7 @@ class Grid:
                 while removed < abs(count):
                     row = randint(0, self._height - 1)
                     col = randint(0, self._width - 1)
-                    if self.grid[row][col].get_type() == cell_type:
+                    if self.grid[row][col].type == cell_type:
                         self.grid[row][col] = Cell(row, col, self.CELLA_VUOTA)
                         removed += 1
             else:
@@ -86,14 +86,14 @@ class Grid:
                 while placed < count:
                     row = randint(0, self._height - 1)
                     col = randint(0, self._width - 1)
-                    if self._spawn_point:
-                        distance = abs(self._spawn_point[0] - row) + abs(self._spawn_point[1] - col)
+                    if self._spawn_position:
+                        distance = abs(self._spawn_position[0] - row) + abs(self._spawn_position[1] - col)
                     if self.grid[row][
-                        col].get_type() == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
+                        col].type == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
                         if cell_type == self.PUNTO_DI_PARTENZA:
-                            self._spawn_point = (row, col)
+                            self._spawn_position = (row, col)
                         elif cell_type == self.OBIETTIVO:
-                            self._target_point = (row, col)
+                            self._target_position = (row, col)
                         self.set_cell((row, col), cell_type)
                         placed += 1
 
@@ -102,7 +102,7 @@ class Grid:
         place_cells_randomly(self.TRAPPOLA, trappole_count)
         place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
         place_cells_randomly(self.OBIETTIVO, 1, 15)
-        print(self.is_reachable(self._spawn_point, self._target_point))
+        print(self.is_reachable(self._spawn_position, self._target_position))
 
     def generative_dfs(self):
         """
@@ -140,12 +140,15 @@ class Grid:
 
     @property
     def spawn_position(self):
-        """
-        Restituisce la posizione dello spawn point
-        """
-        return self._spawn_point
+        """Restituisce la posizione dello spawn point"""
+        return self._spawn_position
 
-    def is_reachable(self, posizione_1: tuple, posizione_2: tuple):
+    @property
+    def target_position(self):
+        """Restituisce la posizione del target point"""
+        return self._target_position
+
+    def is_reachable(self, posizione_1: tuple, posizione_2: tuple, breakable_walls = 0):
         """
         Verifica se la cella obiettivo è raggiungibile dalla cella di spawn
         controllando le celle adiacenti in modo da vedere se esiste un percorso percorribile
@@ -172,17 +175,23 @@ class Grid:
 
                 for i, j in neighbors:
                     if (0 <= i < self._height and 0 <= j < self._width):
-                        if (i, j) not in visited:
-                            to_visit.append((i, j))
-                            visited.append((i, j))
-            count_moves += 1
+                        if breakable_walls >= 1:
+                            if (i, j) not in visited:
+                                to_visit.append((i, j))
+                                visited.append((i, j))
+                        else:
+                            if (i, j) not in visited and self.grid[i][j].is_walkable():
+                                to_visit.append((i, j))
+                                visited.append((i, j))
+                
+            count_moves += 1         
         return False
 
     def cell_count(self, cell_type):
         counter = 0
         for row in range(self._height):
             for col in range(self._width):
-                if self.grid[row][col].get_type() == cell_type:
+                if self.grid[row][col].type == cell_type:
                     counter += 1
         return counter
 
@@ -190,7 +199,7 @@ class Grid:
     def get_cell_data(self, position):
         cell = self.grid[position[0]][position[1]]
         return {
-            "type": cell.get_type(),
+            "type": cell.type,
             "position": position,
             "walkable": cell.is_walkable()
         }
@@ -206,10 +215,23 @@ class Grid:
     def get_grid_dimension(self):
         return self._height, self._width
 
+    def serialize(self):
+        grid_data = [
+            [cell.type for cell in row]
+            for row in self.grid
+        ]
+        return {
+            "rows": self._height,
+            "cols": self._width,
+            "grid": grid_data,
+            "spawn_position": self.spawn_position,
+            "target_position": self.target_position
+        }
+
     def print_grid(self):
         for i in range(0, self._height):
             for j in range(0, self._width):
-                print(self.grid[i][j].get_type(), end=" ")
+                print(self.grid[i][j].type, end=" ")
             print("")
 
 
