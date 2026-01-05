@@ -1,12 +1,16 @@
 from .models.game import Game
 from .views.main_view import MainView
-from .views.start_screen import StartScreen
-from .views.leaderboard_view import LeaderboardView
-from .views.game_view import GameView
-from .views.menu import Menu
 
 
 class Controller:
+    """
+    Controller è la classe che gestisce le interazioni dell'utente e coordina la comunicazione
+    tra Model e View
+
+    In dettaglio:
+    Intercetta le richieste dell'utente (ad esempio il movimento)
+    Fa da ponte tra Model e View, senza contenere dati persistenti né logica di presentazione
+    """
     def __init__(self):
 
         self._start_screen = None
@@ -21,6 +25,8 @@ class Controller:
         pass
 
     def init_game(self):
+        """Inizializza il gioco passando all'istanza gli attributi
+        nickname e difficulty, ottenuti dalla classe Start Screen"""
         nickname = self._main_view.start_screen.nickname
         difficulty = self._main_view.start_screen.difficulty
         self.game = Game(nickname, difficulty)
@@ -31,9 +37,12 @@ class Controller:
         pass
 
     def init_start_screen(self):
+        """Mostra la schermata iniziale"""
         self._main_view.show_start_screen()
 
     def handle_movement(self, direction):
+        """Gestisce il movimento del giocatore e aggiorna
+        l'interfaccia grafica di GameView"""
         self.game.move_player(direction)
         new_pos = self.game.player.position
         self._main_view.game_view.update_player_position_display()
