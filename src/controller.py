@@ -1,12 +1,16 @@
 from .models.game import Game
 from .views.main_view import MainView
-from .views.start_screen import StartScreen
-from .views.leaderboard_view import LeaderboardView
-from .views.game_view import GameView
-from .views.menu import Menu
 
 
 class Controller:
+    """
+    Controller è la classe che gestisce le interazioni dell'utente e coordina la comunicazione
+    tra Model e View
+
+    In dettaglio:
+    Intercetta le richieste dell'utente (ad esempio il movimento)
+    Fa da ponte tra Model e View, senza contenere dati persistenti né logica di presentazione
+    """
     def __init__(self):
 
         self._start_screen = None
@@ -14,27 +18,43 @@ class Controller:
         self._game_view = None
 
         self._main_view = MainView(self)
+        self.start()
+
+
+    def start(self):
         self._main_view.mainloop()
 
-
     def init_menu(self):
-        pass
+        raise NotImplementedError("Menu non ancora implementato")
 
-    def init_game(self):
-        nickname = self._main_view.start_screen.nickname
-        difficulty = self._main_view.start_screen.difficulty
+    def init_game(self, nickname, difficulty):
+        """Inizializza il gioco passando all'istanza gli attributi
+        nickname e difficulty, ottenuti dalla classe Start Screen"""
+
         self.game = Game(nickname, difficulty)
         self.game.start_game()
 
 
     def init_leaderboard(self):
-        pass
+        raise NotImplementedError("Menu non ancora implementato")
 
     def init_start_screen(self):
+        """Imposta lo stato iniziale dell'app e mostra
+        la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
 
     def handle_movement(self, direction):
-        self.game.move_player(direction)
+        """Gestisce il movimento del giocatore e aggiorna
+        l'interfaccia grafica di GameView"""
+
+        if not self.game:
+            return
+
+        moved = self.game.move_player(direction)
+        
+        if not moved:
+            return
+
         new_pos = self.game.player.position
         self._main_view.game_view.update_player_position_display()
         self._main_view.game_view.update_cell_display(new_pos)

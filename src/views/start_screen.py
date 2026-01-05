@@ -1,4 +1,5 @@
 from .views import Views
+from breezypythongui import EasyDialog
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
@@ -7,11 +8,23 @@ class StartScreen(Views):
 
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
-        self._widgets = []
+
         self._parent_view = parent_view
         self._controller = controller
+
+        self._widgets = []  # Lista di tutti i widgets di start_screen
+
+        # --- Variabili di Gioco ---
         self._difficulty = None
         self._nickname = None
+
+        # --- Widgets ---
+        self.nickname_field = None
+        self.start_button = None
+        self.quit_button = None
+        self.error_label = None
+        self.correct_label = None
+
 
         self._parent_view.grid_init(12,12)
         self.build_ui()
@@ -23,12 +36,14 @@ class StartScreen(Views):
         widget["background"]=self.BACKGROUND_COLOR
 
     def build_ui(self):
+        # --- Titolo ---
         title = self._parent_view.addLabel("PERCORSO EVOLUTIVO", row=2, column=4, columnspan=2)
         title["foreground"]="white"
         title["background"]="Pink"
         title["font"]=self.MAIN_FONT
         self._widgets.append(title)
 
+        # --- Scelta Nickname ---
         user=self._parent_view.addLabel(text="Inserisci un nickname ( massimo 20 caratteri)", row = 3, column=4, columnspan=2)
         user["foreground"]="white"
         user["background"]=self.BACKGROUND_COLOR
@@ -39,14 +54,17 @@ class StartScreen(Views):
         self.nickname_field["font"]=self.MAIN_FONT
         self._widgets.append(self.nickname_field)
 
+        # --- Pulsante Start ---
         self.start_button=self._parent_view.addButton(text="Start game", row=5, column=4, columnspan=2, command=self.handle_start_btn)
         self.style(self.start_button)
         self._widgets.append(self.start_button)
 
+        # --- Pulsante Quit ---
         self.quit_button=self._parent_view.addButton(text="Quit game", row=6, column=4, columnspan=2, command=self._parent_view.quit)
         self.style(self.quit_button)
         self._widgets.append(self.quit_button)
 
+        # --- Testo di Errore ---
         self.error_label = self._parent_view.addLabel(
             text="Messaggio di errore",
             row=4,
@@ -59,6 +77,7 @@ class StartScreen(Views):
 
         self.error_label.grid_remove()
 
+        # --- Testo di Successo ---
         self.correct_label = self._parent_view.addLabel(
             text="Messaggio",
             row=5,
@@ -110,6 +129,19 @@ class StartScreen(Views):
             self.error_label.grid()
 
 
+    def set_difficulty(self):
+        """Passaggio alla fase successiva: selezione difficoltà."""
+        dialog = DifficultyDialog(self._parent_view)
+
+        if dialog.choice:
+            self._difficulty = dialog.choice
+            print(f"Hai scelto la difficoltà: {self.difficulty}")
+            self._parent_view.messageBox(title="Pronto!", message=f"Partita avviata in modalità {self.difficulty}")
+            self._parent_view.show_game()
+        else:
+            self.error_label["text"] = "Devi scegliere una difficoltà per iniziare!"
+            self.error_label.grid()
+
     @property
     def difficulty(self):
         return self._difficulty
@@ -117,3 +149,22 @@ class StartScreen(Views):
     @property
     def nickname(self):
         return self._nickname
+
+class DifficultyDialog(EasyDialog):
+    def __init__(self, parent):
+        self.choice = None
+        super().__init__(parent, title="Selezione Difficoltà")
+
+    def body(self, master):
+        """Crea il corpo della finestra di dialogo."""
+        self.addLabel(master, text="Seleziona il livello di sfida:", row=0, column=0, columnspan=3)
+
+        self.addButton(master, text="Facile", row=1, column=0, command=lambda: self.set_difficulty("Facile"))
+        self.addButton(master, text="Medio", row=1, column=1, command=lambda: self.set_difficulty("Medio"))
+        self.addButton(master, text="Difficile", row=1, column=2, command=lambda: self.set_difficulty("Difficile"))
+
+    def set_difficulty(self, difficulty):
+        self.choice = difficulty
+        self.destroy()
+
+
