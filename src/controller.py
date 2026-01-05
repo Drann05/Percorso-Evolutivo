@@ -38,7 +38,7 @@ class Controller:
         self.pending_nickname = nickname
         self._main_view.show_difficulty_dialog()
 
-    def on_difficulty_selected(self, difficulty):
+    def handle_difficulty_selected(self, difficulty):
         """Inizializza il gioco passando all'istanza gli attributi
         nickname e difficulty, ottenuti dalla classe Start Screen"""
 
