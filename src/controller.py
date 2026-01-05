@@ -15,20 +15,16 @@ class Controller:
 
         self._start_screen = None
         self.game = None
-        self._game_view = None
 
         self._main_view = MainView(self)
-        self.start()
+        self.run()
 
 
-    def start(self):
+    def run(self):
         self._main_view.mainloop()
 
     def init_menu(self):
         raise NotImplementedError("Menu non ancora implementato")
-
-
-
 
     def init_leaderboard(self):
         raise NotImplementedError("Menu non ancora implementato")
