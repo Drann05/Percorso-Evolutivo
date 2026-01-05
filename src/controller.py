@@ -18,7 +18,7 @@ class Controller:
         self._game_view = None
 
         self._main_view = MainView(self)
-
+        self.start()
 
 
     def start(self):
@@ -27,11 +27,10 @@ class Controller:
     def init_menu(self):
         raise NotImplementedError("Menu non ancora implementato")
 
-    def init_game(self):
+    def init_game(self, nickname, difficulty):
         """Inizializza il gioco passando all'istanza gli attributi
         nickname e difficulty, ottenuti dalla classe Start Screen"""
-        nickname = self._main_view.start_screen.nickname
-        difficulty = self._main_view.start_screen.difficulty
+
         self.game = Game(nickname, difficulty)
         self.game.start_game()
 
@@ -52,6 +51,7 @@ class Controller:
             return
 
         moved = self.game.move_player(direction)
+        
         if not moved:
             return
 
