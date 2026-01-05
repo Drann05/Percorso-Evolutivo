@@ -164,3 +164,5 @@ class GameView(Views):
 
                 self.canvas.itemconfig(self.rects[(row, col)], fill=color)
 
+    def set_game_state(self, game_state):
+        self.game_state = game_state
