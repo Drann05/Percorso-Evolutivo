@@ -37,7 +37,7 @@ class Controller:
 
             #--------------------#
             #    START SCREEN    #
-            # --------------------#
+            # -------------------#
 
     def start_game_request(self, nickname):
         self.pending_nickname = nickname
@@ -54,9 +54,9 @@ class Controller:
                 #------------#
                 #    GAME    #
                 #------------#
-    def game_state(self):
+    def get_game_state(self):
         return {
-            "grid": self.game.grid,
+            "grid": self.game.grid.serialize(),
             "player_position": self.game.player.position,
             "stats": {
                 "score": self.game.player.score,
@@ -85,23 +85,19 @@ class Controller:
         if not moved:
             return
 
-        self._main_view.update_game(self.game_state)
+        self._main_view.update_game(self.get_game_state())
 
-    def handle_special_action_request(self, special_move, direction):
+    def handle_special_action_request(self, action, direction):
 
         if not self.game:
             return
 
-        special_move = special_move.upper()
-        if special_move == "REMOVE_WALL":
-            special_move_used = self.game.use_remove_wall(direction)
-        else:
-            special_move_used = self.game.use_convert_trap(direction)
-
-        if not special_move_used:
+        success = self.game.use_special_action(action, direction)
+        if not success:
+            self._main_view.show_error()
             return
 
-        self._main_view.update_game(self.game_state)
+        self._main_view.update_game(self.get_game_state())
 
 
 if __name__ == '__main__':
