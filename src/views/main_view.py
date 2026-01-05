@@ -1,5 +1,6 @@
 from breezypythongui import EasyFrame, EasyCanvas
 from .start_screen import StartScreen
+from .difficulty_dialog import DifficultyDialog
 from .leaderboard_view import LeaderboardView
 from .game_view import GameView
 from .menu import Menu
@@ -11,13 +12,15 @@ class MainView(EasyFrame):
         self.controller = controller
         self.start_screen = None
         self.game_view = None
-        self.widgets = []
 
         self.show_start_screen()
 
     def show_start_screen(self):
         self.clear()
         self.start_screen = StartScreen(self, self.controller, self._title)
+
+    def show_difficulty_dialog(self):
+        dialog = DifficultyDialog(self, self.controller)
 
     def show_game(self):
         self.clear()
