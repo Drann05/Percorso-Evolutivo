@@ -2,7 +2,6 @@
 from .views import Views
 
 class StartScreen(Views):
-    MAIN_FONT = ("Arial", 20, "bold")
     BG_COLOR = "#2C3E50"
     ACCENT_COLOR = "#1ABC9C"
     TEXT_COLOR = "#ECF0F1"
