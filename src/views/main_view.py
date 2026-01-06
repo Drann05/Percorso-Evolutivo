@@ -28,7 +28,7 @@ class MainView(EasyFrame):
 
     def show_instructions(self):
         self.clear()
-        self.game_instructions = GameInstructions(self, self._title)
+        self.game_instructions = GameInstructions(self, self._title, self.controller)
 
     def clear(self):
         for widget in self.winfo_children():
