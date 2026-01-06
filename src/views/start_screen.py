@@ -1,9 +1,11 @@
+from IPython.terminal.pt_inputhooks import tk
+
 from .views import Views
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
-    ACCENT_COLOR = "Pink"
-    BACKGROUND_COLOR = "Purple"
+    ACCENT_COLOR = "#9a51c2"
+    BACKGROUND_COLOR = "LightSkyBlue1"
 
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
@@ -20,8 +22,8 @@ class StartScreen(Views):
         self.error_label = None
         self.correct_label = None
 
-
-        self._parent_view.grid_init(12,12)
+        self._parent_view.setBackground(self.BACKGROUND_COLOR)
+        self._parent_view.grid_init(15,15)
         self.build_ui()
 
 
@@ -32,37 +34,37 @@ class StartScreen(Views):
 
     def build_ui(self):
         # --- Titolo ---
-        title = self._parent_view.addLabel("PERCORSO EVOLUTIVO", row=2, column=4, columnspan=2)
+        title = self._parent_view.addLabel("PERCORSO EVOLUTIVO", row=2, column=4, columnspan=2, sticky="NSEW")
         title["foreground"]="white"
-        title["background"]="Pink"
+        title["background"]="#9a51c2"
         title["font"]=self.MAIN_FONT
         self._widgets.append(title)
 
         # --- Scelta Nickname ---
-        user=self._parent_view.addLabel(text="Inserisci un nickname ( massimo 20 caratteri)", row = 3, column=4, columnspan=2)
-        user["foreground"]="white"
+        user=self._parent_view.addLabel(text="Inserisci un nickname ( massimo 20 caratteri)", row = 3, column=4, columnspan=2, sticky="NSEW")
+        user["foreground"]="#6251c2"
         user["background"]=self.BACKGROUND_COLOR
-        user["font"]=self.MAIN_FONT
+        user["font"]=("Arial", 15, "bold")
         self._widgets.append(user)
 
-        self.nickname_field=self._parent_view.addTextField(text="", row = 4, column=4, columnspan=2)
+        self.nickname_field=self._parent_view.addTextField(text="", row = 4, column=4, columnspan=2, sticky="NSEW")
         self.nickname_field["font"]=self.MAIN_FONT
         self._widgets.append(self.nickname_field)
 
         # --- Pulsante Start ---
-        self.start_button=self._parent_view.addButton(text="Start game", row=5, column=4, columnspan=2, command=self.handle_start_btn)
+        self.start_button=self._parent_view.addButton(text="Start game", row=7, column=4, columnspan=2, command=self.handle_start_btn)
         self.style(self.start_button)
         self._widgets.append(self.start_button)
 
         # --- Pulsante Quit ---
-        self.quit_button=self._parent_view.addButton(text="Quit game", row=6, column=4, columnspan=2, command=self._parent_view.quit)
+        self.quit_button=self._parent_view.addButton(text="Quit game", row=8, column=4, columnspan=2, command=self._parent_view.quit)
         self.style(self.quit_button)
         self._widgets.append(self.quit_button)
 
         # --- Testo di Errore ---
         self.error_label = self._parent_view.addLabel(
             text="Messaggio di errore",
-            row=4,
+            row=5,
             column=4,
             columnspan=6,
         )

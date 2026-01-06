@@ -20,10 +20,12 @@ class GameView(Views):
         # --- Inizializzazione Interfaccia ---
         self.MAIN_FONT = ("Arial", 12, "bold")
         self.ACCENT_COLOR = "White"
-        self.BACKGROUND_COLOR = "Light Blue"
+        self.BACKGROUND_COLOR = "LightSkyBlue1"
 
         self.widgets = []
         self._parent_view.grid_init(30, 25)
+
+        self._parent_view.setBackground(self.BACKGROUND_COLOR)
 
         self.player_display_id = None
 
