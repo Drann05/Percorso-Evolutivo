@@ -1,5 +1,6 @@
 from breezypythongui import EasyFrame, EasyCanvas
 from .start_screen import StartScreen
+from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
 from .leaderboard_view import LeaderboardView
 from .game_view import GameView
@@ -12,6 +13,7 @@ class MainView(EasyFrame):
         self.controller = controller
         self.start_screen = None
         self.game_view = None
+        self.game_instructions = None
 
         self.show_start_screen()
 
@@ -25,6 +27,10 @@ class MainView(EasyFrame):
     def show_game(self):
         self.clear()
         self.game_view = GameView(self, self.controller, self._title)
+
+    def show_instructions(self):
+        self.clear()
+        self.game_instructions = GameInstructions(self, self._title)
 
     def clear(self):
         for widget in self.winfo_children():
