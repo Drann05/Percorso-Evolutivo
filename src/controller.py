@@ -34,6 +34,10 @@ class Controller:
         la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
 
+            #--------------------#
+            #    START SCREEN    #
+            # -------------------#
+
     def start_game_request(self, nickname):
         self.pending_nickname = nickname
         self._main_view.show_difficulty_dialog()
@@ -46,7 +50,29 @@ class Controller:
         self.game.start_game()
         self._main_view.show_game()
 
-    def handle_movement(self, direction):
+                #------------#
+                #    GAME    #
+                #------------#
+    def get_game_state(self):
+        return {
+            "grid": self.game.grid.serialize(),
+            "player_position": self.game.player.position,
+            "stats": {
+                "score": self.game.player.score,
+                "moves": self.game.player.moves,
+                "timer": self.game.timer.get_elapsed()
+            },
+            "special_moves": {
+                "remove_wall": self.game.player.is_remove_wall_available(),
+                "convert_trap": self.game.player.is_convert_trap_available()
+            }
+        }
+
+    def handle_restart_game_request(self):
+        self.game.restart_game()
+        self._main_view.show_game()
+
+    def handle_movement_request(self, direction):
         """Gestisce il movimento del giocatore e aggiorna
         l'interfaccia grafica di GameView"""
 
@@ -58,9 +84,20 @@ class Controller:
         if not moved:
             return
 
-        new_pos = self.game.player.position
-        self._main_view.game_view.update_player_position_display()
-        self._main_view.game_view.update_cell_display(new_pos)
+        self._main_view.update_game(self.get_game_state())
+
+    def handle_special_action_request(self, action, direction):
+
+        if not self.game:
+            return
+
+        success = self.game.use_special_action(action, direction)
+        if not success:
+            self._main_view.show_error()
+            return
+
+        self._main_view.update_game(self.get_game_state())
+
 
 if __name__ == '__main__':
     app = Controller()

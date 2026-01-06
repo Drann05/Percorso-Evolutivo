@@ -2,9 +2,7 @@ from breezypythongui import EasyFrame, EasyCanvas
 from .start_screen import StartScreen
 from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
-from .leaderboard_view import LeaderboardView
 from .game_view import GameView
-from .menu import Menu
 
 class MainView(EasyFrame):
     def __init__(self, controller, title="Percorso Evolutivo"):
@@ -41,3 +39,13 @@ class MainView(EasyFrame):
             self.rowconfigure(r, weight=1)
         for c in range(column):
             self.columnconfigure(c, weight=1)
+
+    def update_game(self, game_state):
+        if not self.game_view:
+            return
+        else:
+            self.game_view.set_game_state(game_state)
+            self.game_view.update_game_view()
+
+    def show_error(self):
+        pass
