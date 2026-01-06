@@ -13,8 +13,8 @@ class Player:
         self._position = position
         self._score = 0
         self._moves = 0
-        self._remove_wall_available = True
-        self._convert_trap_available = True
+        self.remove_wall_available = True
+        self.convert_trap_available = True
 
     def move_to(self, direction):
         """
@@ -41,11 +41,9 @@ class Player:
 
         self._position = (row, col)
 
-    def add_score(self, value):
+    def change_score(self, value):
+        """Aggiunge o sottrae punti al punteggio del giocatore"""
         self._score += value
-
-    def subtract_score(self, value):
-        self._score -= value
 
     def use_remove_wall(self):
         self._remove_wall_available = False
@@ -53,12 +51,21 @@ class Player:
     def use_convert_trap(self):
         self._convert_trap_available = False
 
-    def get_move_count(self):
+    def is_remove_wall_available(self):
+        pass
+
+    def is_convert_trap_available(self):
+        pass
+
+    @property
+    def moves(self):
         return self._moves
 
-    def get_score(self):
+    @property
+    def score(self):
         return self._score
-    
-    def get_position(self):
+
+    @property
+    def position(self):
         return self._position
 
