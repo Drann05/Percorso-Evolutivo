@@ -19,7 +19,7 @@ class GameView(Views):
 
         # --- Inizializzazione Interfaccia ---
         self.MAIN_FONT = ("Arial", 12, "bold")
-        self.ACCENT_COLOR = "White"
+        self.ACCENT_COLOR = "#6251c2"
         self.BACKGROUND_COLOR = "LightSkyBlue1"
 
         self.widgets = []
@@ -65,7 +65,7 @@ class GameView(Views):
         file_menu.addMenuItem("Esci", command=self._parent_view.quit)
 
 
-        titolo = self._parent_view.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25)
+        titolo = self._parent_view.addLabel(text="Percorso Evolutivo", row=1, column=8, columnspan=25)
         self.style(titolo)
 
 
@@ -81,7 +81,7 @@ class GameView(Views):
         for lbl in [self.label_score, self.label_moves, self.label_timer]:
             self.style(lbl)
 
-        control_panel = self._parent_view.addPanel(row=20, column=0, columnspan=25)
+        control_panel = self._parent_view.addPanel(row=20, column=4, columnspan=10)
 
         self.btn_up = control_panel.addButton(text="▲", row=0, column=1,
                                               command=lambda: self._controller.handle_movement_request("N"))

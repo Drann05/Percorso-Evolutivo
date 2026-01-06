@@ -4,7 +4,7 @@ from .views import Views
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
-    ACCENT_COLOR = "#9a51c2"
+    ACCENT_COLOR = "#6251c2"
     BACKGROUND_COLOR = "LightSkyBlue1"
 
     def __init__(self, parent_view, controller, title, width=500, height=500):
