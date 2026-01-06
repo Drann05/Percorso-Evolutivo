@@ -21,6 +21,7 @@ class StartScreen(Views):
         self.quit_button = None
         self.error_label = None
         self.correct_label = None
+        self.instructions_button = None
 
         self._parent_view.setBackground(self.BG_COLOR)
         self._parent_view.grid_init(15,15)
@@ -70,10 +71,20 @@ class StartScreen(Views):
         self.start_button["font"] = ("Segoe UI", 12, "bold")
         self._widgets.append(self.start_button)
 
+        self.instructions_button = self._parent_view.addButton(
+            text="ISTRUZIONI",
+            row=11, column=5, columnspan=5,
+            command=self._parent_view.show_instructions
+        )
+        self.instructions_button["background"] = self.ACCENT_COLOR
+        self.instructions_button["foreground"] = "white"
+        self.instructions_button["font"] = ("Segoe UI", 12, "bold")
+        self._widgets.append(self.instructions_button)
+
         # --- Pulsante Quit ---
         self.quit_button = self._parent_view.addButton(
             text="QUIT",
-            row=11, column=6, columnspan=3,
+            row=13, column=6, columnspan=3,
             command=self._parent_view.quit
         )
         self.quit_button["background"] = "#95A5A6"

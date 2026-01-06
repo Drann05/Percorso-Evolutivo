@@ -1,3 +1,4 @@
+
 from .views import Views
 
 class GameInstructions(Views):
@@ -8,7 +9,6 @@ class GameInstructions(Views):
     def __init__(self, parent_view, controller, title, width=500, height=600):
         super().__init__(title, width, height)
         self._parent_view = parent_view
-        self._controller = controller
 
         self.MAIN_FONT = ("Segoe UI", 11)
         self.TITLE_FONT = ("Segoe UI", 18, "bold")
@@ -44,7 +44,7 @@ class GameInstructions(Views):
         )
 
         txt_area = self._parent_view.addTextArea(
-            text=istruzioni, row=3, column=5, columnspan=10, width=50, height=7
+            text=istruzioni, row=3, column=5, columnspan=5, width=50, height=7
         )
         txt_area["font"] = ("Consolas", 10)
         txt_area["background"] = "#34495E"
@@ -82,7 +82,7 @@ class GameInstructions(Views):
 
         close_btn = self._parent_view.addButton(
             text="TORNA AL GIOCO", row=19, column=5, columnspan=4,
-            command=self._controller.start_game_request
+            command=self._parent_view.show_game
         )
         close_btn["background"] = self.ACCENT_COLOR
         close_btn["foreground"] = "white"
