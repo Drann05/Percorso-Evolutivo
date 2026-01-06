@@ -1,4 +1,4 @@
-from .cell import Cell
+from cell import Cell
 import random
 from random import randint
 
@@ -102,6 +102,17 @@ class Grid:
         place_cells_randomly(self.TRAPPOLA, trappole_count)
         place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
         place_cells_randomly(self.OBIETTIVO, 1, 15)
+
+        self._spawn_position = (0,0)
+        self._target_position = (3,7)
+        self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
+        self.set_cell((3,7), self.OBIETTIVO)
+
+        #self.set_cell((0,1), self.MURO)
+        #self.set_cell((0, 2), self.MURO)
+        #self.set_cell((1, 0), self.MURO)
+        #self.set_cell((2, 0), self.MURO)
+
         print(self.is_reachable(self._spawn_position, self._target_position))
 
     def generative_dfs(self):
@@ -151,19 +162,30 @@ class Grid:
     def is_reachable(self, posizione_1: tuple, posizione_2: tuple, breakable_walls = 0):
         """
         Verifica se la cella obiettivo è raggiungibile dalla cella di spawn
-        controllando le celle adiacenti in modo da vedere se esiste un percorso percorribile
+        controllando le celle adiacenti in modo da vedere se esiste una strada percorribile
         """
-        to_visit = [(posizione_1)]
-        visited = [(posizione_1)]
+        to_visit = [posizione_1]
+        visited = [posizione_1]
+        best_path = []
+        walls_broken_count = 0
         count_moves = 0
+
 
         while len(to_visit) > 0 and count_moves <= 30:
             current_level = len(to_visit)
-            
+
             for _ in range(current_level):
                 current_x, current_y = to_visit.pop(0)
 
-                if (current_x, current_y) == (posizione_2):
+                if (current_x, current_y) == posizione_2:
+                    current_cell_position = current_x, current_y    # Salva la posizione dell'obiettivo
+                    start_index = visited.index(current_cell_position)  # Prende l'indice dell'obiettivo nella lista visited
+                    for visited_cell in reversed(visited[:start_index]):    # Rivisita le celle partendo dall'ultima (l'obiettivo)
+                        if abs(visited_cell[0] - current_cell_position[0]) + abs(visited_cell[1] - current_cell_position[1]) == 1:  # Se la cella da rivisitare è adiacente a quella corrente:
+                            best_path.append(current_cell_position)
+                            current_cell_position = visited_cell
+                    print(count_moves)
+                    print(best_path)
                     return True
 
                 neighbors = [
@@ -174,17 +196,25 @@ class Grid:
                 ]
 
                 for i, j in neighbors:
-                    if (0 <= i < self._height and 0 <= j < self._width):
+                    if 0 <= i < self._height and 0 <= j < self._width:
+
                         if breakable_walls >= 1:
                             if (i, j) not in visited:
+
+                                #print(walls_broken_count)
+                                if walls_broken_count > breakable_walls:
+                                    return False
                                 to_visit.append((i, j))
                                 visited.append((i, j))
+
+
                         else:
                             if (i, j) not in visited and self.grid[i][j].is_walkable():
                                 to_visit.append((i, j))
                                 visited.append((i, j))
-                
-            count_moves += 1         
+
+            count_moves += 1
+
         return False
 
     def cell_count(self, cell_type):
