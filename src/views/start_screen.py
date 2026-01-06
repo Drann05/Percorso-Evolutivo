@@ -4,8 +4,8 @@ from .views import Views
 
 class StartScreen(Views):
     MAIN_FONT = ("Arial", 20, "bold")
-    ACCENT_COLOR = "#6251c2"
-    BACKGROUND_COLOR = "LightSkyBlue1"
+    ACCENT_COLOR = "LightSteelBlue1"
+    BACKGROUND_COLOR = "#6251c2"
 
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
@@ -35,8 +35,8 @@ class StartScreen(Views):
     def build_ui(self):
         # --- Titolo ---
         title = self._parent_view.addLabel("PERCORSO EVOLUTIVO", row=2, column=4, columnspan=2, sticky="NSEW")
-        title["foreground"]="white"
-        title["background"]="#9a51c2"
+        title["foreground"]="Purple"
+        title["background"]="LightSteelBlue1"
         title["font"]=self.MAIN_FONT
         self._widgets.append(title)
 
