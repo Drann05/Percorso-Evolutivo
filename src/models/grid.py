@@ -108,10 +108,20 @@ class Grid:
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
         self.set_cell((1,7), self.OBIETTIVO)
 
-        self.set_cell((0,1), self.TRAPPOLA)
+        self.set_cell((0,1), self.CELLA_VUOTA)
         self.set_cell((0, 2), self.TRAPPOLA)
         self.set_cell((1, 0), self.TRAPPOLA)
-        self.set_cell((2, 0), self.TRAPPOLA)
+        #self.set_cell((0, 3), self.TRAPPOLA)
+        #self.set_cell((0, 4), self.TRAPPOLA)
+        self.set_cell((1, 1), self.RISORSA)
+        self.set_cell((0, 1), self.CELLA_VUOTA)
+
+        self.set_cell((0,3), self.CELLA_VUOTA)
+        self.set_cell((1, 2), self.MURO)
+        self.set_cell((2, 0), self.MURO)
+        self.set_cell((2, 1), self.MURO)
+        self.set_cell((2, 2), self.MURO)
+        self.set_cell((1, 3), self.MURO)
 
 
         print(self.is_reachable(self._spawn_position, self._target_position, 4))
@@ -161,7 +171,7 @@ class Grid:
         return self._target_position
 
 
-    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 2, convertable_traps = 1):
+    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 0, convertable_traps = 0):
         """
         BFS modificata per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
@@ -182,18 +192,18 @@ class Grid:
         T: Converted Traps
         """
 
-        DEBUG = False
+        DEBUG = True
 
         # Coda BFS: nodi da esplorare
         to_visit = [(start, 0, 0, player_score)]
 
         # Set degli stati già visitate: serve a non riesplorare stati già controllati
-        visited = {(start, 0, 0)}
+        visited = {(start, 0, 0, player_score)}
 
         # Dizionario parent per ricostruire il percorso
         # Chiave: stato logico (posizione, broken_walls, converted_trap)
         # Valore: stato precedente
-        parent = {(start, 0, 0): None}
+        parent = {(start, 0, 0, player_score): None}
 
         count_moves = 0
 
@@ -232,9 +242,10 @@ class Grid:
                         print("\n TARGET RAGGIUNTO!")
                     # Ricostruzione del percorso partendo dal target (current_x, current_y)
                     path = []
-                    state = ((current_x, current_y), broken_walls, converted_traps)
+                    state = ((current_x, current_y), broken_walls, converted_traps, score)
                     while state is not None:
-                        pos,_,_ = state
+                        print(state)
+                        pos,_,_,_ = state
                         path.append(pos)
                         state = parent[state]
                     path.reverse()  # Percorso dall'inizio del target
@@ -257,7 +268,7 @@ class Grid:
                     # Controllo i confini della griglia
                     if not (0 <= nx < self._height and 0 <= ny < self._width):
                         if DEBUG:
-                            print(f"  Vicino ({nx},{ny}) fuori griglia → scarto")
+                            print(f"  Vicino ({nx},{ny}) fuori griglia -> scarto")
                         continue
 
                     cell = self.grid[nx][ny]
@@ -275,37 +286,39 @@ class Grid:
                             if score >= 5:              # E lo score dell'utente è maggiore a quello che sottrae la trappola
                                 new_score -= 5          # Attraversala
                                 if DEBUG:
-                                    print("    Trappola → perdo 5 punti")
-                            elif converted_traps < convertable_traps:   #Altrimenti, se puoi convertirla, convertila
+                                    print(F"    Trappola -> perdo 5 punti: {new_score}")
+                            elif converted_traps < convertable_traps:   # Altrimenti, se puoi, convertila
                                 new_converted_traps += 1
                                 if DEBUG:
-                                    print("    Trappola → convertita")
+                                    print("    Trappola -> convertita")
                             else:
-                                if DEBUG:
-                                    print("    Trappola → convertita")
                                 # Se non si può attraversare e non si può convertire, cerca un'altra strada
                                 continue
+                        if cell.type == self.RISORSA:
+                            new_score += 10
+                            if DEBUG:
+                                print(f"    Risorsa -> prendo 10 punti: {new_score}")
 
                     # Se la cella non è camminabile (muro) e posso distruggere dei muri
                     elif broken_walls < breakable_walls:
                         new_broken_walls += 1
                         if DEBUG:
-                            print("    Muro → distrutto")
+                            print("    Muro -> distrutto")
 
                     else:
                         if DEBUG:
-                            print("    Muro non distruggibile → scarto")
+                            print("    Muro non distruggibile -> scarto")
                         # Se non posso attraversare e non posso rompere, cerca un'altra strada
                         continue
 
                     # Chiave dello stato logico per visited e parent (senza score)
-                    state_key = ((nx, ny), new_broken_walls, new_converted_traps)
-                    prev_key = ((current_x, current_y), broken_walls, converted_traps)
+                    state_key = ((nx, ny), new_broken_walls, new_converted_traps, new_score)
+                    prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
 
                     # Se lo stato è già stato visitato, non lo riesploro
                     if state_key in visited:
                         if DEBUG:
-                            print(f"    Stato {state_key} già visitato → scarto")
+                            print(f"    Stato {state_key} già visitato -> scarto")
                         continue
 
                     visited.add(state_key)  # Salvo il nodo visitato per non rivisitarlo
