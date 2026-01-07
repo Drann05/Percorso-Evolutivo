@@ -104,16 +104,17 @@ class Grid:
         place_cells_randomly(self.OBIETTIVO, 1, 15)
 
         self._spawn_position = (0,0)
-        self._target_position = (3,7)
+        self._target_position = (1,7)
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
-        self.set_cell((3,7), self.OBIETTIVO)
+        self.set_cell((1,7), self.OBIETTIVO)
 
-        #self.set_cell((0,1), self.MURO)
-        #self.set_cell((0, 2), self.MURO)
-        #self.set_cell((1, 0), self.MURO)
-        #self.set_cell((2, 0), self.MURO)
+        self.set_cell((0,1), self.TRAPPOLA)
+        self.set_cell((0, 2), self.TRAPPOLA)
+        self.set_cell((1, 0), self.TRAPPOLA)
+        self.set_cell((2, 0), self.TRAPPOLA)
 
-        print(self.is_reachable(self._spawn_position, self._target_position))
+
+        print(self.is_reachable(self._spawn_position, self._target_position, 4))
 
     def generative_dfs(self):
         """
@@ -159,35 +160,59 @@ class Grid:
         """Restituisce la posizione del target point"""
         return self._target_position
 
-    def is_reachable(self, posizione_1: tuple, posizione_2: tuple, breakable_walls = 0):
+
+    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 2, convertable_traps = 0):
         """
-        Verifica se la cella obiettivo è raggiungibile dalla cella di spawn
-        controllando le celle adiacenti in modo da vedere se esiste una strada percorribile
+        BFS modificata per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
+        Tiene conto di:
+        - Muri che possono essere distrutti (fino a breakable_walls)
+        - Trappole che possono essere convertite (fino a convertable_traps)
+        - Punteggio del giocatore (non deve andare in negativo)
+
+        Ogni nodo esplorato contiene:
+        (x, y) - coordinate nella griglia
+        broken_walls - numero di muri distrutti per arrivare qui
+        converted_traps - numero di trappole convertite per arrivare qui
+        user_score - punteggio attuale del giocatore
         """
-        to_visit = [posizione_1]
-        visited = [posizione_1]
-        best_path = []
-        walls_broken_count = 0
+
+        # Coda BFS: nodi da esplorare
+        to_visit = [(start, 0, 0, player_score)]
+
+        # Set degli stati già visitate: serve a non riesplorare stati già controllati
+        visited = {(start, 0, 0)}
+
+        # Dizionario parent per ricostruire il percorso
+        # Chiave: stato logico (posizione, broken_walls, converted_trap)
+        # Valore: stato precedente
+        parent = {(start, 0, 0): None}
+
         count_moves = 0
 
-
+        # Ciclo principale: continua finché non rimangono altri nodi da visitare, oppure finché non superiamo il limite di mosse
         while len(to_visit) > 0 and count_moves <= 30:
+
             current_level = len(to_visit)
 
+            # Espando tutti i nodi del livello corrente prima di passare al livello successivo
+            # Ogni livello equivale agli stati nelle celle adiacenti del livello precedente
             for _ in range(current_level):
-                current_x, current_y = to_visit.pop(0)
+                # Prendo il primo nodo dalla coda (FIFO)
+                (current_x, current_y), broken_walls, converted_traps, score = to_visit.pop(0)
 
-                if (current_x, current_y) == posizione_2:
-                    current_cell_position = current_x, current_y    # Salva la posizione dell'obiettivo
-                    start_index = visited.index(current_cell_position)  # Prende l'indice dell'obiettivo nella lista visited
-                    for visited_cell in reversed(visited[:start_index]):    # Rivisita le celle partendo dall'ultima (l'obiettivo)
-                        if abs(visited_cell[0] - current_cell_position[0]) + abs(visited_cell[1] - current_cell_position[1]) == 1:  # Se la cella da rivisitare è adiacente a quella corrente:
-                            best_path.append(current_cell_position)
-                            current_cell_position = visited_cell
-                    print(count_moves)
-                    print(best_path)
-                    return True
+                # Controllo se abbiamo raggiunto il target
+                if (current_x, current_y) == target:
+                    # Ricostruzione del percorso partendo dal target (current_x, current_y)
+                    path = []
+                    state = ((current_x, current_y), broken_walls, converted_traps)
+                    while state is not None:
+                        pos,_,_ = state
+                        path.append(pos)
+                        state = parent[state]
+                    path.reverse()  # Percorso dall'inizio del target
+                    return True, path   # Ritorna: percorso trovato, strada minima
 
+                # Salvo le posizioni dei vicini (celle adiacenti a (current_x, current_y))
                 neighbors = [
                     (current_x - 1, current_y),  # N
                     (current_x + 1, current_y),  # S
@@ -195,27 +220,54 @@ class Grid:
                     (current_x, current_y + 1)   # E
                 ]
 
-                for i, j in neighbors:
-                    if 0 <= i < self._height and 0 <= j < self._width:
+                # Esploro ogni vicino
+                for nx, ny in neighbors:
+                    # Controllo i confini della griglia
+                    if not (0 <= nx < self._height and 0 <= ny < self._width):
+                        continue
 
-                        if breakable_walls >= 1:
-                            if (i, j) not in visited:
+                    cell = self.grid[nx][ny]
 
-                                #print(walls_broken_count)
-                                if walls_broken_count > breakable_walls:
-                                    return False
-                                to_visit.append((i, j))
-                                visited.append((i, j))
+                    # Copio i valori correnti per modificarli nel vicino
+                    new_broken_walls = broken_walls
+                    new_converted_traps = converted_traps
+                    new_score = score
+
+                    if cell.is_walkable():
+                        if cell.type == self.TRAPPOLA:  # Se la cella è una trappola
+                            if score >= 5:              # E lo score dell'utente è maggiore a quello che sottrae la trappola
+                                new_score -= 5          # Attraversala
+                            elif converted_traps < convertable_traps:   #Altrimenti, se puoi convertirla, convertila
+                                new_converted_traps += 1
+                            else:
+                                # Se non si può attraversare e non si può convertire, cerca un'altra strada
+                                continue
+
+                    # Se la cella non è camminabile (muro) e posso distruggere dei muri
+                    elif broken_walls < breakable_walls:
+                        new_broken_walls += 1
+
+                    else:
+                        # Se non posso attraversare e non posso rompere, cerca un'altra strada
+                        continue
+
+                    # Chiave dello stato logico per visited e parent (senza score)
+                    state_key = ((nx, ny), new_broken_walls, new_converted_traps)
+                    prev_key = ((current_x, current_y), broken_walls, converted_traps)
+
+                    # Se lo stato è già stato visitato, non lo riesploro
+                    if state_key in visited:
+                        continue
 
 
-                        else:
-                            if (i, j) not in visited and self.grid[i][j].is_walkable():
-                                to_visit.append((i, j))
-                                visited.append((i, j))
+                    new_state = ((nx,ny), new_broken_walls, new_converted_traps, new_score) # Creo il nuovo nodo da aggiungere alla coda
+                    parent[state_key] = prev_key    # Aggiorno il parent per poter ricostruire il percorso
+                    to_visit.append(new_state)      # Aggiungo il nuovo nodo alla coda BFS
 
             count_moves += 1
 
-        return False
+        # Se esco dal while senza aver raggiunto il target, non è raggiungibile
+        return False, []
 
     def cell_count(self, cell_type):
         counter = 0
