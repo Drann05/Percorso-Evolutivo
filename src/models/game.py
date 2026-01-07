@@ -1,4 +1,89 @@
+from .player import Player
+from .grid import Grid
+from .timer import Timer
+from .leaderboard import Leaderboard
+
 class Game:
-    def __init__(self, parent):
-        self._parent = parent
-        self.widgets = []
+    """
+    Gestisce la logica principale di Percorso Evolutivo
+
+    Utilizza le classi Player, Grid, Timer e Leaderboard per implementare la logica
+    di Percorso Evolutivo tra cui:
+    - Avvio gioco
+    - Interazione input utente -> gioco
+    - Applicazione effetto cella
+    - Controlli validità spostamento
+    - Gestione fine gioco
+    """
+
+    SCORES = {
+        "O": 20,    # Obiettivo
+        "R": 10,    # Risorsa
+        "T": -5     # Trappola
+    }
+    def __init__(self, player_name, difficulty):
+        self._player_name = player_name
+        self._difficulty = difficulty
+
+        self.grid = Grid(20, 20)
+        self.player = None
+        self.timer = Timer()
+        self._started = False
+
+    def start_game(self):
+        self.grid.generate_grid(self._difficulty)
+
+        spawn_point = self.grid.spawn_position
+        self.player = Player(self._player_name, spawn_point)
+
+        #self.timer.start_timer()
+
+    def move_player(self, direction):
+        if not self.is_reachable(direction):
+            return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
+
+        if self.player.moves >= 30:
+            self.end_game()
+            return {'moved': False, 'new_position': self.player.position, 'cell_data': None, 'game_over': True}
+
+        self.player.move_to(direction)
+
+        new_position = self.player.position
+        cell_data = self.grid.get_cell_data(new_position)
+        self.apply_cell_effect(cell_data)
+
+        return {'moved': True, 'new_position': self.player.position, 'cell_data': cell_data, 'game_over': False}
+
+    def apply_cell_effect(self, cell_data):
+        cell_type = cell_data["type"]
+        cell_position = cell_data["position"]
+
+        cell_type = cell_type.upper()
+
+        if cell_type in self.SCORES:
+            self.player.change_score(self.SCORES[cell_type])
+
+        if cell_type == "R":
+            self.grid.set_cell(cell_position, '.')
+
+
+    def end_game(self):
+        self.timer.stop_timer()
+
+    def is_reachable(self, direction):
+        row, col = self.player.position
+
+        match direction:
+            case "N":
+                row -= 1
+            case "S":
+                row += 1
+            case "E":
+                col += 1
+            case "W":
+                col -= 1
+
+        position = (row, col)
+
+        return self.grid.is_valid_movement(position)
+
