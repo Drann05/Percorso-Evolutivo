@@ -35,6 +35,7 @@ class Game:
 
 
     def start_game(self):
+        """Inizializza griglia, giocatore e timer"""
         self._started = True
         self.grid.generate_grid(self._difficulty)
 
@@ -43,55 +44,55 @@ class Game:
 
         self.timer.start_timer()
 
+    def end_game(self):
+        """Termina la partita e ferma il timer"""
+        self._started = False
+        self.timer.stop_timer()
+
     def move_player(self, direction):
+        """Muove il giocatore, se possibile, e applica gli effetti della cella.
+        Ritorna un dizionario utile per l'interfaccia grafica"""
         if not self._started:
             raise RuntimeError("Il gioco è finito")
 
         if not self.is_neighbor_reachable(direction):
-            return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
+            return self._move_result(False)
 
         self.player.move_to(direction)
+        cell_data = self.grid.get_cell_data(self.player.position)
 
-        new_position = self.player.position
-        cell_data = self.grid.get_cell_data(new_position)
         self.apply_cell_effect(cell_data)
 
-        if self.check_game_over():
+        game_over = self.check_game_over()
+        if game_over:
             self.end_game()
 
         if self.player.moves % 5 == 0:
             self.grid.step()
 
-        return {'moved': True, 'new_position': self.player.position, 'cell_data': cell_data, 'game_over': False}
+        return self._move_result(True, cell_data, game_over)
 
 
     def check_game_over(self):
+        """Controlla tutte le condizioni di fine partita"""
         self.is_moves_out_of_limit = self.player.moves >= 30
         self.is_negative_score = self.player.score < 0
         self.is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
 
 
-        if self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached:
-            return True
-        return False
+        return any([
+                self.is_moves_out_of_limit,
+                self.is_negative_score,
+                self.is_objective_reached])
 
-    def apply_cell_effect(self, cell_data):
-        cell_type = cell_data["type"]
-        cell_position = cell_data["position"]
-
-        cell_type = cell_type.upper()
-
-        if cell_type in self.SCORES:
-            self.player.change_score(self.SCORES[cell_type])
-
-        if cell_type == "R":
-            self.grid.set_cell(cell_position, '.')
-
-
-    def end_game(self):
-        self._started = False
-        self.timer.stop_timer()
-
+    def _move_result(self, moved, cell_data=None, game_over=False):
+        """Formato standard della risposta di movimento"""
+        return {
+            "moved": moved,
+            "new_position": self.player.position if moved else None,
+            "cell_data": cell_data,
+            "game_over": game_over
+        }
 
 
     def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 0, convertable_traps = 0):
@@ -262,6 +263,7 @@ class Game:
         return False, []
 
     def is_neighbor_reachable(self, direction):
+        """Verifica se la cella adiacente è raggiungibile"""
         row, col = self.player.position
 
         match direction:
@@ -277,4 +279,16 @@ class Game:
         position = (row, col)
 
         return self.grid.is_valid_movement(position)
+
+    def apply_cell_effect(self, cell_data):
+        cell_type = cell_data["type"]
+        cell_position = cell_data["position"]
+
+        cell_type = cell_type.upper()
+
+        if cell_type in self.SCORES:
+            self.player.change_score(self.SCORES[cell_type])
+
+        if cell_type == "R":
+            self.grid.set_cell(cell_position, '.')
 
