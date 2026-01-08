@@ -43,6 +43,7 @@ class Grid:
         self._spawn_position = None
         self._target_position = None
 
+        self._walls_positions = set()
         self._resources_positions = set()
         self._traps_positions = set()
         self._empty_cells_positions = set()
@@ -368,14 +369,16 @@ class Grid:
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
 
-    def cell_count(self, cell_type):
-        counter = 0
-        for row in range(self._height):
-            for col in range(self._width):
-                if self.grid[row][col].type == cell_type:
-                    counter += 1
-        return counter
+    def _count_cells(self, cell_type):
+        return len(self._get_positions_by_type(cell_type))
 
+    def _get_positions_by_type(self, cell_type):
+        return {
+            self.MURO: self._walls_positions,
+            self.RISORSA: self._resources_positions,
+            self.TRAPPOLA: self._traps_positions,
+            self.CELLA_VUOTA: self._empty_cells_positions
+        }.get(cell_type, set())
 
     def get_cell_data(self, position):
         cell = self.grid[position[0]][position[1]]
