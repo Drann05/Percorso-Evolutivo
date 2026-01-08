@@ -35,11 +35,12 @@ class Game:
 
         spawn_point = self.grid.spawn_position
         self.player = Player(self._player_name, spawn_point)
+        print(self.is_reachable((0,0),(1,7),10))
 
         #self.timer.start_timer()
 
     def move_player(self, direction):
-        if not self.is_reachable(direction):
+        if not self.is_neighbor_reachable(direction):
             return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
 
         if self.player.moves >= 30:
@@ -165,12 +166,12 @@ class Game:
                 # Esploro ogni vicino
                 for nx, ny in neighbors:
                     # Controllo i confini della griglia
-                    if not (0 <= nx < self._height and 0 <= ny < self._width):
+                    if not (0 <= nx < self.grid.height and 0 <= ny < self.grid.width):
                         if DEBUG:
                             print(f"  Vicino ({nx},{ny}) fuori griglia -> scarto")
                         continue
 
-                    cell = self.grid[nx][ny]
+                    cell = self.grid.get_cell((nx,ny))
 
                     # Copio i valori correnti per modificarli nel vicino
                     new_broken_walls = broken_walls
@@ -181,7 +182,7 @@ class Game:
                         print(f"\n  Analizzo vicino ({nx},{ny})")
 
                     if cell.is_walkable():
-                        if cell.type == self.TRAPPOLA:  # Se la cella è una trappola
+                        if cell.type == self.grid.TRAPPOLA:  # Se la cella è una trappola
                             if score >= 5:              # E lo score dell'utente è maggiore a quello che sottrae la trappola
                                 new_score -= 5          # Attraversala
                                 if DEBUG:
@@ -193,7 +194,7 @@ class Game:
                             else:
                                 # Se non si può attraversare e non si può convertire, cerca un'altra strada
                                 continue
-                        if cell.type == self.RISORSA:
+                        if cell.type == self.grid.RISORSA:
                             new_score += 10
                             if DEBUG:
                                 print(f"    Risorsa -> prendo 10 punti: {new_score}")
@@ -236,7 +237,7 @@ class Game:
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
 
-    def is_cell_reachable(self, direction):
+    def is_neighbor_reachable(self, direction):
         row, col = self.player.position
 
         match direction:

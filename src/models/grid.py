@@ -1,4 +1,4 @@
-from cell import Cell
+from .cell import Cell
 import random
 from random import randint
 
@@ -76,14 +76,14 @@ class Grid:
 
 
 
-        """
+
         self._spawn_position = (0,0)
         self._target_position = (1,7)
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
         self.set_cell((1,7), self.OBIETTIVO)
 
         self.set_cell((0,1), self.CELLA_VUOTA)
-        self.set_cell((0, 2), self.TRAPPOLA)
+        self.set_cell((0, 2), self.MURO)
         self.set_cell((1, 0), self.TRAPPOLA)
         #self.set_cell((0, 3), self.TRAPPOLA)
         #self.set_cell((0, 4), self.TRAPPOLA)
@@ -96,7 +96,7 @@ class Grid:
         self.set_cell((2, 1), self.MURO)
         self.set_cell((2, 2), self.MURO)
         self.set_cell((1, 3), self.MURO)
-        """
+
 
         #print(self.is_reachable(self._spawn_position, self._target_position, 4))
 
