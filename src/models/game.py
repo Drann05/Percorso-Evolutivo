@@ -289,6 +289,34 @@ class Game:
         if cell_type in self.SCORES:
             self.player.change_score(self.SCORES[cell_type])
 
-        if cell_type == "R":
-            self.grid.set_cell(cell_position, '.')
+        if cell_type == self.grid.RISORSA:
+            self.grid.set_cell(cell_position, self.grid.CELLA_VUOTA)
+
+
+    def use_special_action(self, action, target_position):
+        if not self._started:
+            return False
+
+        p_row, p_col = self.player.position
+        t_row, t_col = target_position
+
+        distance = abs(p_row - t_row) + abs(p_col - t_col)
+        if distance != 1:
+            return False
+
+        cell = self.grid.get_cell(target_position)
+
+        if action == "remove_wall":
+            if self.player.is_remove_wall_available() and cell.type == self.grid.MURO:
+                self.grid.set_cell(target_position, self.grid.CELLA_VUOTA)
+                self.player.use_remove_wall()
+                return True
+
+        elif action == "convert_trap":
+            if self.player.is_convert_trap_available() and cell.type == self.grid.TRAPPOLA:
+                self.grid.set_cell(target_position, self.grid.RISORSA)
+                self.player.use_convert_trap()
+                return True
+
+        return False
 
