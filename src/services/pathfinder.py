@@ -32,6 +32,8 @@ class Pathfinder:
         T: Converted Traps
         """
 
+        DEBUG = False
+
         # Coda BFS: nodi da esplorare
         to_visit = [(start, 0, 0, player_score)]
 
@@ -46,7 +48,7 @@ class Pathfinder:
         count_moves = 0
         MAX_MOVES = 30
 
-        if self.DEBUG:
+        if DEBUG:
             print(f"\n=== BFS START ===")
             print(f"Start: {start}, Target: {target}")
             print(f"Score iniziale: {player_score}")
@@ -57,7 +59,7 @@ class Pathfinder:
 
             current_level = len(to_visit)
 
-            if self.DEBUG:
+            if DEBUG:
                 print(f"\n--- LIVELLO BFS {count_moves} ---")
                 print(f"Nodi nel livello: {current_level}")
                 print(f"Coda: {to_visit}")
@@ -66,9 +68,10 @@ class Pathfinder:
             # Ogni livello equivale agli stati nelle celle adiacenti del livello precedente
             for _ in range(current_level):
                 # Prendo il primo nodo dalla coda (FIFO)
-                (current_x, current_y), broken_walls, converted_traps, score = to_visit.pop(0)
+                state = to_visit.pop(0)
+                (current_x, current_y), broken_walls, converted_traps, score = state
 
-                if self.DEBUG:
+                if DEBUG:
                     print(f"\nEspando nodo:")
                     print(f"  Posizione: ({current_x}, {current_y})")
                     print(f"  Muri rotti: {broken_walls}")
@@ -77,102 +80,113 @@ class Pathfinder:
 
                 # Controllo se abbiamo raggiunto il target
                 if (current_x, current_y) == target:
-                    if self.DEBUG:
-                        print("\n TARGET RAGGIUNTO!")
-                    # Ricostruzione del percorso partendo dal target (current_x, current_y)
-                    path = []
-                    state = ((current_x, current_y), broken_walls, converted_traps, score)
-                    while state is not None:
-                        print(state)
-                        pos, _, _, _ = state
-                        path.append(pos)
-                        state = parent[state]
-                    path.reverse()  # Percorso dall'inizio del target
+                    return True, self._reconstruct_path(state, parent)
 
-                    if self.DEBUG:
-                        print(f"Percorso trovato: {path}")
+                neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertable_traps)
 
-                    return True, path  # Ritorna: percorso trovato, strada minima
+                # Chiave dello stato logico per visited e parent (senza score)
+                prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
 
-                # Salvo le posizioni dei vicini (celle adiacenti a (current_x, current_y))
-                neighbors = [
-                    (current_x - 1, current_y),  # N
-                    (current_x + 1, current_y),  # S
-                    (current_x, current_y - 1),  # O
-                    (current_x, current_y + 1)  # E
-                ]
-
-                # Esploro ogni vicino
-                for nx, ny in neighbors:
-                    # Controllo i confini della griglia
-                    if not (0 <= nx < self.grid.height and 0 <= ny < self.grid.width):
-                        if self.DEBUG:
-                            print(f"  Vicino ({nx},{ny}) fuori griglia -> scarto")
-                        continue
-
-                    cell = self.grid.get_cell((nx, ny))
-
-                    # Copio i valori correnti per modificarli nel vicino
-                    new_broken_walls = broken_walls
-                    new_converted_traps = converted_traps
-                    new_score = score
-
-                    if self.DEBUG:
-                        print(f"\n  Analizzo vicino ({nx},{ny})")
-
-                    if cell.is_walkable():
-                        if cell.type == self.grid.TRAPPOLA:  # Se la cella è una trappola
-                            if score >= 5:  # E lo score dell'utente è maggiore a quello che sottrae la trappola
-                                new_score -= 5  # Attraversala
-                                if self.DEBUG:
-                                    print(F"    Trappola -> perdo 5 punti: {new_score}")
-                            elif converted_traps < convertable_traps:  # Altrimenti, se puoi, convertila
-                                new_converted_traps += 1
-                                if self.DEBUG:
-                                    print("    Trappola -> convertita")
-                            else:
-                                # Se non si può attraversare e non si può convertire, cerca un'altra strada
-                                continue
-                        if cell.type == self.grid.RISORSA:
-                            new_score += 10
-                            if self.DEBUG:
-                                print(f"    Risorsa -> prendo 10 punti: {new_score}")
-
-                    # Se la cella non è camminabile (muro) e posso distruggere dei muri
-                    elif broken_walls < breakable_walls:
-                        new_broken_walls += 1
-                        if self.DEBUG:
-                            print("    Muro -> distrutto")
-
-                    else:
-                        if self.DEBUG:
-                            print("    Muro non distruggibile -> scarto")
-                        # Se non posso attraversare e non posso rompere, cerca un'altra strada
-                        continue
-
-                    # Chiave dello stato logico per visited e parent (senza score)
-                    state_key = ((nx, ny), new_broken_walls, new_converted_traps, new_score)
-                    prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
-
+                for new_state in neighbors:
                     # Se lo stato è già stato visitato, non lo riesploro
-                    if state_key in visited:
-                        if self.DEBUG:
-                            print(f"    Stato {state_key} già visitato -> scarto")
+                    if new_state in visited:
+                        if DEBUG:
+                            print(f"    Stato {new_state} già visitato -> scarto")
                         continue
 
-                    visited.add(state_key)  # Salvo il nodo visitato per non rivisitarlo
-                    new_state = ((nx, ny), new_broken_walls, new_converted_traps,
-                                 new_score)  # Salvo il nuovo nodo da visitare da aggiungere alla coda
-                    parent[state_key] = prev_key  # Aggiorno il parent per poter ricostruire il percorso
+                    visited.add(new_state)  # Salvo il nodo visitato per non rivisitarlo
+                    parent[new_state] = prev_key  # Aggiorno il parent per poter ricostruire il percorso
                     to_visit.append(new_state)  # Aggiungo il nuovo nodo alla coda BFS
 
-                    if self.DEBUG:
+                    if DEBUG:
                         print(f"    Aggiunto in coda: {new_state}")
 
             count_moves += 1
 
-        if self.DEBUG:
+        if DEBUG:
             print("\n Target NON raggiungibile")
 
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
+
+
+    def _extend_neighbors(self, current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertable_traps):
+        neighbors = []
+
+        # Salvo le posizioni dei vicini (celle adiacenti a (current_x, current_y))
+        directions = [
+            (current_x - 1, current_y),  # N
+            (current_x + 1, current_y),  # S
+            (current_x, current_y - 1),  # O
+            (current_x, current_y + 1)  # E
+        ]
+
+        # Esploro ogni vicino
+        for nx, ny in directions:
+            # Controllo i confini della griglia
+            if not (0 <= nx < self.grid.height and 0 <= ny < self.grid.width):
+                if self.DEBUG:
+                    print(f"  Vicino ({nx},{ny}) fuori griglia -> scarto")
+                continue
+
+            cell = self.grid.get_cell((nx, ny))
+
+            # Copio i valori correnti per modificarli nel vicino
+            new_broken_walls = broken_walls
+            new_converted_traps = converted_traps
+            new_score = score
+
+            if self.DEBUG:
+                print(f"\n  Analizzo vicino ({nx},{ny})")
+
+            if cell.is_walkable():
+                if cell.type == self.grid.TRAPPOLA:  # Se la cella è una trappola
+                    if score >= 5:  # E lo score dell'utente è maggiore a quello che sottrae la trappola
+                        new_score -= 5  # Attraversala
+                        if self.DEBUG:
+                            print(F"    Trappola -> perdo 5 punti: {new_score}")
+                    elif converted_traps < convertable_traps:  # Altrimenti, se puoi, convertila
+                        new_converted_traps += 1
+                        if self.DEBUG:
+                            print("    Trappola -> convertita")
+                    else:
+                        # Se non si può attraversare e non si può convertire, cerca un'altra strada
+                        continue
+                if cell.type == self.grid.RISORSA:
+                    new_score += 10
+                    if self.DEBUG:
+                        print(f"    Risorsa -> prendo 10 punti: {new_score}")
+
+            # Se la cella non è camminabile (muro) e posso distruggere dei muri
+            elif broken_walls < breakable_walls:
+                new_broken_walls += 1
+                if self.DEBUG:
+                    print("    Muro -> distrutto")
+
+            else:
+                if self.DEBUG:
+                    print("    Muro non distruggibile -> scarto")
+                # Se non posso attraversare e non posso rompere, cerca un'altra strada
+                continue
+
+            neighbors.append(((nx,ny), new_broken_walls, new_converted_traps, new_score))
+
+        return neighbors
+
+    def _reconstruct_path(self, state, parent):
+        if self.DEBUG:
+            print("\n TARGET RAGGIUNTO!")
+        # Ricostruzione del percorso partendo dal target (current_x, current_y)
+        path = []
+
+        while state:
+            print(state)
+            pos, _, _, _ = state
+            path.append(pos)
+            state = parent[state]
+        path.reverse()  # Percorso dall'inizio del target
+
+        if self.DEBUG:
+            print(f"Percorso trovato: {path}")
+
+        return path  # ritorna strada minima
