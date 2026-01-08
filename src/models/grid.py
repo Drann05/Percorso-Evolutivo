@@ -354,7 +354,20 @@ class Grid:
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
 
-    def register_cell_positions(self, cell_type, pos):
+    #---------------------#
+    #   CELL MANAGEMENT   #
+    #---------------------#
+
+    def set_cell(self, position, cell_type):
+        row, col = position
+        old_type = self.grid[row][col].type
+
+        self.grid[row][col].set_type(cell_type)
+
+        self._unregister_position(old_type, position)
+        self._register_position(cell_type, position)
+
+    def _register_position(self, cell_type, pos):
         if cell_type == self.MURO:
             self._walls_positions.add(pos)
         elif cell_type == self.RISORSA:
@@ -374,7 +387,15 @@ class Grid:
                 if self.grid[row][col].type == self.CELLA_VUOTA:
                     self._empty_cells_positions.add((r, c))"""
 
-
+    def _unregister_position(self, cell_type, pos):
+        if cell_type == self.MURO:
+            self._walls_positions.discard(pos)
+        elif cell_type == self.RISORSA:
+            self._resources_positions.discard(pos)
+        elif cell_type == self.TRAPPOLA:
+            self._traps_positions.discard(pos)
+        elif cell_type == self.CELLA_VUOTA:
+            self._empty_cells_positions.discard(pos)
 
     #-----------------------#
     #   RANDOM PLACEMENT    #
@@ -421,13 +442,7 @@ class Grid:
             "walkable": cell.is_walkable()
         }
 
-    def set_cell(self, position, cell_type):
-        row, col = position
-        self.grid[row][col].set_type(cell_type)
 
-    def set_multiple_cells(self, list_of_cells_positions, cell_type):
-        for position in list_of_cells_positions:
-            self.set_cell(position, cell_type)
 
     def is_valid_movement(self, position):
         row, col = position
