@@ -130,21 +130,6 @@ class Grid:
 
         print(self.is_reachable(self._spawn_position, self._target_position, 4))
 
-    def register_cell_positions(self, cell_type, row, col):
-        if cell_type == self.PUNTO_DI_PARTENZA:
-            self._spawn_position = (row, col)
-        elif cell_type == self.OBIETTIVO:
-            self._target_position = (row, col)
-        elif cell_type == self.RISORSA:
-            self._resources_positions.add((row, col))
-        elif cell_type == self.TRAPPOLA:
-            self._traps_positions.add((row, col))
-
-        for r in range(self._height):
-            for c in range(self._width):
-                if self.grid[row][col].type == self.CELLA_VUOTA:
-                    self._empty_cells_positions.add((r, c))
-
     def generative_dfs(self):
         """
         Genera un labirinto utilizzando un algoritmo Depth-First Search (DFS)
@@ -368,6 +353,33 @@ class Grid:
 
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
+
+    def register_cell_positions(self, cell_type, pos):
+        if cell_type == self.MURO:
+            self._walls_positions.add(pos)
+        elif cell_type == self.RISORSA:
+            self._resources_positions.add(pos)
+        elif cell_type == self.TRAPPOLA:
+            self._traps_positions.add(pos)
+        elif cell_type == self.CELLA_VUOTA:
+            self._empty_cells_positions.add(pos)
+        elif cell_type == self.PUNTO_DI_PARTENZA:
+            self._spawn_position = pos
+        elif cell_type == self.OBIETTIVO:
+            self._target_position = pos
+
+
+        """for r in range(self._height):
+            for c in range(self._width):
+                if self.grid[row][col].type == self.CELLA_VUOTA:
+                    self._empty_cells_positions.add((r, c))"""
+
+
+
+    #-----------------------#
+    #   RANDOM PLACEMENT    #
+    #-----------------------#
+
 
     def _add_random_cells(self, cell_type, count):
         candidates = list(self._empty_cells_positions)
