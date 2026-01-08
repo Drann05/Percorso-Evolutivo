@@ -1,79 +1,66 @@
 import os
 
-""" 
-    Questa classe si occupa della gestione della classifica in un file.
-    All'interno del file devono essere salvati: nome, punteggio, mosse, livello.
-    Vengono salvati nel dizionario scores in questo formato: {'Nome': (punteggio, mosse, livello)}.
-
-"""
 
 class Leaderboard:
-    def __init__(self, filepath="classifica.txt", entry=None):
+    """
+    Gestisce una classifica salvata su file.
+    Formato file: punteggio:mosse:livello:nome
+    """
+
+    def __init__(self, filepath="classifica.txt"):
         self._filepath = filepath
-        self._entry = entry
         self._scores = self.load()
 
-    
     def load(self):
+        """Carica i dati dal file e restituisce un dizionario."""
         scores = {}
         if os.path.exists(self._filepath):
             with open(self._filepath, "r") as f:
                 for line in f:
-                    line = line.strip()
-                    if line and ":" in line:
+                    parts = line.strip().split(":")
+                    if len(parts) == 4:
                         try:
-                            score, moves, level, name = line.split(":")
-                            scores[name.strip()] = (int(score.strip()), int(moves.strip()), int(level.strip()))
+                            score, moves, level, name = parts
+                            scores[name] = (int(score), int(moves), int(level))
                         except ValueError:
                             continue
         return scores
-    
 
-    def save(self, score, moves, level):
-        name = self._entry.get().strip()
-        
-        old_data = self._scores.get(name, (0, 30, 0)) #valori di default se il nome non esiste
-        if self.is_better(score, moves, level, old_data[0], old_data[1], old_data[2]):
+    def is_better(self, n_score, n_moves, n_level, o_score, o_moves, o_level):
+        """
+        Logica: punteggio alto meglio.
+        A parità di punti, meno mosse meglio.
+        A parità di mosse, livello più alto meglio.
+        """
+        if n_score > o_score:
+            return True
+        if n_score == o_score:
+            if n_moves < o_moves:
+                return True
+            if n_moves == o_moves:
+                return n_level > o_level
+        return False
+
+    def save(self, name, score, moves, level):
+        """Aggiorna la classifica se il punteggio è migliore e salva su file."""
+        name = name.strip()
+        old_data = self._scores.get(name)
+
+        if not old_data or self.is_better(score, moves, level, *old_data):
             self._scores[name] = (score, moves, level)
 
-            sorted_data = self.sorting()
+            sorted_items = sorted(
+                self._scores.items(),
+                key=lambda x: (-x[1][0], x[1][1], -x[1][2])
+            )
 
             with open(self._filepath, "w") as f:
-                for name, (score, moves, level) in sorted_data:
-                    f.write(f"{score}:{moves}:{level}:{name}\n")
-        else:
-            return
+                for s_name, (s_score, s_moves, s_level) in sorted_items:
+                    f.write(f"{s_score}:{s_moves}:{s_level}:{s_name}\n")
 
-    """
-    Funzione di ordinamento. 
-    Trasforma il dizionario in una lista di tuple per ordinare la classifica, successivamente confrontiamo il giocatore attuale con l'ultimo inserito:
-    se è migliore, prende il posto del giocatore nella lista e tutti i successivi "scivolano" di un posto, altrimenti viene confrontato con gli altri giocatori, se non è migliore di nessuno viene inserito in coda.
-    """
-    def sorting(self):
-        current_data = list(self._scores.items())
-        sorted_data = []
-
-        for item in current_data:
-            inserted = False
-            for i in range(len(sorted_data)):
-                p_score, p_moves, p_level = item[1]  
-                _, (s_score, s_moves, s_level) = sorted_data[i]
-
-                if self.is_better(p_score, p_moves, p_level, s_score, s_moves, s_level):
-                    sorted_data.insert(i, item)
-                    inserted = True
-                    break
-        
-            if not inserted:
-                sorted_data.append(item)
-        
-        return sorted_data
-
-    """riceve i dati della nuova e dell'ultima partita, stabilisce se è migliore in base alla priorità: punteggio > mosse > livello"""
-    def is_better(self, new_score, new_moves, new_level, old_score, old_moves, old_level):
-        return (new_score, new_moves, new_level) > (old_score, old_moves, old_level)
-
-    
     def get_top_10(self, n=10):
-        ordered_data = self.sorting()
-        return ordered_data[:n]
+        """Ritorna i primi N giocatori ordinati."""
+        return sorted(
+            self._scores.items(),
+            key=lambda x: (-x[1][0], x[1][1], -x[1][2])
+        )[:n]
