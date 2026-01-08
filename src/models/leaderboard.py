@@ -1,6 +1,5 @@
 import os
 
-
 class Leaderboard:
     """
     Gestisce una classifica salvata su file.
