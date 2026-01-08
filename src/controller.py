@@ -65,7 +65,10 @@ class Controller:
             "special_moves": {
                 "remove_wall": self.game.player.is_remove_wall_available(),
                 "convert_trap": self.game.player.is_convert_trap_available()
-            }
+            },
+            "is_moves_out_of_limit": self.game.is_moves_out_of_limit,
+            "is_negative_score": self.game.is_negative_score,
+            "is_objective_reached": self.game.is_objective_reached
         }
 
     def handle_restart_game_request(self):
