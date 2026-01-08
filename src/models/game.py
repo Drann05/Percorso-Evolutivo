@@ -28,24 +28,27 @@ class Game:
         self.grid = Grid(20, 20)
         self.player = None
         self.timer = Timer()
+        self.is_objective_reached = False
+        self.is_moves_out_of_limit = False
+        self.is_negative_score = False
         self._started = False
 
+
     def start_game(self):
+        self._started = True
         self.grid.generate_grid(self._difficulty)
 
         spawn_point = self.grid.spawn_position
         self.player = Player(self._player_name, spawn_point)
-        print(self.is_reachable((0,0),(1,7),10))
 
-        #self.timer.start_timer()
+        self.timer.start_timer()
 
     def move_player(self, direction):
+        if not self._started:
+            raise RuntimeError("Il gioco non è iniziato")
+
         if not self.is_neighbor_reachable(direction):
             return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
-
-        if self.player.moves >= 30:
-            self.end_game()
-            return {'moved': False, 'new_position': self.player.position, 'cell_data': None, 'game_over': True}
 
         self.player.move_to(direction)
 
@@ -53,7 +56,19 @@ class Game:
         cell_data = self.grid.get_cell_data(new_position)
         self.apply_cell_effect(cell_data)
 
+        self.check_game_over()
+
         return {'moved': True, 'new_position': self.player.position, 'cell_data': cell_data, 'game_over': False}
+
+    def check_game_over(self):
+        self.is_moves_out_of_limit = self.player.moves >= 30
+        self.is_negative_score = self.player.score < 0
+        self.is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
+
+
+        if self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached:
+            self.end_game()
+
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
@@ -69,7 +84,10 @@ class Game:
 
 
     def end_game(self):
+        self._started = False
         self.timer.stop_timer()
+
+
 
     def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 0, convertable_traps = 0):
         """
@@ -92,7 +110,7 @@ class Game:
         T: Converted Traps
         """
 
-        DEBUG = True
+        DEBUG = False
 
         # Coda BFS: nodi da esplorare
         to_visit = [(start, 0, 0, player_score)]
