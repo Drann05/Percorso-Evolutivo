@@ -130,6 +130,19 @@ class Grid:
 
         print(self.is_reachable(self._spawn_position, self._target_position, 4))
 
+    def _adjust_cells(self, cell_type, target_count):
+        current = self._count_cells(cell_type)
+        difference = target_count - current
+
+        if difference > 0:
+            self._add_random_cells(cell_type, difference)
+        elif difference < 0:
+            self._remove_random_cells(cell_type, abs(difference))
+    
+    #--------------#
+    #   DFS Maze   #
+    #--------------#
+
     def generative_dfs(self):
         """
         Genera un labirinto utilizzando un algoritmo Depth-First Search (DFS)
