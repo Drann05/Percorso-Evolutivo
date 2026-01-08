@@ -18,8 +18,6 @@ class Controller:
 
         self._main_view = MainView(self)
 
-
-
     def run(self):
         self._main_view.mainloop()
 

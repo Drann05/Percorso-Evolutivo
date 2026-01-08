@@ -74,7 +74,7 @@ class StartScreen(Views):
         self.instructions_button = self._parent_view.addButton(
             text="ISTRUZIONI",
             row=11, column=5, columnspan=5,
-            command=self._parent_view.show_instructions
+            command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions)
         )
         self.instructions_button["background"] = self.ACCENT_COLOR
         self.instructions_button["foreground"] = "white"
