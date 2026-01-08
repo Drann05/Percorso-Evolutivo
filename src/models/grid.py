@@ -369,7 +369,19 @@ class Grid:
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
 
+    def _add_random_cells(self, cell_type, count):
+        candidates = list(self._empty_cells_positions)
+        random.shuffle(candidates)
 
+        for pos in candidates[:count]:
+            self.set_cell(pos, cell_type)
+
+    def _remove_random_cells(self, cell_type, count):
+        positions = list(self._get_positions_by_type(cell_type))
+        random.shuffle(positions)
+
+        for pos in positions[:count]:
+            self.set_cell(pos, self.CELLA_VUOTA)
 
     #------------------#
     #     UTILITIES    #
