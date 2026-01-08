@@ -98,6 +98,11 @@ class Controller:
 
         self._main_view.update_game(self.get_game_state())
 
+    def update_timer(self):
+        if not self.game:
+            return
+        return self.game.timer.get_elapsed()
+
 
 if __name__ == '__main__':
     app = Controller()

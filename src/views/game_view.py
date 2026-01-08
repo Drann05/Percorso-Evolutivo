@@ -18,6 +18,7 @@ class GameView(Views):
 
     def __init__(self, parent_view, controller, title, width=500, height=500):
         super().__init__(title, width, height)
+
         self._controller = controller
         self._parent_view = parent_view
 
@@ -145,7 +146,9 @@ class GameView(Views):
         stats = self.game_state["stats"]
         self.label_score["text"] = f"Score: {stats['score']}"
         self.label_moves["text"] = f"Moves: {stats['moves']}"
-        self.label_timer["text"] = f"Timer: {stats['timer']}s"
+
+    def update_timer(self, timer):
+        self.label_timer["text"] = f"Timer: {timer}s"
 
     def reset_game(self):
         pass

@@ -25,6 +25,7 @@ class MainView(EasyFrame):
     def show_game(self):
         self.clear()
         self.game_view = GameView(self, self.controller, self._title)
+        self.after(2000, self.update_timer)
 
     def show_instructions(self):
         self.clear()
@@ -46,6 +47,13 @@ class MainView(EasyFrame):
         else:
             self.game_view.set_game_state(game_state)
             self.game_view.update_game_view()
+
+    def update_timer(self):
+        if not self.game_view:
+            return
+        timer = self.controller.update_timer()
+        self.game_view.update_timer(timer)
+        self.after(1000, self.update_timer)
 
     def show_error(self):
         pass
