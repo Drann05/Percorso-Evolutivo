@@ -73,11 +73,11 @@ class Grid:
         self._adjust_cells(self.MURO, walls_target)
         self._adjust_cells(self.RISORSA, resources_target)
         self._adjust_cells(self.TRAPPOLA, traps_target)
+        self._place_special_cells()
 
 
 
-
-        self._spawn_position = (0,0)
+        """self._spawn_position = (0,0)
         self._target_position = (1,7)
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
         self.set_cell((1,7), self.OBIETTIVO)
@@ -95,7 +95,7 @@ class Grid:
         self.set_cell((2, 0), self.MURO)
         self.set_cell((2, 1), self.MURO)
         self.set_cell((2, 2), self.MURO)
-        self.set_cell((1, 3), self.MURO)
+        self.set_cell((1, 3), self.MURO)"""
 
 
         #print(self.is_reachable(self._spawn_position, self._target_position, 4))
@@ -158,10 +158,6 @@ class Grid:
         to_remove_resources = pick_cells(self._resources_positions, 2)
         to_add_traps = pick_cells(self._empty_cells_positions, 2)
         to_remove_traps = pick_cells(self._traps_positions, 1)
-
-        print(to_remove_resources)
-        print(to_add_traps)
-        print(to_remove_traps)
 
         for pos in to_remove_resources:
             self.set_cell(pos, self.CELLA_VUOTA)
