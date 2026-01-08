@@ -264,8 +264,11 @@ class Grid:
     def _distance(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
+    def get_cell(self, position):
+        return self.grid[position[0]][position[1]]
+
     def get_cell_data(self, position):
-        cell = self.grid[position[0]][position[1]]
+        cell = self.get_cell(position)
         return {
             "type": cell.type,
             "position": position,
@@ -305,6 +308,14 @@ class Grid:
     def target_position(self):
         """Restituisce la posizione del target point"""
         return self._target_position
+
+    @property
+    def height(self):
+        return self._height
+
+    @property
+    def width(self):
+        return self._width
 
     def print_grid(self):
         for i in range(0, self._height):
