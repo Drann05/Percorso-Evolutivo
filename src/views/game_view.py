@@ -69,6 +69,7 @@ class GameView(Views):
         file_menu.addMenuItem("Nuova Partita", command=self._controller.handle_restart_game_request)
         file_menu.addMenuItem("Esci", command=self._parent_view.quit)
         file_menu.addMenuItem("Istruzioni", command=self._parent_view.show_instructions)
+        file_menu.addMenuItem("Classifica", command=self._parent_view.show_leaderboard)
 
 
         titolo = self._parent_view.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25, sticky="NSEW")
