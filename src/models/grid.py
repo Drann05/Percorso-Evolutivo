@@ -98,11 +98,9 @@ class Grid:
         self.set_cell((1, 3), self.MURO)
         """
 
-        #print(self.is_reachable(self._spawn_position, self._target_position, 4))
 
     def _adjust_cells(self, cell_type, target_count):
         current = self._count_cells(cell_type)
-        print(current)
         difference = target_count - current
 
         if difference > 0:
@@ -169,8 +167,6 @@ class Grid:
             self.set_cell(pos, self.TRAPPOLA)
         for pos in to_remove_traps:
             self.set_cell(pos, self.CELLA_VUOTA)
-
-
 
     #---------------------#
     #   CELL MANAGEMENT   #
@@ -264,13 +260,9 @@ class Grid:
     def _distance(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-    def get_cell_data(self, position):
-        cell = self.grid[position[0]][position[1]]
-        return {
-            "type": cell.type,
-            "position": position,
-            "walkable": cell.is_walkable()
-        }
+    def get_cell(self, position):
+        return self.grid[position[0]][position[1]]
+
 
     def is_valid_movement(self, position):
         row, col = position
@@ -305,6 +297,14 @@ class Grid:
     def target_position(self):
         """Restituisce la posizione del target point"""
         return self._target_position
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
 
     def print_grid(self):
         for i in range(0, self._height):
