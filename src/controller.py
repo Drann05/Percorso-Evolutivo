@@ -17,7 +17,7 @@ class Controller:
         self.game = None
 
         self._main_view = MainView(self)
-        self.run()
+
 
 
     def run(self):
@@ -30,6 +30,7 @@ class Controller:
         raise NotImplementedError("Menu non ancora implementato")
 
     def init_start_screen(self):
+        print("b")
         """Imposta lo stato iniziale dell'app e mostra
         la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
