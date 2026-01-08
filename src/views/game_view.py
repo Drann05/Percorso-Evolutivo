@@ -37,6 +37,9 @@ class GameView(Views):
         self.label_moves = None
         self.label_timer = None
 
+        self.label_special_wall = None
+        self.label_special_trap = None
+
         # --- Pulsanti Giocatore ---
         self.btn_up = None
         self.btn_left = None
@@ -70,6 +73,7 @@ class GameView(Views):
 
 
         self.draw_grid()
+        self.canvas.bind("<Double-Button-1>", self.handle_double_click)
         self.player_display_id=self.draw_player()
 
         stats = self.game_state["stats"]
@@ -78,8 +82,23 @@ class GameView(Views):
         self.label_moves = self._parent_view.addLabel(text=f"Moves: {stats['moves']}", row=8, column=col_stats)
         self.label_timer = self._parent_view.addLabel(text=f"Timer: {stats['timer']}s", row=13, column=col_stats)
 
-        for lbl in [self.label_score, self.label_moves, self.label_timer]:
+        specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
+
+        col_specials = 20
+        self.label_special_wall = self._parent_view.addLabel(
+            text=f"Break Wall: {'READY' if specials['remove_wall'] else 'USED'}",
+            row=7, column=col_specials, columnspan=5
+        )
+        self.label_special_trap = self._parent_view.addLabel(
+            text=f"Convert Trap: {'READY' if specials['convert_trap'] else 'USED'}",
+            row=12, column=col_specials, columnspan=5
+        )
+
+        for lbl in [self.label_score, self.label_moves, self.label_timer,
+                    self.label_special_wall, self.label_special_trap]:
             self.style(lbl)
+
+        self.update_special_labels(specials)
 
         control_panel = self._parent_view.addPanel(row=35, column=12)
         control_panel["background"] = self.BG_COLOR
@@ -136,6 +155,38 @@ class GameView(Views):
 
         return self.canvas.drawOval(cx1, cy1, cx2, cy2, fill=self.PLAYER_COLOR, outline="white")
 
+    def handle_double_click(self, event):
+        col = event.x // self.CELL_PIXEL_SIZE
+        row = event.y // self.CELL_PIXEL_SIZE
+
+        grid_info = self.game_state["grid"]
+        if 0 <= row < grid_info["rows"] and 0 <= col < grid_info["cols"]:
+            cell_type = grid_info["grid"][row][col]
+
+            action = None
+            if cell_type == 'X':
+                action = "remove_wall"
+            elif cell_type == 'T':
+                action = "convert_trap"
+
+            if action:
+                self._controller.handle_special_action_request(action, (row, col))
+
+    def update_special_labels(self, specials):
+        if specials["remove_wall"]:
+            self.label_special_wall["text"] = "Break Wall: READY"
+            self.label_special_wall["foreground"] = self.ACCENT_COLOR
+        else:
+            self.label_special_wall["text"] = "Break Wall: USED"
+            self.label_special_wall["foreground"] = "gray"
+
+        if specials["convert_trap"]:
+            self.label_special_trap["text"] = "Convert Trap: READY"
+            self.label_special_trap["foreground"] = self.ACCENT_COLOR
+        else:
+            self.label_special_trap["text"] = "Convert Trap: USED"
+            self.label_special_trap["foreground"] = "gray"
+
     def update_stats(self):
         stats = self.game_state["stats"]
         self.label_score["text"] = f"Score: {stats['score']}"
@@ -143,6 +194,9 @@ class GameView(Views):
 
     def update_timer(self, timer):
         self.label_timer["text"] = f"Timer: {timer}s"
+
+        specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
+        self.update_special_labels(specials)
 
     def reset_game(self):
         pass

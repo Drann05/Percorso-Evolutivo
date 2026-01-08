@@ -292,3 +292,7 @@ class Game:
         if cell_type == "R":
             self.grid.set_cell(cell_position, '.')
 
+
+    def use_special_action(self, action, direction):
+        pass
+
