@@ -43,6 +43,10 @@ class Grid:
         self._spawn_position = None
         self._target_position = None
 
+        self._resources_positions = set()
+        self._traps_positions = set()
+        self._empty_cells_positions = set()
+
     def generate_grid(self, difficulty):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
@@ -88,12 +92,8 @@ class Grid:
                     col = randint(0, self._width - 1)
                     if self._spawn_position:
                         distance = abs(self._spawn_position[0] - row) + abs(self._spawn_position[1] - col)
-                    if self.grid[row][
-                        col].type == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
-                        if cell_type == self.PUNTO_DI_PARTENZA:
-                            self._spawn_position = (row, col)
-                        elif cell_type == self.OBIETTIVO:
-                            self._target_position = (row, col)
+                    if self.grid[row][col].type == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
+                        self.register_cell_positions(cell_type, row, col)
                         self.set_cell((row, col), cell_type)
                         placed += 1
 
@@ -103,6 +103,9 @@ class Grid:
         place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
         place_cells_randomly(self.OBIETTIVO, 1, 15)
 
+
+
+        """
         self._spawn_position = (0,0)
         self._target_position = (1,7)
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
@@ -122,9 +125,24 @@ class Grid:
         self.set_cell((2, 1), self.MURO)
         self.set_cell((2, 2), self.MURO)
         self.set_cell((1, 3), self.MURO)
-
+        """
 
         print(self.is_reachable(self._spawn_position, self._target_position, 4))
+
+    def register_cell_positions(self, cell_type, row, col):
+        if cell_type == self.PUNTO_DI_PARTENZA:
+            self._spawn_position = (row, col)
+        elif cell_type == self.OBIETTIVO:
+            self._target_position = (row, col)
+        elif cell_type == self.RISORSA:
+            self._resources_positions.add((row, col))
+        elif cell_type == self.TRAPPOLA:
+            self._traps_positions.add((row, col))
+
+        for r in range(self._height):
+            for c in range(self._width):
+                if self.grid[row][col].type == self.CELLA_VUOTA:
+                    self._empty_cells_positions.add((r, c))
 
     def generative_dfs(self):
         """
@@ -160,20 +178,33 @@ class Grid:
             else:
                 stack.pop()
 
-    @property
-    def spawn_position(self):
-        """Restituisce la posizione dello spawn point"""
-        return self._spawn_position
 
-    @property
-    def target_position(self):
-        """Restituisce la posizione del target point"""
-        return self._target_position
+    def step(self):
+
+        def pick_cells(cell_type_positions, number_of_cells):
+            chosen_positions = []
+            if len(cell_type_positions) >= number_of_cells:
+                chosen_positions = random.sample(list(cell_type_positions), 2)
+            elif len(cell_type_positions) < number_of_cells:
+                chosen_positions = random.sample(list(cell_type_positions), len(number_of_cells))
+            return chosen_positions
+
+        chosen_resource_positions = pick_cells(self._resources_positions, 2)
+        chosen_empty_cells_positions = pick_cells(self._empty_cells_positions, 2)
+        chosen_traps_positions = pick_cells(self._traps_positions, 1)
+
+        print(chosen_resource_positions)
+        print(chosen_empty_cells_positions)
+        print(chosen_traps_positions)
+
+        self.set_multiple_cells(chosen_resource_positions, self.CELLA_VUOTA)
+        self.set_multiple_cells(chosen_empty_cells_positions, self.TRAPPOLA)
+        self.set_multiple_cells(chosen_traps_positions, self.CELLA_VUOTA)
 
 
     def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls = 0, convertable_traps = 0):
         """
-        BFS modificata per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
+        Algoritmo per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
         - Muri che possono essere distrutti (fino a breakable_walls)
         - Trappole che possono essere convertite (fino a convertable_traps)
@@ -358,6 +389,10 @@ class Grid:
         row, col = position
         self.grid[row][col].set_type(cell_type)
 
+    def set_multiple_cells(self, list_of_cells_positions, cell_type):
+        for position in list_of_cells_positions:
+            self.set_cell(position, cell_type)
+
     def is_valid_movement(self, position):
         row, col = position
         return self.grid[row][col].is_walkable() and 0 <= row < self._height and 0 <= col < self._width
@@ -378,6 +413,16 @@ class Grid:
             "target_position": self.target_position
         }
 
+    @property
+    def spawn_position(self):
+        """Restituisce la posizione dello spawn point"""
+        return self._spawn_position
+
+    @property
+    def target_position(self):
+        """Restituisce la posizione del target point"""
+        return self._target_position
+
     def print_grid(self):
         for i in range(0, self._height):
             for j in range(0, self._width):
@@ -390,6 +435,10 @@ if __name__ == '__main__':
 
     grid.generate_grid("Difficile")
     # grid.generative_dfs()
+    grid.print_grid()
+    print("")
+    print("")
+    grid.step()
     grid.print_grid()
     print(grid.cell_count('X'))
     print(grid.cell_count('R'))
