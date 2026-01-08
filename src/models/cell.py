@@ -42,3 +42,7 @@ class Cell:
     @property
     def type(self):
         return self._cell_type
+
+    @property
+    def position(self):
+        return self._posx, self._posy
