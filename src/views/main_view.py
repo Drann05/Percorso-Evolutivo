@@ -38,6 +38,18 @@ class MainView(EasyFrame):
         self.clear()
         self.leaderboard_view = LeaderboardView(self, self.controller, self._title)
 
+    def exit_game(self):
+        self.quit()
+        self.after(20, quit)
+
+    def show_menu_bar(self):
+        menu_bar = self.addMenuBar(row=0, column=0, columnspan=5)
+        file_menu = menu_bar.addMenu("Menu")
+        file_menu.addMenuItem("Nuova Partita", command=self.controller.handle_restart_game_request)
+        file_menu.addMenuItem("Esci", command=self.exit_game)
+        file_menu.addMenuItem("Istruzioni", command=self.show_instructions)
+        file_menu.addMenuItem("Classifica", command=self.show_leaderboard)
+
     def clear(self):
         for widget in self.winfo_children():
             widget.destroy()

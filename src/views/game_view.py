@@ -63,14 +63,7 @@ class GameView(Views):
         widget["background"] = self.BG_COLOR
 
     def build_ui(self):
-
-        menu_bar = self._parent_view.addMenuBar(row=0, column=0, columnspan=5)
-        file_menu = menu_bar.addMenu("Menu")
-        file_menu.addMenuItem("Nuova Partita", command=self._controller.handle_restart_game_request)
-        file_menu.addMenuItem("Esci", command=self._parent_view.quit)
-        file_menu.addMenuItem("Istruzioni", command=self._parent_view.show_instructions)
-        file_menu.addMenuItem("Classifica", command=self._parent_view.show_leaderboard)
-
+        self._parent_view.show_menu_bar()
 
         titolo = self._parent_view.addLabel(text="Percorso Evolutivo", row=1, column=0, columnspan=25, sticky="NSEW")
         self.style(titolo, is_title=True)
