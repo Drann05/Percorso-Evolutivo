@@ -138,7 +138,7 @@ class Grid:
             self._add_random_cells(cell_type, difference)
         elif difference < 0:
             self._remove_random_cells(cell_type, abs(difference))
-    
+
     #--------------#
     #   DFS Maze   #
     #--------------#
@@ -177,28 +177,28 @@ class Grid:
             else:
                 stack.pop()
 
-
     def step(self):
 
-        def pick_cells(cell_type_positions, number_of_cells):
-            chosen_positions = []
-            if len(cell_type_positions) >= number_of_cells:
-                chosen_positions = random.sample(list(cell_type_positions), 2)
-            elif len(cell_type_positions) < number_of_cells:
-                chosen_positions = random.sample(list(cell_type_positions), len(number_of_cells))
-            return chosen_positions
+        def pick_cells(positions, number_of_cells):
+            if not positions:
+                return []
+            return random.sample(list(positions), min(len(positions), number_of_cells))
 
-        chosen_resource_positions = pick_cells(self._resources_positions, 2)
-        chosen_empty_cells_positions = pick_cells(self._empty_cells_positions, 2)
-        chosen_traps_positions = pick_cells(self._traps_positions, 1)
+        to_remove_resources = pick_cells(self._resources_positions, 2)
+        to_add_traps = pick_cells(self._empty_cells_positions, 2)
+        to_remove_traps = pick_cells(self._traps_positions, 1)
 
-        print(chosen_resource_positions)
-        print(chosen_empty_cells_positions)
-        print(chosen_traps_positions)
+        print(to_remove_resources)
+        print(to_add_traps)
+        print(to_remove_traps)
 
-        self.set_multiple_cells(chosen_resource_positions, self.CELLA_VUOTA)
-        self.set_multiple_cells(chosen_empty_cells_positions, self.TRAPPOLA)
-        self.set_multiple_cells(chosen_traps_positions, self.CELLA_VUOTA)
+        for pos in to_remove_resources:
+            self.set_cell(pos, self.CELLA_VUOTA)
+        for pos in to_add_traps:
+            self.set_cell(pos, self.TRAPPOLA)
+        for pos in to_remove_traps:
+            self.set_cell(pos, self.CELLA_VUOTA)
+
 
 
     #---------------------#
