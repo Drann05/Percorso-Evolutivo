@@ -45,7 +45,7 @@ class Game:
 
     def move_player(self, direction):
         if not self._started:
-            raise RuntimeError("Il gioco non è iniziato")
+            raise RuntimeError("Il gioco è finito")
 
         if not self.is_neighbor_reachable(direction):
             return {'moved': False, 'new_position': None, 'cell_data': None, 'game_over': False}
@@ -56,9 +56,14 @@ class Game:
         cell_data = self.grid.get_cell_data(new_position)
         self.apply_cell_effect(cell_data)
 
-        self.check_game_over()
+        if self.check_game_over():
+            self.end_game()
+
+        if self.player.moves % 5 == 0:
+            self.grid.step()
 
         return {'moved': True, 'new_position': self.player.position, 'cell_data': cell_data, 'game_over': False}
+
 
     def check_game_over(self):
         self.is_moves_out_of_limit = self.player.moves >= 30
@@ -67,8 +72,8 @@ class Game:
 
 
         if self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached:
-            self.end_game()
-
+            return True
+        return False
 
     def apply_cell_effect(self, cell_data):
         cell_type = cell_data["type"]
@@ -124,6 +129,7 @@ class Game:
         parent = {(start, 0, 0, player_score): None}
 
         count_moves = 0
+        MAX_MOVES = 30
 
         if DEBUG:
             print(f"\n=== BFS START ===")
@@ -132,7 +138,7 @@ class Game:
             print(f"Muri rompibili: {breakable_walls}, Trappole convertibili: {convertable_traps}\n")
 
         # Ciclo principale: continua finché non rimangono altri nodi da visitare, oppure finché non superiamo il limite di mosse
-        while len(to_visit) > 0 and count_moves <= 30:
+        while len(to_visit) > 0 and count_moves <= MAX_MOVES:
 
             current_level = len(to_visit)
 
