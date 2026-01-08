@@ -369,6 +369,12 @@ class Grid:
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
         return False, []
 
+
+
+    #------------------#
+    #     UTILITIES    #
+    #------------------#
+
     def _count_cells(self, cell_type):
         return len(self._get_positions_by_type(cell_type))
 
@@ -379,6 +385,9 @@ class Grid:
             self.TRAPPOLA: self._traps_positions,
             self.CELLA_VUOTA: self._empty_cells_positions
         }.get(cell_type, set())
+
+    def _distance(self, a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
     def get_cell_data(self, position):
         cell = self.grid[position[0]][position[1]]
@@ -402,6 +411,10 @@ class Grid:
 
     def get_grid_dimension(self):
         return self._height, self._width
+
+    #----------------------#
+    #    SERIALIZATION     #
+    #----------------------#
 
     def serialize(self):
         grid_data = [
