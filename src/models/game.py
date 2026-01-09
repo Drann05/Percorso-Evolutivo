@@ -86,7 +86,7 @@ class Game:
             self.end_game()
 
         if self.player.moves % 5 == 0:
-            self.grid.step()
+            self.grid.step(self.player.position)
 
         return self._move_result(True, cell_data, game_over)
 
