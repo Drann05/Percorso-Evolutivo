@@ -1,13 +1,13 @@
 import os
 
-""" 
-    Questa classe si occupa della gestione della classifica in un file.
-    All'interno del file devono essere salvati: nome, punteggio, mosse, livello.
-    Vengono salvati nel dizionario scores in questo formato: {'Nome': (punteggio, mosse, livello)}.
 
-"""
 
 class Leaderboard:
+    """
+        Questa classe si occupa della gestione della classifica in un file.
+        All'interno del file devono essere salvati: nome, punteggio, mosse, livello.
+        Vengono salvati nel dizionario scores in questo formato: {'Nome': (punteggio, mosse, livello)}.
+    """
     def __init__(self, filepath="classifica.txt", entry=None):
         self._filepath = filepath
         self._entry = entry
@@ -44,12 +44,13 @@ class Leaderboard:
         else:
             return
 
-    """
-    Funzione di ordinamento. 
-    Trasforma il dizionario in una lista di tuple per ordinare la classifica, successivamente confrontiamo il giocatore attuale con l'ultimo inserito:
-    se è migliore, prende il posto del giocatore nella lista e tutti i successivi "scivolano" di un posto, altrimenti viene confrontato con gli altri giocatori, se non è migliore di nessuno viene inserito in coda.
-    """
+
     def sorting(self):
+        """
+            Funzione di ordinamento.
+            Trasforma il dizionario in una lista di tuple per ordinare la classifica, successivamente confrontiamo il giocatore attuale con l'ultimo inserito:
+            se è migliore, prende il posto del giocatore nella lista e tutti i successivi "scivolano" di un posto, altrimenti viene confrontato con gli altri giocatori, se non è migliore di nessuno viene inserito in coda.
+        """
         current_data = list(self._scores.items())
         sorted_data = []
 
