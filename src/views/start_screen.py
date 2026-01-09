@@ -3,7 +3,7 @@ from .views import Views
 
 class StartScreen(Views):
     # --- Matched Color Palette ---
-    BG_COLOR = "#121212"  
+    BG_COLOR = "#121212"
     ACCENT_COLOR = "#00ADB5"
     TEXT_COLOR = "#EEEEEE"
     ERROR_COLOR = "#FF3131"

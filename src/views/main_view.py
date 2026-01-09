@@ -9,6 +9,13 @@ from .game_view import GameView
 
 
 class MainView(EasyFrame):
+    COLORS = {
+        "bg": "#121212",  
+        "accent": "#00ADB5",
+        "text": "#EEEEEE",
+        "error": "#FF3131",
+        "panel_bg": "#1A1A1A"
+    }
 
     def __init__(self, controller, title="Percorso Evolutivo"):
         super().__init__(title=title, width=500, height=500)
