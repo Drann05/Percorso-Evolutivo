@@ -21,6 +21,7 @@ class Game:
         "O": 20,    # Obiettivo
         "R": 10,    # Risorsa
         "T": -5     # Trappola
+        # Il resto è 0
     }
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
