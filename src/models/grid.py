@@ -63,7 +63,6 @@ class Grid:
 
         difficulty = difficulty.lower()
         self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
-        print(self._walls_positions)
 
         walls_target = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100)
         resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
