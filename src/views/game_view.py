@@ -65,6 +65,7 @@ class GameView(Views):
     def setup_hud(self):
         """Crea il panel per i comandi e le statistiche di gioco"""
         self.hud_panel = self._parent_view.addPanel(row=22, column=2, columnspan=26, background=self.BG_COLOR)
+        self.hud_panel.grid_columnconfigure(1, weight=1)
 
         # Stats
         self.stats_pnl = self.hud_panel.addPanel(row=0, column=0, background=self.BG_COLOR)
@@ -74,15 +75,40 @@ class GameView(Views):
 
         # Comandi
         self.ctrl_pnl = self.hud_panel.addPanel(row=0, column=1, background=self.BG_COLOR)
-        btn_s = {"font": ("Segoe UI", 12, "bold"), "width": 3, "background": self.ACCENT_COLOR, "foreground": "white"}
-        self.ctrl_pnl.addButton(text="▲", row=0, column=1,
-                                command=lambda: self._controller.handle_movement_request("N")).configure(**btn_s)
-        self.ctrl_pnl.addButton(text="◀", row=1, column=0,
-                                command=lambda: self._controller.handle_movement_request("W")).configure(**btn_s)
-        self.ctrl_pnl.addButton(text="▼", row=1, column=1,
-                                command=lambda: self._controller.handle_movement_request("S")).configure(**btn_s)
-        self.ctrl_pnl.addButton(text="▶", row=1, column=2,
-                                command=lambda: self._controller.handle_movement_request("E")).configure(**btn_s)
+        self.ctrl_pnl.grid_configure(sticky="NSEW", padx=20)
+
+        for i in range(3):
+            self.ctrl_pnl.grid_columnconfigure(i, weight=1)
+        for i in range(3):
+            self.ctrl_pnl.grid_rowconfigure(i, weight=1)
+        btn_s = {
+            "font": ("Segoe UI", 14, "bold"),
+            "width": 3,
+            "height": 1,
+            "background": self.ACCENT_COLOR,
+            "foreground": "white",
+            "relief": "flat"
+        }
+
+        self.ctrl_pnl.addButton(
+            text="▲", row=0, column=1,
+            command=lambda: self._controller.handle_movement_request("N")
+        ).configure(**btn_s)
+
+        self.ctrl_pnl.addButton(
+            text="◀", row=1, column=0,
+            command=lambda: self._controller.handle_movement_request("W")
+        ).configure(**btn_s)
+
+        self.ctrl_pnl.addButton(
+            text="▼", row=1, column=1,
+            command=lambda: self._controller.handle_movement_request("S")
+        ).configure(**btn_s)
+
+        self.ctrl_pnl.addButton(
+            text="▶", row=1, column=2,
+            command=lambda: self._controller.handle_movement_request("E")
+        ).configure(**btn_s)
 
         # Abilitià
         self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self.BG_COLOR)

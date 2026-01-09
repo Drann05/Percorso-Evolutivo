@@ -1,115 +1,91 @@
-
 from .views import Views
 
-class StartScreen(Views):
-    BG_COLOR = "#2C3E50"
-    ACCENT_COLOR = "#1ABC9C"
-    TEXT_COLOR = "#ECF0F1"
-    ERROR_COLOR = "#E74C3C"
 
-    def __init__(self, parent_view, controller, title, width=500, height=500):
+class StartScreen(Views):
+    # --- Matched Color Palette ---
+    BG_COLOR = "#121212"  # Same dark background as GameView
+    ACCENT_COLOR = "#00ADB5"  # Neon Teal (Mint)
+    TEXT_COLOR = "#EEEEEE"  # Off-white text
+    ERROR_COLOR = "#FF3131"  # Red matching your timer color
+    PANEL_BG = "#1A1A1A"  # Slightly lighter dark for panels
+
+    def __init__(self, parent_view, controller, title, width=800, height=600):
         super().__init__(title, width, height)
 
         self._parent_view = parent_view
         self._controller = controller
-
-        self._widgets = []  # Lista di tutti i widgets di start_screen
-
-        # --- Widgets ---
-        self.nickname_field = None
-        self.start_button = None
-        self.quit_button = None
-        self.error_label = None
-        self.correct_label = None
-        self.instructions_button = None
+        self._widgets = []
 
         self._parent_view.setBackground(self.BG_COLOR)
-        self._parent_view.grid_init(15,15)
+        self._parent_view.grid_init(20, 20)  # Finer grid for better centering
         self.build_ui()
 
-
-    def style(self, widget, font_size=12, bold=False):
-        weight = "bold" if bold else "normal"
-        widget["font"] = ("Segoe UI", font_size, weight)
-        widget["background"] = self.BG_COLOR
-        widget["foreground"] = self.TEXT_COLOR
+    def style_button(self, button, is_primary=True):
+        """Applies the GameView button aesthetic."""
+        button["font"] = ("Segoe UI", 12, "bold")
+        button["foreground"] = "white"
+        button["background"] = self.ACCENT_COLOR if is_primary else "#444444"
+        button["width"] = 20
+        button["relief"] = "flat"
 
     def build_ui(self):
-        # --- Titolo ---
+        # --- 1. TITLE (Matched to GameView Header) ---
         title = self._parent_view.addLabel(
-            text="PERCORSO EVOLUTIVO",
-            row=2, column=4, columnspan=7, sticky="NSEW"
+            text="P E R C O R S O  E V O L U T I V O",
+            row=3, column=5, columnspan=10, sticky="NSEW"
         )
-        title["font"] = ("Segoe UI", 26, "bold")
-        title["foreground"] = self.ACCENT_COLOR
-        title["background"] = self.BG_COLOR
+        title.configure(
+            font=("Impact", 32),
+            foreground=self.ACCENT_COLOR,
+            background=self.BG_COLOR
+        )
         self._widgets.append(title)
 
-        # --- Scelta Nickname ---
-        user_inst = self._parent_view.addLabel(
-            text="Inserisci un nickname (massimo 20 caratteri):",
-            row=5, column=4, columnspan=7, sticky="NSEW"
-        )
-        self.style(user_inst, font_size=15)
-        self._widgets.append(user_inst)
 
-        self.nickname_field = self._parent_view.addTextField(
-            text="", row=6, column=5, columnspan=5, sticky="NSEW"
-        )
-        self.nickname_field["font"] = ("Segoe UI", 14)
-        self.nickname_field["width"] = 20
-        self._widgets.append(self.nickname_field)
+        # --- 2. INPUT PANEL (Grouped logic) ---
+        # Using a panel to create a centered "login" area
+        input_panel = self._parent_view.addPanel(row=7, column=6, columnspan=8, rowspan=6, background=self.PANEL_BG)
+        input_panel.grid_configure(padx=20, pady=20)
 
-        # --- Pulsante Start ---
+        user_inst = input_panel.addLabel(
+            text="INSERISCI UN NICKNAME:",
+            row=0, column=0, sticky="W"
+        )
+        user_inst.configure(font=("Consolas", 11, "bold"), background=self.PANEL_BG, foreground=self.TEXT_COLOR)
+
+        self.nickname_field = input_panel.addTextField(text="", row=1, column=0, sticky="EW")
+        self.nickname_field.configure(font=("Consolas", 14), width=25)
+
+        # Error text inside the panel
+        self.error_label = input_panel.addLabel(text="", row=2, column=0)
+        self.error_label.configure(foreground=self.ERROR_COLOR, background=self.PANEL_BG,
+                                   font=("Segoe UI", 10, "italic"))
+        self.error_label.grid_remove()
+
+        # --- 3. BUTTONS ---
         self.start_button = self._parent_view.addButton(
-            text="START GAME",
-            row=9, column=5, columnspan=5,
+            text="NUOVA PARTITA",
+            row=14, column=7, columnspan=6,
             command=self.handle_start_btn
         )
-        self.start_button["background"] = self.ACCENT_COLOR
-        self.start_button["foreground"] = "white"
-        self.start_button["font"] = ("Segoe UI", 12, "bold")
+        self.style_button(self.start_button)
         self._widgets.append(self.start_button)
 
         self.instructions_button = self._parent_view.addButton(
             text="ISTRUZIONI",
-            row=11, column=5, columnspan=5,
+            row=16, column=7, columnspan=6,
             command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions)
         )
-        self.instructions_button["background"] = self.ACCENT_COLOR
-        self.instructions_button["foreground"] = "white"
-        self.instructions_button["font"] = ("Segoe UI", 12, "bold")
+        self.style_button(self.instructions_button, is_primary=False)
         self._widgets.append(self.instructions_button)
 
-        # --- Pulsante Quit ---
         self.quit_button = self._parent_view.addButton(
-            text="QUIT",
-            row=13, column=6, columnspan=3,
+            text="ESCI",
+            row=18, column=8, columnspan=4,
             command=self._parent_view.quit
         )
-        self.quit_button["background"] = "#95A5A6"
-        self.quit_button["foreground"] = "white"
-        self.quit_button["font"] = ("Segoe UI", 12, "bold")
+        self.quit_button.configure(background="#333333", foreground="#888888", font=("Segoe UI", 9), relief="flat")
         self._widgets.append(self.quit_button)
-
-        # --- Testo di Errore ---
-        self.error_label = self._parent_view.addLabel(
-            text="", row=7, column=4, columnspan=7
-        )
-        self.error_label["foreground"] = self.ERROR_COLOR
-        self.error_label["background"] = self.BG_COLOR
-        self.error_label["font"] = ("Segoe UI", 14, "italic")
-        self.error_label.grid_remove()
-
-        # --- Testo di Successo ---
-        self.correct_label = self._parent_view.addLabel(
-            text="", row=7, column=4, columnspan=7
-        )
-        self.correct_label["foreground"] = self.ERROR_COLOR
-        self.correct_label["background"] = self.BG_COLOR
-        self.correct_label["font"] = ("Segoe UI", 20, "italic")
-        # Start hidden
-        self.correct_label.grid_remove()
 
     def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
