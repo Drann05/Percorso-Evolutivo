@@ -1,3 +1,5 @@
+from models.leaderboard import Leaderboard
+from views.leaderboard_view import LeaderboardView
 from .models.game import Game
 from .views.main_view import MainView
 
@@ -86,6 +88,8 @@ class Controller:
             return
 
         self._main_view.update_game(self.get_game_state())
+        if moved["game_over"]:
+            self._main_view.show_game_over(moved)
 
     def handle_special_action_request(self, action, target_position):
 
@@ -103,6 +107,12 @@ class Controller:
         if not self.game:
             return
         return self.game.timer.get_elapsed()
+
+    def handle_leaderboard_request(self):
+        if self.game:
+            return self.game.leaderboard
+        #else:
+            #return Leaderboard()
 
 
 if __name__ == '__main__':
