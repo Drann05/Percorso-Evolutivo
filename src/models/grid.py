@@ -148,12 +148,19 @@ class Grid:
             else:
                 stack.pop()
 
-    def step(self):
+    def step(self, player_position):
 
         def pick_cells(positions, number_of_cells):
+            player_neighbors = self.get_neighbors(player_position)
+
+            cells_picked = player_neighbors.copy()
+
             if not positions:
                 return []
-            return random.sample(list(positions), min(len(positions), number_of_cells))
+            while any(position in cells_picked for position in player_neighbors):
+                cells_picked = random.sample(list(positions), min(len(positions), number_of_cells))
+
+            return cells_picked
 
         to_remove_resources = pick_cells(self._positions[self.RISORSA], 2)
         to_add_traps = pick_cells(self._positions[self.CELLA_VUOTA], 2)
@@ -250,6 +257,14 @@ class Grid:
 
     def get_cell(self, position):
         return self.grid[position[0]][position[1]]
+
+    def get_neighbors(self, position):
+        return [
+            (position[0] - 1, position[1]),  # N
+            (position[0] + 1, position[1]),  # S
+            (position[0], position[1] - 1),  # O
+            (position[0], position[1] + 1)  # E
+        ]
 
     def get_cell_data(self, position):
         cell = self.get_cell(position)

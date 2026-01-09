@@ -36,6 +36,7 @@ class GameView(Views):
         self.setup_menu()
         self.build_ui()
         self.canvas.bind("<Configure>", self.on_resize)
+        self.canvas.bind("<Double-Button-1>", self.handle_double_click)
 
     def build_ui(self):
         # Titolo
@@ -57,10 +58,15 @@ class GameView(Views):
         self.canvas = self._parent_view.addCanvas(row=3, column=5, columnspan=20, rowspan=15)
         self.canvas.configure(background="#1A1A1A", highlightthickness=0)
         self.canvas.grid_configure(sticky="NSEW")
-        self.canvas.bind("<Double-Button-1>", self.handle_double_click)
+
 
         # HUD
         self.setup_hud()
+
+    def setup_layout(self):
+        self._parent_view.master.rowconfigure(0, weight=1)
+        self._parent_view.master.columnconfigure(0, weight=1)
+
 
     def setup_hud(self):
         """Crea il panel per i comandi e le statistiche di gioco"""
@@ -76,6 +82,7 @@ class GameView(Views):
         # Comandi
         self.ctrl_pnl = self.hud_panel.addPanel(row=0, column=1, background=self.BG_COLOR)
         self.ctrl_pnl.grid_configure(sticky="NSEW", padx=20)
+
 
         for i in range(3):
             self.ctrl_pnl.grid_columnconfigure(i, weight=1)
@@ -149,6 +156,8 @@ class GameView(Views):
                 self.rects[(r, c)] = self.canvas.create_rectangle(
                     x1, y1, x2, y2, fill=color, outline="#121212"
                 )
+
+    def screen_flicker(self):
         for rect in self.rects.values():
             self.canvas.itemconfig(rect, stipple="gray50")
         self.canvas.after(200, lambda: [
@@ -194,19 +203,8 @@ class GameView(Views):
                 action = "convert_trap"
 
             if action:
-                self.flash_cell(row, col, self.ACCENT_COLOR)
                 self._controller.handle_special_action_request(action, (row, col))
-            else:
-                self.flash_cell(row, col, "#d11a02")
-
-    def flash_cell(self, row, col, color, duration=150):
-        rect = self.rects.get((row, col))
-        if not rect:
-            return
-
-        original = self.canvas.itemcget(rect, "fill")
-        self.canvas.itemconfig(rect, fill=color)
-        self.canvas.after(duration, lambda: self.canvas.itemconfig(rect, fill=original))
+                self.screen_flicker()
 
     def setup_menu(self):
         """Crea la menu bar"""

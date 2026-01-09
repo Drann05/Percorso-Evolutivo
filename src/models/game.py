@@ -30,6 +30,7 @@ class Game:
         self.grid = Grid(20, 20)
         self.player = None
         self.timer = Timer()
+        self.leaderboard = Leaderboard()
         self.is_objective_reached = False
         self.is_moves_out_of_limit = False
         self.is_negative_score = False
@@ -55,6 +56,17 @@ class Game:
         self._started = False
         self.timer.stop_timer()
 
+        try:
+            self.leaderboard.save(
+                name = self._player_name,
+                score = self.player.score,
+                moves = self.player.moves,
+                level = self._difficulty
+            )
+            print(f"Dati salvati per {self._player_name}: {self.player.score} punti.")
+        except Exception as e:
+            print(f"Errore durante il salvataggio della classifica: {e}")
+
     def move_player(self, direction):
         """Muove il giocatore, se possibile, e applica gli effetti della cella.
         Ritorna un dizionario utile per l'interfaccia grafica"""
@@ -74,7 +86,7 @@ class Game:
             self.end_game()
 
         if self.player.moves % 5 == 0:
-            self.grid.step()
+            self.grid.step(self.player.position)
 
         return self._move_result(True, cell_data, game_over)
 
@@ -166,4 +178,3 @@ class Game:
                 return True
 
         return False
-
