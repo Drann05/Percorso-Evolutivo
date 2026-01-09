@@ -244,8 +244,8 @@ class Grid:
             Usa il metodo dict.get() per evitare KeyError se il tipo non esiste."""
         return self._positions.get(cell_type, set())
 
-    
-    def _distance(self, a, b):
+    @staticmethod
+    def _manhattan_distance(a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
     def get_cell(self, position):
