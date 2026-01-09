@@ -1,6 +1,6 @@
 from .cell import Cell
 import random
-from random import randint
+
 
 
 class Grid:
@@ -43,11 +43,12 @@ class Grid:
         self._spawn_position = None
         self._target_position = None
 
-        self._walls_positions = {(r, c) for r in range(self._height) for c in range(self._width)}
-        self._resources_positions = set()
-        self._traps_positions = set()
-        self._empty_cells_positions = set()
-
+        self._positions = {
+            self.MURO: {(r, c) for r in range(self._height) for c in range(self._width)},
+            self.RISORSA: set(),
+            self.TRAPPOLA: set(),
+            self.CELLA_VUOTA: set()
+        }
     def generate_grid(self, difficulty):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
@@ -63,7 +64,6 @@ class Grid:
 
         difficulty = difficulty.lower()
         self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
-        print(self._walls_positions)
 
         walls_target = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100)
         resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
@@ -73,11 +73,11 @@ class Grid:
         self._adjust_cells(self.MURO, walls_target)
         self._adjust_cells(self.RISORSA, resources_target)
         self._adjust_cells(self.TRAPPOLA, traps_target)
+        self._place_special_cells()
 
 
 
-
-        self._spawn_position = (0,0)
+        """self._spawn_position = (0,0)
         self._target_position = (1,7)
         self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
         self.set_cell((1,7), self.OBIETTIVO)
@@ -95,7 +95,7 @@ class Grid:
         self.set_cell((2, 0), self.MURO)
         self.set_cell((2, 1), self.MURO)
         self.set_cell((2, 2), self.MURO)
-        self.set_cell((1, 3), self.MURO)
+        self.set_cell((1, 3), self.MURO)"""
 
 
         #print(self.is_reachable(self._spawn_position, self._target_position, 4))
@@ -155,13 +155,9 @@ class Grid:
                 return []
             return random.sample(list(positions), min(len(positions), number_of_cells))
 
-        to_remove_resources = pick_cells(self._resources_positions, 2)
-        to_add_traps = pick_cells(self._empty_cells_positions, 2)
-        to_remove_traps = pick_cells(self._traps_positions, 1)
-
-        print(to_remove_resources)
-        print(to_add_traps)
-        print(to_remove_traps)
+        to_remove_resources = pick_cells(self._positions[self.RISORSA], 2)
+        to_add_traps = pick_cells(self._positions[self.CELLA_VUOTA], 2)
+        to_remove_traps = pick_cells(self._positions[self.TRAPPOLA], 1)
 
         for pos in to_remove_resources:
             self.set_cell(pos, self.CELLA_VUOTA)
@@ -186,14 +182,9 @@ class Grid:
         self._register_position(cell_type, position)
 
     def _register_position(self, cell_type, pos):
-        if cell_type == self.MURO:
-            self._walls_positions.add(pos)
-        elif cell_type == self.RISORSA:
-            self._resources_positions.add(pos)
-        elif cell_type == self.TRAPPOLA:
-            self._traps_positions.add(pos)
-        elif cell_type == self.CELLA_VUOTA:
-            self._empty_cells_positions.add(pos)
+
+        if cell_type in self._positions:
+            self._positions[cell_type].add(pos)
         elif cell_type == self.PUNTO_DI_PARTENZA:
             self._spawn_position = pos
         elif cell_type == self.OBIETTIVO:
@@ -206,22 +197,17 @@ class Grid:
                     self._empty_cells_positions.add((r, c))"""
 
     def _unregister_position(self, cell_type, pos):
-        if cell_type == self.MURO:
-            self._walls_positions.discard(pos)
-        elif cell_type == self.RISORSA:
-            self._resources_positions.discard(pos)
-        elif cell_type == self.TRAPPOLA:
-            self._traps_positions.discard(pos)
-        elif cell_type == self.CELLA_VUOTA:
-            self._empty_cells_positions.discard(pos)
+
+        if cell_type in self._positions:
+            self._positions[cell_type].discard(pos)
 
     def _place_special_cells(self):
-        self._spawn_position = random.choice(list(self._empty_cells_positions))
+        self._spawn_position = random.choice(list(self._positions[self.CELLA_VUOTA]))
         self.set_cell(self._spawn_position, self.PUNTO_DI_PARTENZA)
 
         valid_target_positions = [
-            pos for pos in self._empty_cells_positions
-            if self._distance(pos, self._spawn_position) >= 10
+            pos for pos in self._positions[self.CELLA_VUOTA]
+            if self._manhattan_distance(pos, self._spawn_position) >= 10
         ]
 
         self._target_position = random.choice(valid_target_positions)
@@ -233,7 +219,7 @@ class Grid:
 
 
     def _add_random_cells(self, cell_type, count):
-        candidates = list(self._empty_cells_positions)
+        candidates = list(self._positions[self.CELLA_VUOTA])
         random.shuffle(candidates)
 
         for pos in candidates[:count]:
@@ -254,14 +240,12 @@ class Grid:
         return len(self._get_positions_by_type(cell_type))
 
     def _get_positions_by_type(self, cell_type):
-        return {
-            self.MURO: self._walls_positions,
-            self.RISORSA: self._resources_positions,
-            self.TRAPPOLA: self._traps_positions,
-            self.CELLA_VUOTA: self._empty_cells_positions
-        }.get(cell_type, set())
+        """Restituisce il set di posizioni per il tipo di cella specificato.
+            Usa il metodo dict.get() per evitare KeyError se il tipo non esiste."""
+        return self._positions.get(cell_type, set())
 
-    def _distance(self, a, b):
+    @staticmethod
+    def _manhattan_distance(a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
     def get_cell(self, position):
@@ -277,6 +261,8 @@ class Grid:
 
     def is_valid_movement(self, position):
         row, col = position
+        if not (0 <= row < self._height and 0 <= col < self._width):
+            return False
         return self.grid[row][col].is_walkable() and 0 <= row < self._height and 0 <= col < self._width
 
     def get_grid_dimension(self):

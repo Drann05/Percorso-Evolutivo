@@ -1,3 +1,5 @@
+from models.leaderboard import Leaderboard
+from views.leaderboard_view import LeaderboardView
 from .models.game import Game
 from .views.main_view import MainView
 
@@ -17,8 +19,6 @@ class Controller:
         self.game = None
 
         self._main_view = MainView(self)
-        self.run()
-
 
     def run(self):
         self._main_view.mainloop()
@@ -65,7 +65,10 @@ class Controller:
             "special_moves": {
                 "remove_wall": self.game.player.is_remove_wall_available(),
                 "convert_trap": self.game.player.is_convert_trap_available()
-            }
+            },
+            "is_moves_out_of_limit": self.game.is_moves_out_of_limit,
+            "is_negative_score": self.game.is_negative_score,
+            "is_objective_reached": self.game.is_objective_reached
         }
 
     def handle_restart_game_request(self):
@@ -85,18 +88,31 @@ class Controller:
             return
 
         self._main_view.update_game(self.get_game_state())
+        if moved["game_over"]:
+            self._main_view.show_game_over(moved)
 
-    def handle_special_action_request(self, action, direction):
+    def handle_special_action_request(self, action, target_position):
 
         if not self.game:
             return
 
-        success = self.game.use_special_action(action, direction)
+        success = self.game.use_special_action(action, target_position)
         if not success:
             self._main_view.show_error()
             return
 
         self._main_view.update_game(self.get_game_state())
+
+    def update_timer(self):
+        if not self.game:
+            return
+        return self.game.timer.get_elapsed()
+
+    def handle_leaderboard_request(self):
+        if self.game:
+            return self.game.leaderboard
+        #else:
+            #return Leaderboard()
 
 
 if __name__ == '__main__':
