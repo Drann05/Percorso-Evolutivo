@@ -179,7 +179,7 @@ class GameView(Views):
 
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="How to Play",
-                              command=lambda: self._controller.init_instructions(from_game=True))
+                              command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions))
         menubar.add_cascade(label="Help", menu=help_menu)
 
         root.config(menu=menubar)
