@@ -273,6 +273,8 @@ class Grid:
 
     def is_valid_movement(self, position):
         row, col = position
+        if not (0 <= row < self._height and 0 <= col < self._width):
+            return False
         return self.grid[row][col].is_walkable() and 0 <= row < self._height and 0 <= col < self._width
 
     def get_grid_dimension(self):

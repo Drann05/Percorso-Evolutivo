@@ -28,7 +28,6 @@ class Controller:
         raise NotImplementedError("Menu non ancora implementato")
 
     def init_start_screen(self):
-        print("b")
         """Imposta lo stato iniziale dell'app e mostra
         la shermata di avvio attraverso MainView"""
         self._main_view.show_start_screen()
