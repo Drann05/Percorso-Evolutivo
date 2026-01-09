@@ -43,11 +43,12 @@ class Grid:
         self._spawn_position = None
         self._target_position = None
 
-        self._walls_positions = {(r, c) for r in range(self._height) for c in range(self._width)}
-        self._resources_positions = set()
-        self._traps_positions = set()
-        self._empty_cells_positions = set()
-
+        self._positions = {
+            self.MURO: {(r, c) for r in range(self._height) for c in range(self._width)},
+            self.RISORSA: set(),
+            self.TRAPPOLA: set(),
+            self.CELLA_VUOTA: set()
+        }
     def generate_grid(self, difficulty):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
@@ -181,14 +182,9 @@ class Grid:
         self._register_position(cell_type, position)
 
     def _register_position(self, cell_type, pos):
-        if cell_type == self.MURO:
-            self._walls_positions.add(pos)
-        elif cell_type == self.RISORSA:
-            self._resources_positions.add(pos)
-        elif cell_type == self.TRAPPOLA:
-            self._traps_positions.add(pos)
-        elif cell_type == self.CELLA_VUOTA:
-            self._empty_cells_positions.add(pos)
+
+        if cell_type in self._positions:
+            self._positions[cell_type].add(pos)
         elif cell_type == self.PUNTO_DI_PARTENZA:
             self._spawn_position = pos
         elif cell_type == self.OBIETTIVO:
@@ -201,21 +197,16 @@ class Grid:
                     self._empty_cells_positions.add((r, c))"""
 
     def _unregister_position(self, cell_type, pos):
-        if cell_type == self.MURO:
-            self._walls_positions.discard(pos)
-        elif cell_type == self.RISORSA:
-            self._resources_positions.discard(pos)
-        elif cell_type == self.TRAPPOLA:
-            self._traps_positions.discard(pos)
-        elif cell_type == self.CELLA_VUOTA:
-            self._empty_cells_positions.discard(pos)
+
+        if cell_type in self._positions:
+            self._positions[cell_type].discard(pos)
 
     def _place_special_cells(self):
-        self._spawn_position = random.choice(list(self._empty_cells_positions))
+        self._spawn_position = random.choice(list(self._positions[self.CELLA_VUOTA]))
         self.set_cell(self._spawn_position, self.PUNTO_DI_PARTENZA)
 
         valid_target_positions = [
-            pos for pos in self._empty_cells_positions
+            pos for pos in self._positions[self.CELLA_VUOTA]
             if self._distance(pos, self._spawn_position) >= 10
         ]
 
@@ -228,7 +219,7 @@ class Grid:
 
 
     def _add_random_cells(self, cell_type, count):
-        candidates = list(self._empty_cells_positions)
+        candidates = list(self._positions[self.CELLA_VUOTA])
         random.shuffle(candidates)
 
         for pos in candidates[:count]:
@@ -249,13 +240,11 @@ class Grid:
         return len(self._get_positions_by_type(cell_type))
 
     def _get_positions_by_type(self, cell_type):
-        return {
-            self.MURO: self._walls_positions,
-            self.RISORSA: self._resources_positions,
-            self.TRAPPOLA: self._traps_positions,
-            self.CELLA_VUOTA: self._empty_cells_positions
-        }.get(cell_type, set())
+        """Restituisce il set di posizioni per il tipo di cella specificato.
+            Usa il metodo dict.get() per evitare KeyError se il tipo non esiste."""
+        return self._positions.get(cell_type, set())
 
+    
     def _distance(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
