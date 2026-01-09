@@ -1,5 +1,5 @@
-from models.leaderboard import Leaderboard
-from views.leaderboard_view import LeaderboardView
+from .models.leaderboard import Leaderboard
+from .views.leaderboard_view import LeaderboardView
 from .models.game import Game
 from .views.main_view import MainView
 
