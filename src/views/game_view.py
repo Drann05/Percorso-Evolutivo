@@ -163,7 +163,19 @@ class GameView(Views):
                 action = "convert_trap"
 
             if action:
+                self.flash_cell(row, col, self.ACCENT_COLOR)
                 self._controller.handle_special_action_request(action, (row, col))
+            else:
+                self.flash_cell(row, col, "#d11a02")
+
+    def flash_cell(self, row, col, color, duration=150):
+        rect = self.rects.get((row, col))
+        if not rect:
+            return
+
+        original = self.canvas.itemcget(rect, "fill")
+        self.canvas.itemconfig(rect, fill=color)
+        self.canvas.after(duration, lambda: self.canvas.itemconfig(rect, fill=original))
 
     def setup_menu(self):
         """Crea la menu bar"""
