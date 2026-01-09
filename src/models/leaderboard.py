@@ -69,8 +69,9 @@ class Leaderboard:
         
         return sorted_data
 
-    """riceve i dati della nuova e dell'ultima partita, stabilisce se è migliore in base alla priorità: punteggio > mosse > livello"""
-    def is_better(self, new_score, new_moves, new_level, old_score, old_moves, old_level):
+    @staticmethod
+    def is_better(new_score, new_moves, new_level, old_score, old_moves, old_level):
+        """riceve i dati della nuova e dell'ultima partita, stabilisce se è migliore in base alla priorità: punteggio > mosse > livello"""
         return (new_score, new_moves, new_level) > (old_score, old_moves, old_level)
 
     
