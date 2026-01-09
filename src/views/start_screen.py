@@ -3,11 +3,11 @@ from .views import Views
 
 class StartScreen(Views):
     # --- Matched Color Palette ---
-    BG_COLOR = "#121212"  # Same dark background as GameView
-    ACCENT_COLOR = "#00ADB5"  # Neon Teal (Mint)
-    TEXT_COLOR = "#EEEEEE"  # Off-white text
-    ERROR_COLOR = "#FF3131"  # Red matching your timer color
-    PANEL_BG = "#1A1A1A"  # Slightly lighter dark for panels
+    BG_COLOR = "#121212"  
+    ACCENT_COLOR = "#00ADB5"
+    TEXT_COLOR = "#EEEEEE"
+    ERROR_COLOR = "#FF3131"
+    PANEL_BG = "#1A1A1A"
 
     def __init__(self, parent_view, controller, title, width=800, height=600):
         super().__init__(title, width, height)
