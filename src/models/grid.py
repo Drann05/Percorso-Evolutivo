@@ -1,6 +1,6 @@
 from .cell import Cell
 import random
-from random import randint
+
 
 
 class Grid:
@@ -155,9 +155,9 @@ class Grid:
                 return []
             return random.sample(list(positions), min(len(positions), number_of_cells))
 
-        to_remove_resources = pick_cells(self._resources_positions, 2)
-        to_add_traps = pick_cells(self._empty_cells_positions, 2)
-        to_remove_traps = pick_cells(self._traps_positions, 1)
+        to_remove_resources = pick_cells(self._positions[self.RISORSA], 2)
+        to_add_traps = pick_cells(self._positions[self.CELLA_VUOTA], 2)
+        to_remove_traps = pick_cells(self._positions[self.TRAPPOLA], 1)
 
         for pos in to_remove_resources:
             self.set_cell(pos, self.CELLA_VUOTA)
@@ -207,7 +207,7 @@ class Grid:
 
         valid_target_positions = [
             pos for pos in self._positions[self.CELLA_VUOTA]
-            if self._distance(pos, self._spawn_position) >= 10
+            if self._manhattan_distance(pos, self._spawn_position) >= 10
         ]
 
         self._target_position = random.choice(valid_target_positions)
