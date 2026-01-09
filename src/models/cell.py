@@ -39,5 +39,10 @@ class Cell:
         else:
             self._cell_type = cell_type
 
-    def get_type(self):
+    @property
+    def type(self):
         return self._cell_type
+
+    @property
+    def position(self):
+        return self._posx, self._posy

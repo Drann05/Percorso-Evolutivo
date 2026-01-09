@@ -1,6 +1,6 @@
 from .cell import Cell
 import random
-from random import randint
+
 
 
 class Grid:
@@ -37,12 +37,18 @@ class Grid:
 
         self._width = width
         self._height = height
-        self.grid = [[Cell(col, row, self.MURO) for col in range(self._width)] for row in range(self._height)]
+        self.grid = [[Cell(row, col, self.MURO) for row in range(self._height)] for col in range(self._width)]
         self._grid_dimension = width * height
         self._safe_zone = []
-        self._spawn_point = None
-        self._target_point = None
+        self._spawn_position = None
+        self._target_position = None
 
+        self._positions = {
+            self.MURO: {(r, c) for r in range(self._height) for c in range(self._width)},
+            self.RISORSA: set(),
+            self.TRAPPOLA: set(),
+            self.CELLA_VUOTA: set()
+        }
     def generate_grid(self, difficulty):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
@@ -55,54 +61,58 @@ class Grid:
         - Medio: 20% Muri, 10% Risorse, 5% Trappole
         - Difficile: 25% Muri, 8% Risorse, 7% Trappole
         """
+
         difficulty = difficulty.lower()
         self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
 
-        muri_count = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100) - self.cell_count(self.MURO)
-        risorse_count = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
-        trappole_count = int(self.DIFFICULTY[difficulty]["Trappole"] * self._grid_dimension / 100)
+        walls_target = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100)
+        resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
+        traps_target = int(self.DIFFICULTY[difficulty]["Trappole"] * self._grid_dimension / 100)
 
-        def place_cells_randomly(cell_type, count, min_distance_from_spawn=0):
-            """
-            Inserisce 'count' numero di celle di tipo 'cell_type' randomicamente.
-            Può essere modificata una distanza minima dallo spawn (min_distance_from_spawn).
-            ma se lo spawn_point non è definito, verrà ignorata.
-            """
-            distance = 0
+        print(walls_target)
+        self._adjust_cells(self.MURO, walls_target)
+        self._adjust_cells(self.RISORSA, resources_target)
+        self._adjust_cells(self.TRAPPOLA, traps_target)
+        self._place_special_cells()
 
-            # Se le celle nella griglia già inizializzata sono maggiori del numero specificato in count, rimuove
-            # quel tipo di cella fino a ottenere il numero stabilito
 
-            if count < 0:
-                removed = 0
-                while removed < abs(count):
-                    row = randint(0, self._height - 1)
-                    col = randint(0, self._width - 1)
-                    if self.grid[row][col].get_type() == cell_type:
-                        self.grid[row][col] = Cell(row, col, self.CELLA_VUOTA)
-                        removed += 1
-            else:
-                placed = 0
-                while placed < count:
-                    row = randint(0, self._height - 1)
-                    col = randint(0, self._width - 1)
-                    if self._spawn_point:
-                        distance = abs(self._spawn_point[0] - row) + abs(self._spawn_point[1] - col)
-                    if self.grid[row][
-                        col].get_type() == self.CELLA_VUOTA and distance >= min_distance_from_spawn:  # controlla che la cella sia vuota e superi la distanza minima
-                        if cell_type == self.PUNTO_DI_PARTENZA:
-                            self._spawn_point = (row, col)
-                        elif cell_type == self.OBIETTIVO:
-                            self._target_point = (row, col)
-                        self.set_cell((row, col), cell_type)
-                        placed += 1
 
-        place_cells_randomly(self.MURO, muri_count)
-        place_cells_randomly(self.RISORSA, risorse_count)
-        place_cells_randomly(self.TRAPPOLA, trappole_count)
-        place_cells_randomly(self.PUNTO_DI_PARTENZA, 1)
-        place_cells_randomly(self.OBIETTIVO, 1, 15)
-        #print(self.is_reachable(self._spawn_point, self._target_point))
+        """self._spawn_position = (0,0)
+        self._target_position = (1,7)
+        self.set_cell((0,0), self.PUNTO_DI_PARTENZA)
+        self.set_cell((1,7), self.OBIETTIVO)
+
+        self.set_cell((0,1), self.CELLA_VUOTA)
+        self.set_cell((0, 2), self.MURO)
+        self.set_cell((1, 0), self.TRAPPOLA)
+        #self.set_cell((0, 3), self.TRAPPOLA)
+        #self.set_cell((0, 4), self.TRAPPOLA)
+        self.set_cell((1, 1), self.RISORSA)
+        self.set_cell((0, 1), self.CELLA_VUOTA)
+
+        self.set_cell((0,3), self.CELLA_VUOTA)
+        self.set_cell((1, 2), self.MURO)
+        self.set_cell((2, 0), self.MURO)
+        self.set_cell((2, 1), self.MURO)
+        self.set_cell((2, 2), self.MURO)
+        self.set_cell((1, 3), self.MURO)"""
+
+
+        #print(self.is_reachable(self._spawn_position, self._target_position, 4))
+
+    def _adjust_cells(self, cell_type, target_count):
+        current = self._count_cells(cell_type)
+        print(current)
+        difference = target_count - current
+
+        if difference > 0:
+            self._add_random_cells(cell_type, difference)
+        elif difference < 0:
+            self._remove_random_cells(cell_type, abs(difference))
+
+    #--------------#
+    #   DFS Maze   #
+    #--------------#
 
     def generative_dfs(self):
         """
@@ -131,85 +141,172 @@ class Grid:
                 mid_x = (x + nx) // 2
                 mid_y = (y + ny) // 2
 
-                self.grid[mid_x][mid_y] = Cell(mid_x, mid_y, self.CELLA_VUOTA)  # Scava la cella intermedia
+                self.set_cell((mid_x,mid_y), self.CELLA_VUOTA)  # Scava la cella intermedia
                 self.set_cell((x, y), self.CELLA_VUOTA)  # Scava la cella corrente
                 visited.add((nx, ny))
                 stack.append((nx, ny))
             else:
                 stack.pop()
 
-    @property
-    def spawn_position(self):
-        """
-        Restituisce la posizione dello spawn point
-        """
-        return self._spawn_point
+    def step(self):
 
-    def is_reachable(self, posizione_1: tuple, posizione_2: tuple):
-        """
-        Verifica se la cella obiettivo è raggiungibile dalla cella di spawn
-        controllando le celle adiacenti in modo da vedere se esiste un percorso percorribile
-        """
-        to_visit = [(posizione_1)]
-        visited = [(posizione_1)]
-        count_moves = 0
+        def pick_cells(positions, number_of_cells):
+            if not positions:
+                return []
+            return random.sample(list(positions), min(len(positions), number_of_cells))
 
-        while len(to_visit) > 0 and count_moves <= 30:
-            current_level = len(to_visit)
-            
-            for _ in range(current_level):
-                current_x, current_y = to_visit.pop(0)
+        to_remove_resources = pick_cells(self._positions[self.RISORSA], 2)
+        to_add_traps = pick_cells(self._positions[self.CELLA_VUOTA], 2)
+        to_remove_traps = pick_cells(self._positions[self.TRAPPOLA], 1)
 
-                if (current_x, current_y) == (posizione_2):
-                    return True
+        for pos in to_remove_resources:
+            self.set_cell(pos, self.CELLA_VUOTA)
+        for pos in to_add_traps:
+            self.set_cell(pos, self.TRAPPOLA)
+        for pos in to_remove_traps:
+            self.set_cell(pos, self.CELLA_VUOTA)
 
-                neighbors = [
-                    (current_x - 1, current_y),  # N
-                    (current_x + 1, current_y),  # S
-                    (current_x, current_y - 1),  # O
-                    (current_x, current_y + 1)   # E
-                ]
 
-                for i, j in neighbors:
-                    if (0 <= i < self._height and 0 <= j < self._width):
-                        if (i, j) not in visited:
-                            to_visit.append((i, j))
-                            visited.append((i, j))
-            count_moves += 1
-        return False
 
-    def cell_count(self, cell_type):
-        counter = 0
-        for row in range(self._height):
-            for col in range(self._width):
-                if self.grid[row][col].get_type() == cell_type:
-                    counter += 1
-        return counter
+    #---------------------#
+    #   CELL MANAGEMENT   #
+    #---------------------#
 
+    def set_cell(self, position, cell_type):
+        row, col = position
+        old_type = self.grid[row][col].type
+
+        self.grid[row][col].set_type(cell_type)
+
+        self._unregister_position(old_type, position)
+        self._register_position(cell_type, position)
+
+    def _register_position(self, cell_type, pos):
+
+        if cell_type in self._positions:
+            self._positions[cell_type].add(pos)
+        elif cell_type == self.PUNTO_DI_PARTENZA:
+            self._spawn_position = pos
+        elif cell_type == self.OBIETTIVO:
+            self._target_position = pos
+
+
+        """for r in range(self._height):
+            for c in range(self._width):
+                if self.grid[row][col].type == self.CELLA_VUOTA:
+                    self._empty_cells_positions.add((r, c))"""
+
+    def _unregister_position(self, cell_type, pos):
+
+        if cell_type in self._positions:
+            self._positions[cell_type].discard(pos)
+
+    def _place_special_cells(self):
+        self._spawn_position = random.choice(list(self._positions[self.CELLA_VUOTA]))
+        self.set_cell(self._spawn_position, self.PUNTO_DI_PARTENZA)
+
+        valid_target_positions = [
+            pos for pos in self._positions[self.CELLA_VUOTA]
+            if self._manhattan_distance(pos, self._spawn_position) >= 10
+        ]
+
+        self._target_position = random.choice(valid_target_positions)
+        self.set_cell(self._target_position, self.OBIETTIVO)
+
+    #-----------------------#
+    #   RANDOM PLACEMENT    #
+    #-----------------------#
+
+
+    def _add_random_cells(self, cell_type, count):
+        candidates = list(self._positions[self.CELLA_VUOTA])
+        random.shuffle(candidates)
+
+        for pos in candidates[:count]:
+            self.set_cell(pos, cell_type)
+
+    def _remove_random_cells(self, cell_type, count):
+        positions = list(self._get_positions_by_type(cell_type))
+        random.shuffle(positions)
+
+        for pos in positions[:count]:
+            self.set_cell(pos, self.CELLA_VUOTA)
+
+    #------------------#
+    #     UTILITIES    #
+    #------------------#
+
+    def _count_cells(self, cell_type):
+        return len(self._get_positions_by_type(cell_type))
+
+    def _get_positions_by_type(self, cell_type):
+        """Restituisce il set di posizioni per il tipo di cella specificato.
+            Usa il metodo dict.get() per evitare KeyError se il tipo non esiste."""
+        return self._positions.get(cell_type, set())
+
+    @staticmethod
+    def _manhattan_distance(a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def get_cell(self, position):
+        return self.grid[position[0]][position[1]]
 
     def get_cell_data(self, position):
-        cell = self.grid[position[0]][position[1]]
+        cell = self.get_cell(position)
         return {
-            "type": cell.get_type(),
+            "type": cell.type,
             "position": position,
             "walkable": cell.is_walkable()
         }
 
-    def set_cell(self, position, cell_type):
-        row, col = position
-        self.grid[row][col].set_type(cell_type)
-
     def is_valid_movement(self, position):
         row, col = position
-        return self.grid[row][col].is_walkable()
+        if not (0 <= row < self._height and 0 <= col < self._width):
+            return False
+        return self.grid[row][col].is_walkable() and 0 <= row < self._height and 0 <= col < self._width
 
     def get_grid_dimension(self):
         return self._height, self._width
 
+    #----------------------#
+    #    SERIALIZATION     #
+    #----------------------#
+
+    def serialize(self):
+        grid_data = [
+            [cell.type for cell in row]
+            for row in self.grid
+        ]
+        return {
+            "rows": self._height,
+            "cols": self._width,
+            "grid": grid_data,
+            "spawn_position": self.spawn_position,
+            "target_position": self.target_position
+        }
+
+    @property
+    def spawn_position(self):
+        """Restituisce la posizione dello spawn point"""
+        return self._spawn_position
+
+    @property
+    def target_position(self):
+        """Restituisce la posizione del target point"""
+        return self._target_position
+
+    @property
+    def height(self):
+        return self._height
+
+    @property
+    def width(self):
+        return self._width
+
     def print_grid(self):
         for i in range(0, self._height):
             for j in range(0, self._width):
-                print(self.grid[i][j].get_type(), end=" ")
+                print(self.grid[i][j].type, end=" ")
             print("")
 
 
@@ -217,8 +314,8 @@ if __name__ == '__main__':
     grid = Grid(20, 20)
 
     grid.generate_grid("Difficile")
-    # grid.generative_dfs()
     grid.print_grid()
-    print(grid.cell_count('X'))
-    print(grid.cell_count('R'))
-    print(grid.cell_count('T'))
+
+    print(grid._count_cells('X'))
+    print(grid._count_cells('R'))
+    print(grid._count_cells('T'))

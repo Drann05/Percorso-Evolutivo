@@ -46,10 +46,16 @@ class Player:
         self._score += value
 
     def use_remove_wall(self):
-        self._remove_wall_available = False
+        self.remove_wall_available = False
 
     def use_convert_trap(self):
-        self._convert_trap_available = False
+        self.convert_trap_available = False
+
+    def is_remove_wall_available(self):
+        return self.remove_wall_available
+
+    def is_convert_trap_available(self):
+        return self.convert_trap_available
 
     @property
     def moves(self):

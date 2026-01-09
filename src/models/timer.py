@@ -2,7 +2,6 @@
 Classe per la gestione del timer.
 Utilizzo time per aggiornare il tempo trascorso ogni secondo.
 """
-
 import time
 
 class Timer:
@@ -18,12 +17,18 @@ class Timer:
         if not self._running:
             self._starting_time = time.time()
             self._running = True
+            self.update_elapsed()
+
+    def update_elapsed(self):
+        if self._running:
+            self._elapsed = int(time.time() - self._starting_time)
+            return self._elapsed
   
     def stop_timer(self):
         """
         ferma il timer quando richiamata e aggiorna self._elapsed
         """
-        self._elapsed = time.time() - self._starting_time
+        self.get_elapsed()
         self._running = False
    
     def reset_timer(self):
@@ -31,4 +36,5 @@ class Timer:
         self._running = False
 
     def get_elapsed(self):
-        return self._elapsed
+        self.update_elapsed()
+        return int(self._elapsed)
