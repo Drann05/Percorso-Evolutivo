@@ -1,89 +1,111 @@
-
 from .views import Views
 
-class GameInstructions(Views):
-    BG_COLOR = "#2C3E50"
-    ACCENT_COLOR = "#1ABC9C"
-    TEXT_COLOR = "#ECF0F1"
 
-    def __init__(self, parent_view, controller, title, width=500, height=600):
+class GameInstructions(Views):
+    BG_COLOR = "#121212"
+    ACCENT_COLOR = "#00ADB5"
+    TEXT_COLOR = "#EEEEEE"
+    AREA_BG = "#1A1A1A"
+
+    def __init__(self, parent_view, controller, title, width=600, height=700):
         super().__init__(title, width, height)
         self._parent_view = parent_view
+        self._controller = controller
 
-        self.MAIN_FONT = ("Segoe UI", 11)
-        self.TITLE_FONT = ("Segoe UI", 18, "bold")
-
-        self.widgets = []
-        self._parent_view.grid_init(20, 10)
         self._parent_view.setBackground(self.BG_COLOR)
 
         self.build_ui()
+        self._parent_view.bind("<Configure>", self.on_resize)
 
     def style(self, widget, is_header=False):
         if is_header:
-            widget["font"] = self.TITLE_FONT
+            widget["font"] = ("Impact", 24)
             widget["foreground"] = self.ACCENT_COLOR
         else:
-            widget["font"] = self.MAIN_FONT
+            widget["font"] = ("Segoe UI", 11)
             widget["foreground"] = self.TEXT_COLOR
         widget["background"] = self.BG_COLOR
 
     def build_ui(self):
         title = self._parent_view.addLabel(
-            "MANUALE DI GIOCO",
-            row=1, column=5, columnspan=10, sticky="NSEW",
+            "I S T R U Z I O N I",
+            row=1, column=0, columnspan=10, sticky="NSEW",
         )
         self.style(title, is_header=True)
 
+
         istruzioni = (
-            "1. MUOVI: Usa i pulsanti direzionali per spostarti.\n"
-            "2. OBIETTIVO (O): Raggiungilo per completare il livello.\n"
-            "3. RISORSE (R): Raccogli i quadrati gialli per i punti.\n"
-            "4. TRAPPOLE (T): Evita i blocchi rossi!\n"
-            "5. MURI (X): Ostacoli non attraversabili."
+            "> MOVIMENTO: Usa il D-Pad per muoverti all'interno della griglia.\n"
+            "> OBIETTIVO (O): Raggiungi l'obiettivo entro 30 mosse.\n"
+            "> RISORSE (R): Raccogli le risorse per aumentare il punteggio.\n"
+            "> TRAPPOL<e (T): Fai attenzione alle trappole! Se ci passi sopra, ti toglieranno punti.\n"
+            "> MURI (X): Non puoi attraversarli, ma puoi romperli con la mossa speciale.\n"
+            "> MOSSE SPECIALI: Ne hai due a disposizione. Usa il Double-click su un muro o una trappola per utilizzarle."
         )
 
-        txt_area = self._parent_view.addTextArea(
-            text=istruzioni, row=3, column=5, columnspan=5, width=50, height=7
+        self.txt_area = self._parent_view.addTextArea(
+            text=istruzioni, row=4, column=2, columnspan=6, width=60, height=8
         )
-        txt_area["font"] = ("Consolas", 10)
-        txt_area["background"] = "#34495E"
-        txt_area["foreground"] = self.TEXT_COLOR
-        txt_area["borderwidth"] = 0
+        self.txt_area.configure(
+            font=("Consolas", 11),
+            background=self.AREA_BG,
+            foreground=self.TEXT_COLOR,
+            borderwidth=1,
+            relief="flat"
+        )
+        self.txt_area.grid_configure(sticky="NSEW", padx=20, pady=10)
 
-        legenda_title = self._parent_view.addLabel(
-            text="LEGENDA ELEMENTI", row=11, column=5, columnspan=10
+        legend_title = self._parent_view.addLabel(
+            text="ELEMENTI PRINCIPALI", row=13, column=0, columnspan=10
         )
-        self.style(legenda_title)
-        legenda_title["font"] = ("Segoe UI", 12, "bold")
+        self.style(legend_title)
+        legend_title.configure(font=("Impact", 16), foreground=self.ACCENT_COLOR)
+        self.legend_panel = self._parent_view.addPanel(row=14, column=2, columnspan=6, rowspan=7,
+                                                       background=self.BG_COLOR)
 
         elementi = [
-            ("Giocatore", "Pink"),
-            ("Muro (X)", "#1a1a1a"),
-            ("Risorsa (R)", "#F1C40F"),
-            ("Trappola (T)", "#E74C3C"),
-            ("Obiettivo (O)", "#2ECC71"),
-            ("Percorso (.)", "white")
+            ("GIOCATORE", "#E91E63", "oval"),
+            ("MURO (X)", "#1A1A1A", "rect"),
+            ("RISORSA (R)", "#F1C40F", "rect"),
+            ("TRAPPOLA (T)", "#E74C3C", "rect"),
+            ("OBIETTIVO (O)", "#2ECC71", "rect"),
+            ("CELLA VUOTA (.)", "#2C3E50", "rect")
         ]
 
-        current_row = 12
-        for nome, colore in elementi:
+        current_row = 15
+        for nome, colore, shape in elementi:
             canvas = self._parent_view.addCanvas(
-                row=current_row, column=5, width=20, height=20
+                row=current_row, column=3, width=25, height=25
             )
-            canvas["background"] = self.BG_COLOR
-            canvas["highlightthickness"] = 0
-            canvas.create_rectangle(2, 2, 18, 18, fill=colore, outline="gray")
+            canvas.configure(background=self.BG_COLOR, highlightthickness=0)
+
+            if shape == "rect":
+                canvas.create_rectangle(4, 4, 21, 21, fill=colore, outline="gray")
+            else:
+                canvas.create_oval(4, 4, 21, 21, fill=colore, outline="white", width=2)
 
             lbl = self._parent_view.addLabel(text=nome, row=current_row, column=4, sticky="W")
-            self.style(lbl)
-
+            lbl.configure(font=("Consolas", 10, "bold"), background=self.BG_COLOR, foreground=self.TEXT_COLOR)
             current_row += 1
 
         close_btn = self._parent_view.addButton(
-            text="TORNA AL GIOCO", row=19, column=5, columnspan=4,
+            text="TORNA AL GIOCO", row=23, column=3, columnspan=4,
             command=self._parent_view.show_game
         )
-        close_btn["background"] = self.ACCENT_COLOR
-        close_btn["foreground"] = "white"
-        close_btn["font"] = ("Segoe UI", 10, "bold")
+        close_btn.configure(
+            background=self.ACCENT_COLOR,
+            foreground="white",
+            font=("Segoe UI", 10, "bold"),
+            relief="flat",
+            width=20
+        )
+
+    def on_resize(self, event):
+        total_rows = 25
+        total_cols = 10
+        for i in range(total_rows):
+            self._parent_view.rowconfigure(i, weight=1)
+        for j in range(total_cols):
+            self._parent_view.columnconfigure(j, weight=1)
+
+
