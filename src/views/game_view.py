@@ -3,12 +3,6 @@ import tkinter as tk
 
 
 class GameView(Views):
-    # Colori
-    BG_COLOR = "#121212"
-    ACCENT_COLOR = "#00ADB5"
-    TEXT_COLOR = "#EEEEEE"
-    USED_COLOR = "#555555"
-
     # Colori griglia
     CELL_COLORS = {
         'X': "#1A1A1A",
@@ -24,7 +18,7 @@ class GameView(Views):
         super().__init__(title, width, height)
         self._controller = controller
         self._parent_view = parent_view
-        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
 
         self._parent_view.grid_init(30, 30)
         self.game_state = self._controller.get_game_state()
@@ -40,7 +34,7 @@ class GameView(Views):
 
     def build_ui(self):
         # Titolo
-        self.header_panel = self._parent_view.addPanel(row=0, column=0, columnspan=30, background=self.BG_COLOR)
+        self.header_panel = self._parent_view.addPanel(row=0, column=0, columnspan=30, background=self._parent_view.COLORS["bg"])
 
         self.title_lbl = self.header_panel.addLabel(
             "P E R C O R S O  E V O L U T I V O",
@@ -49,8 +43,8 @@ class GameView(Views):
 
         self.title_lbl.configure(
             font=("Impact", 32),
-            foreground=self.ACCENT_COLOR,
-            background=self.BG_COLOR,
+            foreground=self._parent_view.COLORS["accent"],
+            background=self._parent_view.COLORS["bg"],
             padx=20, pady=20
         )
 
@@ -70,17 +64,17 @@ class GameView(Views):
 
     def setup_hud(self):
         """Crea il panel per i comandi e le statistiche di gioco"""
-        self.hud_panel = self._parent_view.addPanel(row=22, column=2, columnspan=26, background=self.BG_COLOR)
+        self.hud_panel = self._parent_view.addPanel(row=22, column=2, columnspan=26, background=self._parent_view.COLORS["bg"])
         self.hud_panel.grid_columnconfigure(1, weight=1)
 
         # Stats
-        self.stats_pnl = self.hud_panel.addPanel(row=0, column=0, background=self.BG_COLOR)
+        self.stats_pnl = self.hud_panel.addPanel(row=0, column=0, background=self._parent_view.COLORS["bg"])
         self.lbl_score = self.stats_pnl.addLabel("SCORE: 0", row=0, column=0, sticky="W")
         self.lbl_moves = self.stats_pnl.addLabel("MOVES: 0", row=1, column=0, sticky="W")
         self.lbl_timer = self.stats_pnl.addLabel("TIME: 0s", row=2, column=0, sticky="W")
 
         # Comandi
-        self.ctrl_pnl = self.hud_panel.addPanel(row=0, column=1, background=self.BG_COLOR)
+        self.ctrl_pnl = self.hud_panel.addPanel(row=0, column=1, background=self._parent_view.COLORS["bg"])
         self.ctrl_pnl.grid_configure(sticky="NSEW", padx=20)
 
 
@@ -92,7 +86,7 @@ class GameView(Views):
             "font": ("Segoe UI", 14, "bold"),
             "width": 3,
             "height": 1,
-            "background": self.ACCENT_COLOR,
+            "background": self._parent_view.COLORS["accent"],
             "foreground": "white",
             "relief": "flat"
         }
@@ -118,12 +112,12 @@ class GameView(Views):
         ).configure(**btn_s)
 
         # Abilitià
-        self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self.BG_COLOR)
+        self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self._parent_view.COLORS["bg"])
         self.lbl_wall_abil = self.abil_pnl.addLabel("BREAK WALL: READY", row=0, column=0, sticky="E")
         self.lbl_trap_abil = self.abil_pnl.addLabel("CONVERT TRAP: READY", row=1, column=0, sticky="E")
 
         for lbl in [self.lbl_score, self.lbl_moves, self.lbl_timer, self.lbl_wall_abil, self.lbl_trap_abil]:
-            lbl.configure(font=("Consolas", 11, "bold"), background=self.BG_COLOR, foreground=self.TEXT_COLOR)
+            lbl.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS["bg"], foreground=self._parent_view.COLORS["text"])
 
     def on_resize(self, event):
         """Centra la griglia dopo il resize della finestra"""

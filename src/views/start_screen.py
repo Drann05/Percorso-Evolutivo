@@ -79,7 +79,7 @@ class StartScreen(Views):
 
         self.quit_button = self.btn_area.addButton(text="ESCI",row=3, column=0,command=self._parent_view.quit)
         self.quit_button.configure(background="#333333", foreground="#888888", font=("Segoe UI", 9), relief="flat")
-        
+
 
     def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
