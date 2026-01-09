@@ -123,6 +123,11 @@ class GameView(Views):
                 self.rects[(r, c)] = self.canvas.create_rectangle(
                     x1, y1, x2, y2, fill=color, outline="#121212"
                 )
+        for rect in self.rects.values():
+            self.canvas.itemconfig(rect, stipple="gray50")
+        self.canvas.after(200, lambda: [
+            self.canvas.itemconfig(r, stipple="") for r in self.rects.values()
+        ])
 
     def draw_player(self):
         """Disegna il giocatore"""
@@ -197,19 +202,14 @@ class GameView(Views):
         root.config(menu=menubar)
 
     def update_special_labels(self, specials):
-        if specials["remove_wall"]:
-            self.lbl_wall_abil["text"] = "Break Wall: READY"
-            self.lbl_wall_abil["foreground"] = self.ACCENT_COLOR
-        else:
-            self.lbl_wall_abil["text"] = "Break Wall: USED"
-            self.lbl_wall_abil["foreground"] = "gray"
+        def style(lbl, ready):
+            lbl.configure(
+                foreground=self.ACCENT_COLOR if ready else self.USED_COLOR,
+                text=f"{lbl.cget('text').split(':')[0]}: {'READY' if ready else 'USED'}"
+            )
 
-        if specials["convert_trap"]:
-            self.lbl_trap_abil["text"] = "Convert Trap: READY"
-            self.lbl_trap_abil["foreground"] = self.ACCENT_COLOR
-        else:
-            self.lbl_trap_abil["text"] = "Convert Trap: USED"
-            self.lbl_trap_abil["foreground"] = "gray"
+        style(self.lbl_wall_abil, specials["remove_wall"])
+        style(self.lbl_trap_abil, specials["convert_trap"])
 
     def update_stats(self):
         stats = self.game_state["stats"]
