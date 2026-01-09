@@ -14,6 +14,7 @@ class StartScreen(Views):
 
         self._parent_view = parent_view
         self._controller = controller
+        self._widgets=[]
 
         self._setup_layout()
         self.build_ui()
@@ -27,64 +28,65 @@ class StartScreen(Views):
         button["relief"] = "flat"
 
     def build_ui(self):
-        # --- 1. TITLE (Matched to GameView Header) ---
-        title = self._parent_view.addLabel(
+       # --- MAIN CONTAINER - --
+        self.main_container = self._parent_view.addPanel(row=1, column=0, background=self.BG_COLOR)
+        self.main_container.grid_configure(sticky="")
+
+        # --- TITOLO ---
+
+        self.title = self.main_container.addLabel(
             text="P E R C O R S O  E V O L U T I V O",
-            row=3, column=5, columnspan=10, sticky="NSEW"
+            row=0, column=0, sticky="NSEW"
         )
-        title.configure(
+        self.title.configure(
             font=("Impact", 32),
             foreground=self.ACCENT_COLOR,
             background=self.BG_COLOR
         )
-        self._widgets.append(title)
+        self.title.grid_configure(pady=(0, 40))
 
+        # --- INPUT AREA ---
+        self.input_area = self.main_container.addPanel(row=1, column=0, background=self.PANEL_BG)
+        self.input_area.grid_configure(padx=20, pady=20, ipady=10, ipadx=10)
 
-        # --- 2. INPUT PANEL (Grouped logic) ---
-        # Using a panel to create a centered "login" area
-        input_panel = self._parent_view.addPanel(row=7, column=6, columnspan=8, rowspan=6, background=self.PANEL_BG)
-        input_panel.grid_configure(padx=20, pady=20)
+        # Testo "Inserisci un nickname"
+        self.input_label = self.input_area.addLabel(text="INSERISCI UN NICKNAME:", row=0, column=0)
+        self.input_label.configure(font=("Consolas", 11, "bold"), background=self.PANEL_BG, foreground=self.TEXT_COLOR)
 
-        user_inst = input_panel.addLabel(
-            text="INSERISCI UN NICKNAME:",
-            row=0, column=0, sticky="W"
-        )
-        user_inst.configure(font=("Consolas", 11, "bold"), background=self.PANEL_BG, foreground=self.TEXT_COLOR)
+        # Area di testo per il nickname
+        self.nickname_field = self.input_area.addTextField(text="", row=1, column=0)
+        self.nickname_field.grid_configure(sticky="")
+        self.nickname_field.configure(font=("Consolas", 14), width=30)
 
-        self.nickname_field = input_panel.addTextField(text="", row=1, column=0, sticky="EW")
-        self.nickname_field.configure(font=("Consolas", 14), width=25)
+        # --- BUTTON AREA ---
+        self.btn_area = self.main_container.addPanel(row=2, column=0, background=self.BG_COLOR)
+        self.btn_area.grid_configure(pady=20)
 
-        # Error text inside the panel
-        self.error_label = input_panel.addLabel(text="", row=2, column=0)
+        # Pulsante Nuova Partita
+        self.start_button = self.btn_area.addButton(text="NUOVA PARTITA", row=0, column=0,
+                                                    command=self.handle_start_btn)
+        self.style_button(self.start_button)
+        self.start_button.grid_configure(pady=5)
+
+        # Pulsante Istruzioni
+        self.instructions_button = self.btn_area.addButton(text="ISTRUZIONI", row=2, column=0,
+                                                           command=lambda: self._parent_view.change_screen(
+                                                               self._parent_view.show_instructions))
+        self.style_button(self.instructions_button, is_primary=False)
+        self.instructions_button.grid_configure(pady=5)
+
+        # Testo di errore
+        self.error_label = self.input_area.addLabel(text="", row=2, column=0)
         self.error_label.configure(foreground=self.ERROR_COLOR, background=self.PANEL_BG,
                                    font=("Segoe UI", 10, "italic"))
         self.error_label.grid_remove()
 
-        # --- 3. BUTTONS ---
-        self.start_button = self._parent_view.addButton(
-            text="NUOVA PARTITA",
-            row=14, column=7, columnspan=6,
-            command=self.handle_start_btn
-        )
-        self.style_button(self.start_button)
-        self._widgets.append(self.start_button)
-
-        self.instructions_button = self._parent_view.addButton(
-            text="ISTRUZIONI",
-            row=16, column=7, columnspan=6,
-            command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions)
-        )
-        self.style_button(self.instructions_button, is_primary=False)
-        self._widgets.append(self.instructions_button)
-
-        self.quit_button = self._parent_view.addButton(
+        self.quit_button = self.btn_area.addButton(
             text="ESCI",
-            row=18, column=8, columnspan=4,
+            row=3, column=0,
             command=self._parent_view.quit
         )
         self.quit_button.configure(background="#333333", foreground="#888888", font=("Segoe UI", 9), relief="flat")
-        self._widgets.append(self.quit_button)
-
     def _setup_layout(self):
         self._parent_view.setBackground(self.BG_COLOR)
         self._parent_view.columnconfigure(0, weight=1)
@@ -110,7 +112,6 @@ class StartScreen(Views):
 
     def clear_messages(self):
         self.error_label.grid_remove()
-        self.correct_label.grid_remove()
 
     def handle_start_btn(self):
         """Gestisce il funzionamento del pulsante Start e la logica degli errori"""
