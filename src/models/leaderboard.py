@@ -26,6 +26,7 @@ class Leaderboard:
                             continue
         return scores
 
+    @staticmethod
     def is_better(self, n_score, n_moves, n_level, o_score, o_moves, o_level):
         """
         Logica: punteggio alto meglio.
@@ -40,6 +41,8 @@ class Leaderboard:
             if n_moves == o_moves:
                 return n_level > o_level
         return False
+
+        #return (new_score, new_moves, new_level) > (old_score, old_moves, old_level)
 
     def save(self, name, score, moves, level):
         """Aggiorna la classifica se il punteggio è migliore e salva su file."""
