@@ -14,10 +14,8 @@ class StartScreen(Views):
 
         self._parent_view = parent_view
         self._controller = controller
-        self._widgets = []
 
-        self._parent_view.setBackground(self.BG_COLOR)
-        self._parent_view.grid_init(20, 20)  # Finer grid for better centering
+        self._setup_layout()
         self.build_ui()
 
     def style_button(self, button, is_primary=True):
@@ -86,6 +84,12 @@ class StartScreen(Views):
         )
         self.quit_button.configure(background="#333333", foreground="#888888", font=("Segoe UI", 9), relief="flat")
         self._widgets.append(self.quit_button)
+
+    def _setup_layout(self):
+        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.columnconfigure(0, weight=1)
+        self._parent_view.rowconfigure(0, weight=1) # Spazio superiore
+        self._parent_view.rowconfigure(2, weight=1) # Spazio inferiore
 
     def validate_nickname(self):
         """Estrae il testo e verifica che esso sia valido"""
