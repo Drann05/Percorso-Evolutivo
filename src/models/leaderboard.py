@@ -11,7 +11,9 @@ class Leaderboard:
         self._scores = self.load()
 
     def load(self):
-        """Carica i dati dal file e restituisce un dizionario."""
+        """Carica i dati dal file, verifica che siano nel formato corretto,
+         trasforma le statistiche in interi e restituisce un dizionario."""
+
         scores = {}
         if os.path.exists(self._filepath):
             with open(self._filepath, "r") as f:
@@ -26,7 +28,12 @@ class Leaderboard:
         return scores
 
     def save(self, name, score, moves, level):
-        """Aggiorna la classifica se il punteggio è migliore e salva su file"""
+        """
+        Aggiorna la classifica solo se il punteggio è migliore del precedente,
+        richiama la funzione di sorting per ordinare volta per volta
+        e sovrascrive il file solo se necessario.
+        """
+
         name = name.strip()
         old_data = self._scores.get(name)
         if not old_data or self.is_better(score, moves, level, *old_data):
@@ -37,14 +44,15 @@ class Leaderboard:
             with open(self._filepath, "w") as f:
                 for s_name, (s_score, s_moves, s_level) in sorted_items:
                     f.write(f"{s_score}:{s_moves}:{s_level}:{s_name}\n")
-            self._scores = dict(sorted_items) #aggiorna il dizionatio per mantenere l'ordine corretto
+            self._scores = dict(sorted_items) #aggiorna il dizionario per mantenere l'ordine corretto
 
     def sorting(self):
         """
-        Implemeta l'algoritmo dell'Insertion Sort.
-        Restituisce una lista di tuple (nome, (punti, mosse, livello)) ordinata
-        in base alla logica is_better.
+        Usa l'algoritmo Insertion Sort.
+        Restituisce una lista di tuple (nome, (punti, mosse, livello))
+        ordinata in base alla logica is_better.
         """
+
         current_data = list(self._scores.items())
         sorted_data = []
 
@@ -52,19 +60,27 @@ class Leaderboard:
             inserted = False
             p_name, (p_score, p_moves, p_level) = item
 
+            """Dopo aver estratto i dati del giocatore corrente cerca la posizione corretta nella lista già ordinata"""
             for i in range(len(sorted_data)):
                 s_name, (s_score, s_moves, s_level) = sorted_data[i]
 
+                """Confronta il giocatore corrente con l'i-esimo e decide se inserirlo"""
                 if self.is_better(p_score, p_moves, p_level, s_score, s_moves, s_level):
                     sorted_data.insert(i, item)
                     inserted = True
                     break
             if not inserted:
-                sorted_data.append(item)
+                sorted_data.append(item) #se non è stato inserito viene messo in coda
         return sorted_data
 
     def get_top_10(self, n=10):
-        """Ritorna i primi N giocatori ordinati."""
+        """
+        Ritorna i primi N giocatori ordinati.
+        Crea una lista di tuple appiattite con lo Splat Operator
+        dopo aver effettuato l'unpacking e associa un indice a ogni elemento.
+        Questo viene incrementato fino ad n.
+        """
+
         return [(nome, *valori) for i, (nome, valori) in enumerate(self._scores.items()) if i < n]
 
     @staticmethod
@@ -73,15 +89,15 @@ class Leaderboard:
         Logica: punteggio alto meglio.
         A parità di punti, meno mosse meglio.
         A parità di mosse, livello più alto meglio.
-        Per confrontare i livelli richiama il metodo statico
         """
+
         n_l = Leaderboard.difficulty_to_int(n_level)
         o_l = Leaderboard.difficulty_to_int(o_level)
-
         return (n_score, -n_moves, n_l) > (o_score, -o_moves, o_l)
 
     @staticmethod
     def difficulty_to_int(difficulty):
+        """Associa a ogni livello un numero intero per effettuare i confronti"""
         if difficulty.lower() == 'facile':
             return 1
         elif difficulty.lower() == 'medio':
