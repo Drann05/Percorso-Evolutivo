@@ -171,13 +171,18 @@ class GameView(Views):
                 )
 
     def screen_flicker(self):
-        """Effetto visivo usato per indicare l'utilizzo di un'abilità speciale in una cella non prevista"""
+        """Effetto visivo immediato per segnalare l'uso di un'abilità in una cella non consentita"""
         for rect in self.rects.values():
-            for rect in self.rects.values():
-                self.canvas.itemconfig(rect, stipple="gray50")
-        self.canvas.after(200, lambda: [
-            self.canvas.itemconfig(r, stipple="") for r in self.rects.values()
-        ])
+            self.canvas.itemconfig(rect, stipple="gray50")
+
+        self.canvas.update_idletasks()
+
+        self.canvas.after(200, self._reset_flicker)
+
+    def _reset_flicker(self):
+        """Metodo di supporto per screen_flicker"""
+        for rect in self.rects.values():
+            self.canvas.itemconfig(rect, stipple="")
 
     def draw_player(self):
         """Crea l'oggetto grafico che rappresenta il giocatore"""
