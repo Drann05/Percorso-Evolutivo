@@ -18,13 +18,14 @@ class Game:
     """
 
     SCORES = {
-        "O": 20,    # Obiettivo
-        "R": 10,    # Risorsa
-        "T": -5,    # Trappola
-        "X": 0,     # Muro
-        ".": 0,     # Cella vuota
-        "P": 0      # Punto di partenza
+        Grid.OBIETTIVO: 20,    # Obiettivo
+        Grid.RISORSA: 10,    # Risorsa
+        Grid.TRAPPOLA: -5,    # Trappola
+        Grid.MURO: 0,     # Muro
+        Grid.CELLA_VUOTA: 0,     # Cella vuota
+        Grid.PUNTO_DI_PARTENZA: 0      # Punto di partenza
     }
+
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
