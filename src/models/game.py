@@ -40,27 +40,29 @@ class Game:
         self._pathfinder = None
 
     def setup_game(self):
-        if self.grid:
-            del self.grid
+        valid_map = False
+        attempts = 0
+        max_attempts = 10
 
-        self.grid = Grid(20, 20)
-        self.grid.generate_grid(self._difficulty)
-        spawn_point = self.grid.spawn_position
+        while not valid_map and attempts < max_attempts:
+            attempts += 1
 
-        self._pathfinder = Pathfinder(self.grid)
+            self.grid = Grid(20, 20)
+            self.grid.generate_grid(self._difficulty)
 
-        if not self.player:
-            self.player = Player(self._player_name, spawn_point)
+            spawn_point = self.grid.spawn_position
+            self._pathfinder = Pathfinder(self.grid)
 
-        self.player.reset_score()
-        self.player.reset_moves()
-        self.player.reset_remove_wall()
-        self.player.reset_convert_trap()
+            if not self.player:
+                self.player = Player(self._player_name, spawn_point)
+            else:
+                self.player.position = spawn_point
+                self.player.reset_all_stats()
 
+            valid_map,_ = self.can_reach(self.grid.target_position,0,0)
 
-
-        if not self.can_reach(self.grid.target_position,0,0)[0]:
-            self.setup_game()
+        if not valid_map:
+            raise RuntimeError("Impossibile generare una mappa valida")
 
     def start_game(self):
         """Inizializza griglia, giocatore e timer"""
