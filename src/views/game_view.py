@@ -22,22 +22,19 @@ class GameView(BaseView):
 
     def __init__(self, parent_view, controller, title, width=1000, height=800):
 
-
-
-
         # Inizializzazione variabili per la gestione grafica
         self.rects = {}
         self.player_display_id = None
         self.cell_size = 30
 
         super().__init__(parent_view, controller, title)
+
         self._controller = controller
         self._parent_view = parent_view
-        
         self._parent_view.setBackground(self._parent_view.COLORS['bg'])
         self.game_state = self._controller.get_game_state()  # Recupera lo stato iniziale dal controller
 
-        self.setup_menu()
+        self._parent_view.setup_menu()
 
 
         # Bind degli eventi: resize della finestra e doppio click per abilità speciali
@@ -215,24 +212,7 @@ class GameView(BaseView):
             if not action_success:
                 self.screen_flicker()
 
-    def setup_menu(self):
-        """Crea la menu bar"""
-        root = self._parent_view.master
-        menubar = tk.Menu(root)
 
-        game_menu = tk.Menu(menubar, tearoff=0)
-        game_menu.add_command(label="Nuova partita", command=self._controller.handle_restart_game_request)
-        game_menu.add_separator()
-        game_menu.add_command(label="Torna al menu", command=self._controller.init_start_screen)
-        game_menu.add_command(label="Esci", command=root.quit)
-        menubar.add_cascade(label="Gioco", menu=game_menu)
-
-        help_menu = tk.Menu(menubar, tearoff=0)
-        help_menu.add_command(label="Istruzioni",
-                              command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions))
-        menubar.add_cascade(label="Aiuto", menu=help_menu)
-
-        root.config(menu=menubar)
 
     def display_game_over(self, won=True):
         """Mostra una schermata (overlay) di fine partita con i risultati"""

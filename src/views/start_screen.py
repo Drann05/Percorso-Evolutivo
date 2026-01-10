@@ -22,25 +22,25 @@ class StartScreen(BaseView):
     def build_ui(self):
 
         # --- MAIN CONTAINER ---
-        self.main_container = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS["bg"])
-        self.main_container.grid_configure(sticky="")
+        self.main_container = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS["bg"])    #
+        self.main_container.grid_configure(sticky="NEW")
 
         # --- TITOLO ---
 
         self.title = self._parent_view.addLabel(
             text="P E R C O R S O  E V O L U T I V O",
-            row=0, column=0, sticky="NSEW"
+            row=0, column=0, sticky="SEW"
         )
         self.title.configure(
             font=("Impact", 32),
             foreground=self._parent_view.COLORS["accent"],
-            background=self._parent_view.COLORS["bg"]
+            background=self._parent_view.COLORS["bg"]   #self._parent_view.COLORS["bg"]
         )
-        self.title.grid_configure(pady=(0,40))
+        self.title.grid_configure(ipady=10)
 
         # --- INPUT AREA ---
         self.input_area = self.main_container.addPanel(row=1, column=0, background=self._parent_view.COLORS["panel_bg"])
-        self.input_area.grid_configure(padx=20, pady=20, ipady=10, ipadx=10)
+        self.input_area.grid_configure(padx=20, pady=20, ipady=10, ipadx=10, sticky="")
 
         # Testo "Inserisci un nickname"
         self.input_label = self.input_area.addLabel(text="INSERISCI UN NICKNAME:",row=0, column=0)
@@ -78,7 +78,8 @@ class StartScreen(BaseView):
         self.error_label.grid_remove()
 
         self.quit_button = self.btn_area.addButton(text="ESCI",row=3, column=0,command=self._parent_view.quit)
-        self.quit_button.configure(background="#333333", foreground="#888888", font=("Segoe UI", 9), relief="flat")
+        self.style_button(self.quit_button, is_primary=False)
+        self.quit_button.configure(background="#A60707", relief="flat")
 
 
 
