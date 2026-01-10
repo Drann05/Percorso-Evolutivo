@@ -95,12 +95,5 @@ class GameInstructions(BaseView):
             relief="flat", width=20
         )
         back_btn.grid_configure(pady=20)
-    def on_resize(self, event):
-        total_rows = 25
-        total_cols = 10
-        for i in range(total_rows):
-            self._parent_view.rowconfigure(i, weight=1)
-        for j in range(total_cols):
-            self._parent_view.columnconfigure(j, weight=1)
 
 
