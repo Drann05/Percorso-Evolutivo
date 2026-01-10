@@ -17,64 +17,77 @@ class Game:
     - Gestione fine gioco
     """
 
+    # Costanti di configurazione punteggi
     SCORES = {
-        Grid.OBIETTIVO: 20,    # Obiettivo
-        Grid.RISORSA: 10,    # Risorsa
-        Grid.TRAPPOLA: -5,    # Trappola
-        Grid.MURO: 0,     # Muro
-        Grid.CELLA_VUOTA: 0,     # Cella vuota
-        Grid.PUNTO_DI_PARTENZA: 0      # Punto di partenza
+        Grid.OBIETTIVO: 20,
+        Grid.RISORSA: 10,
+        Grid.TRAPPOLA: -5,
+        Grid.MURO: 0,
+        Grid.CELLA_VUOTA: 0,
+        Grid.PUNTO_DI_PARTENZA: 0
     }
 
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
+        self._started = False
+
+        # Componenti del modello
         self.grid = None
         self.player = None
         self.timer = Timer()
+        self._pathfinder = None
+
+        # Flag di stato
         self.is_objective_reached = False
         self.is_moves_out_of_limit = False
         self.is_negative_score = False
-        self._started = False
 
-        self._pathfinder = None
+
+    #-----------------------------------|
+    #   METODI DI GESTIONE CICLO VITA   |
+    #-----------------------------------|
 
     def setup_game(self):
-        if self.grid:
-            del self.grid
+        """Inizializza una nuova sessione garantendo una mappa risolvibile"""
 
-        self.grid = Grid(20, 20)
-        self.grid.generate_grid(self._difficulty)
-        spawn_point = self.grid.spawn_position
+        valid_map = False
+        attempts = 0
+        max_attempts = 10
 
-        self._pathfinder = Pathfinder(self.grid)
+        while not valid_map and attempts < max_attempts:
+            attempts += 1
 
-        if not self.player:
-            self.player = Player(self._player_name, spawn_point)
+            self.grid = Grid(20, 20)
+            self.grid.generate_grid(self._difficulty)
 
-        self.player.reset_score()
-        self.player.reset_moves()
-        self.player.reset_remove_wall()
-        self.player.reset_convert_trap()
+            spawn_point = self.grid.spawn_position
+            self._pathfinder = Pathfinder(self.grid)
 
+            if not self.player:
+                self.player = Player(self._player_name, spawn_point)
+            else:
+                self.player.position = spawn_point
+                self.player.reset_all_stats()
 
+            valid_map,_ = self.can_reach(self.grid.target_position,0,0)
 
-        if not self.can_reach(self.grid.target_position,0,0)[0]:
-            self.setup_game()
+        if not valid_map:
+            raise RuntimeError("Impossibile generare una mappa valida")
 
     def start_game(self):
-        """Inizializza griglia, giocatore e timer"""
+        """Avvia la partita e il cronometro"""
         self.setup_game()
         self._started = True
-
         self.timer.start_timer()
 
     def end_game(self):
-        """Termina la partita e ferma il timer"""
+        """Termina la partita e ferma il cronometro"""
         self._started = False
         self.timer.stop_timer()
 
     def restart_game(self):
+        """Scorciatoia per riavviare il gioco con gli stessi parametri"""
         self.start_game()
 
     def move_player(self, direction):
@@ -83,24 +96,61 @@ class Game:
         if not self._started:
             raise RuntimeError("Il gioco è finito")
 
-        if not self.is_neighbor_reachable(direction):
+        if not self._is_neighbor_reachable(direction):
             return self._move_result(False)
 
+        # Esecuzione movimento
         self.player.move_to(direction)
         cell_data = self.grid.get_cell_data(self.player.position)
+        self._apply_cell_effect(cell_data)
 
-        self.apply_cell_effect(cell_data)
+        # Evoluzione della griglia ogni 5 moves
+        if self.player.moves % 5 == 0:
+            self.grid.step(self.player.position)
 
+        # Controllo terminazione
         game_over = self.check_game_over()
         if game_over:
             self.end_game()
 
-        if self.player.moves % 5 == 0:
-            self.grid.step(self.player.position)
-
         return self._move_result(True, cell_data, game_over)
 
+    def use_special_action(self, action, target_position):
+        """Gestisce l'uso di abilità speciali alle celle adiacenti (N, S, O, E)"""
+
+        if not self._started or not self._is_adjacent(target_position):
+            return False
+
+        cell = self.grid.get_cell(target_position)
+
+        if action == "remove_wall" and self.player.is_remove_wall_available():
+            if cell.type == self.grid.MURO:
+                self.grid.set_cell(target_position, self.grid.CELLA_VUOTA)
+                self.player.use_remove_wall()
+                return True
+
+        elif action == "convert_trap" and self.player.is_convert_trap_available():
+            if cell.type == self.grid.TRAPPOLA:
+                self.grid.set_cell(target_position, self.grid.RISORSA)
+                self.player.use_convert_trap()
+                return True
+
+        return False
+
+    #-------------------------------|
+    #   METODI DI CONTROLLO STATO   |
+    #-------------------------------|
+
+    def check_game_over(self):
+        """Controlla tutte le condizioni di fine partita"""
+        self.is_moves_out_of_limit = self.player.moves >= 30
+        self.is_negative_score = self.player.score < 0
+        self.is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
+
+        return self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached
+
     def can_reach(self, target, breakable_walls, convertable_traps):
+        """Interroga il pathfinder per la raggiungibilità di un target"""
         return self._pathfinder.is_reachable(
             start = self.player.position,
             target = target,
@@ -109,14 +159,35 @@ class Game:
             convertable_traps = convertable_traps
         )
 
-    def check_game_over(self):
-        """Controlla tutte le condizioni di fine partita"""
-        self.is_moves_out_of_limit = self.player.moves >= 30
-        self.is_negative_score = self.player.score < 0
-        self.is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
+    def _apply_cell_effect(self, cell_data):
+        """Applica i bonus/malus della cella calpestata"""
+        cell_type = cell_data["type"].upper()
+        points = self.SCORES.get(cell_type, 0)
 
+        if points != 0:
+            self.player.change_score(points)
 
-        return self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached
+        if cell_type == self.grid.RISORSA:
+            self.grid.set_cell(cell_data["position"], self.grid.CELLA_VUOTA)
+
+    def _is_neighbor_reachable(self, direction):
+        """Verifica se la cella adiacente è raggiungibile"""
+        row, col = self.player.position
+
+        match direction:
+            case "N":row -= 1
+            case "S":row += 1
+            case "E":col += 1
+            case "W":col -= 1
+
+        return self.grid.is_valid_movement((row,col))
+
+    def _is_adjacent(self, target_position):
+        """Verifica se una coordinata è a distanza 1 da 'target_position'"""
+        p_row, p_col = self.player.position
+        t_row, t_col = target_position
+
+        return abs(p_row - t_row) + abs(p_col - t_col)
 
     def _move_result(self, moved, cell_data=None, game_over=False):
         """Formato standard della risposta di movimento"""
@@ -127,68 +198,6 @@ class Game:
             "game_over": game_over
         }
 
-
-    def is_neighbor_reachable(self, direction):
-        """Verifica se la cella adiacente è raggiungibile"""
-        row, col = self.player.position
-
-        match direction:
-            case "N":
-                row -= 1
-            case "S":
-                row += 1
-            case "E":
-                col += 1
-            case "W":
-                col -= 1
-
-        position = (row, col)
-
-        return self.grid.is_valid_movement(position)
-
-    def apply_cell_effect(self, cell_data):
-        cell_type = cell_data["type"].upper()
-
-        points = self.SCORES.get(cell_type, 0)
-
-        if points != 0:
-            self.player.change_score(points)
-
-        if cell_type == self.grid.RISORSA:
-            self.grid.set_cell(cell_data["position"], self.grid.CELLA_VUOTA)
-
-    def get_game_config(self):
-        return {
-            "nickname": self.player.nickname,
-            "difficulty": self.difficulty,
-        }
-
-    def use_special_action(self, action, target_position):
-        if not self._started:
-            return False
-
-        p_row, p_col = self.player.position
-        t_row, t_col = target_position
-
-        distance = abs(p_row - t_row) + abs(p_col - t_col)
-        if distance != 1:
-            return False
-
-        cell = self.grid.get_cell(target_position)
-
-        if action == "remove_wall":
-            if self.player.is_remove_wall_available() and cell.type == self.grid.MURO:
-                self.grid.set_cell(target_position, self.grid.CELLA_VUOTA)
-                self.player.use_remove_wall()
-                return True
-
-        elif action == "convert_trap":
-            if self.player.is_convert_trap_available() and cell.type == self.grid.TRAPPOLA:
-                self.grid.set_cell(target_position, self.grid.RISORSA)
-                self.player.use_convert_trap()
-                return True
-
-        return False
 
     @property
     def difficulty(self):
