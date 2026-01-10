@@ -26,8 +26,7 @@ class Game:
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
-
-        self.grid = Grid(20, 20)
+        self.grid = None
         self.player = None
         self.timer = Timer()
         self.is_objective_reached = False
@@ -35,20 +34,37 @@ class Game:
         self.is_negative_score = False
         self._started = False
 
+        self._pathfinder = None
+
+    def setup_game(self):
+        if self.grid:
+            del self.grid
+
+        self.grid = Grid(20, 20)
+        self.grid.generate_grid(self._difficulty)
+        spawn_point = self.grid.spawn_position
+
         self._pathfinder = Pathfinder(self.grid)
+
+        if not self.player:
+            self.player = Player(self._player_name, spawn_point)
+
+        self.player.reset_score()
+        self.player.reset_moves()
+        self.player.reset_remove_wall()
+        self.player.reset_convert_trap()
+
+
+
+        if not self.can_reach(self.grid.target_position,0,0)[0]:
+            self.setup_game()
 
     def start_game(self):
         """Inizializza griglia, giocatore e timer"""
+        self.setup_game()
         self._started = True
-        self.grid.generate_grid(self._difficulty)
-
-        spawn_point = self.grid.spawn_position
-        self.player = Player(self._player_name, spawn_point)
 
         self.timer.start_timer()
-
-        if not self.can_reach(self.grid._target_position,0,0)[0]:
-            self.restart_game()
 
     def end_game(self):
         """Termina la partita e ferma il timer"""
@@ -56,8 +72,6 @@ class Game:
         self.timer.stop_timer()
 
     def restart_game(self):
-        del self.grid
-        self.grid = Grid(20,20)
         self.start_game()
 
     def move_player(self, direction):
