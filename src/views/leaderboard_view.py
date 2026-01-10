@@ -47,6 +47,18 @@ class LeaderboardView(Views):
         # --- LEADERBOARD AREA ---
         self._setup_leaderboard()
 
+        close_btn = self.main_container.addButton(
+            text="TORNA INDIETRO", row=2, column=0,
+            command=self._parent_view.go_back
+        )
+        close_btn.grid_configure(sticky="", pady=(30, 0))
+        close_btn.configure(
+            background=self._parent_view.COLORS["accent"],
+            foreground="white",
+            font=("Segoe UI", 10, "bold"),
+            relief="flat",
+            width=20
+        )
 
     def _setup_leaderboard(self):
 
