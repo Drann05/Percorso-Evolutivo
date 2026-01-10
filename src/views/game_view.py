@@ -174,9 +174,6 @@ class GameView(Views):
         """Effetto visivo immediato per segnalare l'uso di un'abilità in una cella non consentita"""
         for rect in self.rects.values():
             self.canvas.itemconfig(rect, stipple="gray50")
-
-        self.canvas.update_idletasks()
-
         self.canvas.after(200, self._reset_flicker)
 
     def _reset_flicker(self):
