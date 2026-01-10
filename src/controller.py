@@ -95,14 +95,15 @@ class Controller:
     def handle_special_action_request(self, action, target_position):
 
         if not self.game:
-            return
-
-        success = self.game.use_special_action(action, target_position)
-        if not success:
+            return False
+    
+        is_success = self.game.use_special_action(action, target_position)
+        if not is_success:
             self._main_view.show_error()
-            return
-
+            return False
+    
         self._main_view.update_game(self.get_game_state())
+        return True
 
     def update_timer(self):
         if not self.game:
