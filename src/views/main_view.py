@@ -41,10 +41,10 @@ class MainView(EasyFrame):
         if screen not in self.SCREENS:
             raise ValueError("funzione non valida")
 
-        self.came_from = self.current_screen
+        #self.came_from = self.current_screen
         self.clear()
         screen(*args)
-        self.current_screen = screen
+        #self.current_screen = screen
 
     def show_start_screen(self):
         self.clear()
@@ -82,7 +82,7 @@ class MainView(EasyFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
-        for i in range(21):
+        for i in range(20):
             self.columnconfigure(i, weight=0)
             self.rowconfigure(i, weight=0)
 

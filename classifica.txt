@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 30:20:Facile:silvia
 25:13:Facile:n
 20:23:Facile:h
@@ -7,3 +8,11 @@
 -5:2:Medio:fwq
 -5:4:Medio:dwqgqgqs
 -5:10:Medio:asd
+=======
+60:22:Medio:uuykuyk
+50:15:Medio:fqwfwq
+30:30:Medio:ffwqfwqwfq
+-5:1:Medio:AQDW
+-5:4:Medio:uhiihj
+-5:6:Difficile:jiokkokpokpopk
+>>>>>>> Stashed changes

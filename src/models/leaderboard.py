@@ -26,18 +26,18 @@ class Leaderboard:
         return scores
 
     @staticmethod
-    def is_better(self, n_score, n_moves, n_level, o_score, o_moves, o_level):
+    def is_better(n_score, n_moves, n_level, o_score, o_moves, o_level):
         """
         Logica: punteggio alto meglio.
         A parità di punti, meno mosse meglio.
         A parità di mosse, livello più alto meglio.
         """
-        return (n_score, n_moves, n_level) > (o_score, o_moves, o_level)
+        return (n_score, -n_moves, n_level) > (o_score, -o_moves, o_level)
 
     def save(self, name, score, moves, level):
         """Aggiorna la classifica se il punteggio è migliore e salva su file."""
         name = name.strip()
-        if os.path.exists(self._filepath):
+        if not os.path.exists(self._filepath):
             with open(self._filepath, "w") as f:
                 f.write(f"{name}:{score}:{moves}:{level}:{name}\n")
 

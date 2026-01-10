@@ -34,7 +34,7 @@ class StartScreen(Views):
 
         # --- TITOLO ---
 
-        self.title = self.main_container.addLabel(
+        self.title = self._parent_view.addLabel(
             text="P E R C O R S O  E V O L U T I V O",
             row=0, column=0, sticky="NSEW"
         )

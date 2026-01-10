@@ -73,8 +73,8 @@ class Controller:
         }
 
     def handle_restart_game_request(self):
-        self.game.restart_game()
-        self._main_view.show_game()
+        self.game.start_game()
+        self._main_view.change_screen(self._main_view.show_game)
 
     def handle_movement_request(self, direction):
         """Gestisce il movimento del giocatore e aggiorna
@@ -118,14 +118,25 @@ class Controller:
         won = True
         if self.game.is_moves_out_of_limit or self.game.is_negative_score:
             won = False
+        if self.game.is_objective_reached:
+            won = True
 
         nickname = self.game.player.nickname
         score = self.game.player.score
         moves = self.game.player.moves
         difficulty = self.game.difficulty
-        if won:
-            self.leaderboard.save(nickname, score, moves, difficulty)
 
+        if won:
+            try:
+                self.leaderboard.save(
+                    name = nickname,
+                    score = score,
+                    moves = moves,
+                    level = difficulty
+                )
+                print(f"Dati salvati per {nickname}: {score} punti.")
+            except Exception as e:
+                print(f"Errore durante il salvataggio della classifica: {e}")
         self._main_view.game_view.show_game_over(won)
 
 if __name__ == '__main__':
