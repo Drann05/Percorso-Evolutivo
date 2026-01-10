@@ -32,10 +32,10 @@ class LeaderboardView(Views):
         widget["background"] = self.BG_COLOR
 
     def _setup_layout(self):
-        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
         self._parent_view.columnconfigure(0, weight=1)
-        self._parent_view.rowconfigure(0, weight=1) # Spazio superiore
-        self._parent_view.rowconfigure(2, weight=1) # Spazio inferiore
+        self._parent_view.rowconfigure(0, weight=1)  # Spazio superiore
+        self._parent_view.rowconfigure(2, weight=1)  # Spazio inferiore
 
     def build_ui(self):
 
