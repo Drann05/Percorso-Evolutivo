@@ -21,21 +21,24 @@ class GameView(BaseView):
     SPECIAL_USED_COLOR = "#555555"   # Colore per le abilità già utilizzate
 
     def __init__(self, parent_view, controller, title, width=1000, height=800):
-        super().__init__(title, width, height)
-        self._controller = controller
-        self._parent_view = parent_view
 
-        self._parent_view.setBackground(self._parent_view.COLORS['bg'])
 
-        self.game_state = self._controller.get_game_state()     # Recupera lo stato iniziale dal controller
+
 
         # Inizializzazione variabili per la gestione grafica
         self.rects = {}
         self.player_display_id = None
         self.cell_size = 30
 
+        super().__init__(parent_view, controller, title)
+        self._controller = controller
+        self._parent_view = parent_view
+        
+        self._parent_view.setBackground(self._parent_view.COLORS['bg'])
+        self.game_state = self._controller.get_game_state()  # Recupera lo stato iniziale dal controller
+
         self.setup_menu()
-        self.build_ui()
+
 
         # Bind degli eventi: resize della finestra e doppio click per abilità speciali
         self.canvas.bind("<Configure>", self.on_resize)
@@ -43,15 +46,9 @@ class GameView(BaseView):
 
     def build_ui(self):
         """Costruisce i componenti principali dell'interfaccia"""
-        self._setup_layout()
         self._setup_title()
         self._setup_canvas()
         self._setup_hud()
-
-    def _setup_layout(self):
-        """Configura il sistema a griglia della finestra principale"""
-        self._parent_view.master.rowconfigure(0, weight=1)
-        self._parent_view.master.columnconfigure(0, weight=1)
 
     def _setup_title(self):
         """Crea l'intestazione con il titolo del gioco"""
