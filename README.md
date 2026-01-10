@@ -1,4 +1,4 @@
-# Percorso Evolutivo
+  # Percorso Evolutivo
 Percorso Evolutivo è un videogioco singleplayer, basato su una griglia dinamica in continua evoluzione.
 Il giocatore deve raggiungere l'obiettivo tenendo d'occhio risorse, trappole e ostacoli.
 
@@ -17,7 +17,8 @@ La griglia evolve nel tempo, rendendo il gioco più dinamico
       <b>Menù Principale</b>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/02fd564d-6fba-49a4-9a7e-628b6d9cc127" height="300px" alt="Game_View" />
+      <img src="https://github.com/user-attachments/assets/3de5935a-8627-4107-89cd-2a2b6dab4e5e" height="300px" alt="Game_View" />
+
       <br />
       <b>Gioco</b>
     </td>
