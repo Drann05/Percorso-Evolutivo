@@ -6,17 +6,12 @@ class LeaderboardView(Views):
     ACCENT_COLOR = "#1ABC9C"
     TEXT_COLOR = "#ECF0F1"
 
-    def __init__(self, parent_view, controller, title, width=500, height=600):
+    def __init__(self, parent_view, controller, title, scores, width=500, height=600):
         super().__init__(title, width, height)
         self._parent_view = parent_view
         self._controller = controller
-
-        self.MAIN_FONT = ("Segoe UI", 11)
-        self.TITLE_FONT = ("Segoe UI", 20, "bold")
-        self.HEADER_FONT = ("Segoe UI", 10, "bold")
-
-        self._parent_view.setBackground(self.BG_COLOR)
-
+        self._scores = scores
+        self._setup_layout()
         self.build_ui()
 
     def style(self, widget, is_header=False, is_top_three=False):
@@ -32,71 +27,69 @@ class LeaderboardView(Views):
         widget["background"] = self.BG_COLOR
 
     def _setup_layout(self):
-        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
         self._parent_view.columnconfigure(0, weight=1)
-        self._parent_view.rowconfigure(0, weight=1) # Spazio superiore
-        self._parent_view.rowconfigure(2, weight=1) # Spazio inferiore
+        self._parent_view.rowconfigure(0, weight=1)  # Spazio superiore
+        self._parent_view.rowconfigure(2, weight=1)  # Spazio inferiore
 
     def build_ui(self):
 
+        # --- MAIN CONTAINER ---
+        self.main_container = self._parent_view.addPanel(row=0, column=0, background=self._parent_view.COLORS["bg"])
+        self.main_container.grid_configure(sticky="")
 
-        self.main_container = self._parent_view.addPanel(row=0, column=0, background=self.)
+        # Titolo
+        self.title = self.main_container.addLabel(text="Classifica", row=0, column=0)
+        self.title.configure(font=("Impact", 32), background=self._parent_view.COLORS["bg"],
+                             foreground=self._parent_view.COLORS["accent"])
+        self.title.grid_configure(sticky="")
 
-
-
-
-
-
-
-
-
-
-
-
+        # --- LEADERBOARD AREA ---
+        self._setup_leaderboard()
 
 
+    def _setup_leaderboard(self):
 
+        self.leaderboard_area = self.main_container.addPanel(row=1, column=0, background=self._parent_view.COLORS["panel_bg"])
 
+        self.leaderboard_area.grid_configure(sticky="NSEW", padx=20, pady=20, ipadx=10, ipady=10)
 
+        leaderboard_keys = ['pos', 'Giocatore', 'Mosse', 'Punti', 'Livello']
 
-        title = self._parent_view.addLabel(
-            "CLASSIFICA",
-            row=1, column=0
-        )
-        self.style(title, is_header=True)
+        # --- HEADER DELLA TABELLA ---
+        for i, title in enumerate(leaderboard_keys):
+            header = self.leaderboard_area.addLabel(text=title.upper(), row=0, column=i)
+            header.configure(
+                font=("Consolas", 12, "bold"),
+                foreground=self._parent_view.COLORS["accent"],
+                background=self._parent_view.COLORS["panel_bg"]
+            )
+            header.grid_configure(pady=(0, 15), padx=15)
 
-        h_rank = self._parent_view.addLabel("LIVELLO", row=4, column=1)
-        h_name = self._parent_view.addLabel("GIOCATORE", row=4, column=3)
-        h_score = self._parent_view.addLabel("PUNTI", row=4, column=7)
-        h_moves = self._parent_view.addLabel("MOSSE", row=4, column=10)
+        # --- DATI DEI GIOCATORI ---
+        for j, (player, moves, score, difficulty) in enumerate(self._scores, start=1):
+            # Colore speciale per i primi 3
+            if j == 1:
+                color = "#FFD700"  # Oro
+            elif j == 2:
+                color = "#C0C0C0"  # Argento
+            elif j == 3:
+                color = "#CD7F32"  # Bronzo
+            else:
+                color = self._parent_view.COLORS["text"]
 
-        for header in [h_rank, h_name, h_score, h_moves]:
-            header["font"] = self.HEADER_FONT
-            header["foreground"] = self.ACCENT_COLOR
-            header["background"] = self.BG_COLOR
+            # Font: bold per il podio
+            row_font = ("Segoe UI", 11, "bold") if j <= 3 else ("Segoe UI", 11)
 
-        #top_players = self._leaderboard.get_top_10()
+            row_data = [f"#{j}", player, moves, score, difficulty]
 
-        start_row = 6
-        """for i, (name, stats) in enumerate(top_players, start=1):
-            score, moves, level = stats
-
-            is_top = i <= 3
-            current_y = start_row + i
-
-            lbl_rank = self._parent_view.addLabel(text=f"#{i}", row=current_y, column=1)
-            lbl_name = self._parent_view.addLabel(text=name, row=current_y, column=3)
-            lbl_score = self._parent_view.addLabel(text=str(score), row=current_y, column=7)
-            lbl_moves = self._parent_view.addLabel(text=str(moves), row=current_y, column=10)
-
-            for lbl in [lbl_rank, lbl_name, lbl_score, lbl_moves]:
-                self.style(lbl, is_top_three=is_top)"""
-
-
-        close_btn = self._parent_view.addButton(
-            text="TORNA AL MENU", row=22, column=4, columnspan=4,
-            command=self._parent_view.destroy
-        )
-        close_btn["background"] = self.ACCENT_COLOR
-        close_btn["foreground"] = "white"
-        close_btn["font"] = ("Segoe UI", 10, "bold")
+            for col, text in enumerate(row_data):
+                label = self.leaderboard_area.addLabel(text=text, row=j, column=col)
+                label.configure(
+                    font=row_font,
+                    foreground=color,
+                    background=self._parent_view.COLORS["panel_bg"]
+                )
+                # Allinea i nomi (colonna 1) a sinistra ("W"), gli altri al centro
+                sticky_value = "W" if col == 1 else ""
+                label.grid_configure(sticky=sticky_value, padx=15, pady=5)
