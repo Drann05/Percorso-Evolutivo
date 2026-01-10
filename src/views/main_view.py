@@ -1,4 +1,4 @@
-from breezypythongui import EasyFrame, EasyCanvas
+from breezypythongui import EasyFrame
 
 from .leaderboard_view import LeaderboardView
 from .start_screen import StartScreen
