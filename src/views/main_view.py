@@ -17,12 +17,21 @@ class MainView(EasyFrame):
         "panel_bg": "#1A1A1A"
     }
 
+    COLORS = {
+        "bg": "#121212",  # Same dark background as GameView
+        "accent": "#00ADB5",  # Neon Teal (Mint)
+        "text": "#EEEEEE",  # Off-white text
+        "error": "#FF3131",  # Red matching your timer color
+        "panel_bg": "#1A1A1A"  # Slightly lighter dark for panels
+    }
+
     def __init__(self, controller, title="Percorso Evolutivo"):
         super().__init__(title=title, width=500, height=500)
         self._title = title
         self.controller = controller
 
-        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions, self.show_menu_bar]
+        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions,
+                        self.show_menu_bar]
 
         self.start_screen = None
         self.game_view = None
@@ -33,7 +42,6 @@ class MainView(EasyFrame):
         self.came_from = None
 
         self.change_screen(self.show_start_screen)
-
 
     def change_screen(self, screen, *args):
         """Centralizza il cambio della finestra, salvando la finestra
@@ -47,7 +55,9 @@ class MainView(EasyFrame):
         self.current_screen = screen
 
     def show_start_screen(self):
+        self.clear()
         self.start_screen = StartScreen(self, self.controller, self._title)
+        self.current_screen = self.start_screen
 
     def show_difficulty_dialog(self):
         dialog = DifficultyDialog(self, self.controller)
@@ -55,15 +65,17 @@ class MainView(EasyFrame):
     def show_game(self):
 
         self.game_view = GameView(self, self.controller, self._title)
-        self.after(2000, self.update_timer)
-
+        self.after(20, self.update_timer)
+        
     def show_instructions(self):
+        self.clear()
         self.game_instructions = GameInstructions(self, self._title, self.controller)
 
     def show_leaderboard(self, scores):
         self.leaderboard_view = LeaderboardView(self, self.controller, self._title, scores)
 
     def exit_game(self):
+        self.quit()
         self.after(20, quit)
 
     def show_menu_bar(self):
