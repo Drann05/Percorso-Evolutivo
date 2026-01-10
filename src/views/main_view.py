@@ -41,10 +41,10 @@ class MainView(EasyFrame):
         if screen not in self.SCREENS:
             raise ValueError("funzione non valida")
 
-        #self.came_from = self.current_screen
+        self.came_from = self.current_screen
         self.clear()
         screen(*args)
-        #self.current_screen = screen
+        self.current_screen = screen
 
     def show_start_screen(self):
         self.clear()
@@ -113,8 +113,5 @@ class MainView(EasyFrame):
             pass
 
 
-    def show_error(self):
-        pass
-
     def go_back(self):
-        pass
+        self.change_screen(self.came_from)
