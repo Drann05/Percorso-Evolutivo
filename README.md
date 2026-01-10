@@ -24,7 +24,7 @@ La griglia evolve nel tempo, rendendo il gioco più dinamico
     <td align="center">
       <img src="https://github.com/user-attachments/assets/be9d73d3-230a-4a42-ba69-9bbe4b657466" height="300px" alt="Leaderboard" />
       <br />
-      <b>Istruzioni</b>
+      <b>Classifica</b>
     </td>
   </tr>
 </table>
