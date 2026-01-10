@@ -15,6 +15,7 @@ class Controller:
     """
     def __init__(self):
 
+        self.leaderboard = Leaderboard()
         self._start_screen = None
         self.game = None
 
@@ -50,6 +51,10 @@ class Controller:
         self.game = Game(self.pending_nickname, difficulty)
         self.game.start_game()
         self._main_view.show_game()
+
+    def handle_leaderboard_request(self):
+        scores = self.leaderboard.get_top_10()
+        self._main_view.change_screen(self._main_view.show_leaderboard, scores)
 
                 #------------#
                 #    GAME    #
@@ -90,30 +95,34 @@ class Controller:
 
         self._main_view.update_game(self.get_game_state())
         if moved["game_over"]:
-            self._main_view.show_game_over(moved)
+            self.handle_game_over()
 
     def handle_special_action_request(self, action, target_position):
 
         if not self.game:
-            return
+            return False
 
-        success = self.game.use_special_action(action, target_position)
-        if not success:
+        is_success = self.game.use_special_action(action, target_position)
+        if not is_success:
             self._main_view.show_error()
-            return
+            return False
 
         self._main_view.update_game(self.get_game_state())
+        return True
+
+    def handle_game_over(self):
+        nickname = self.game.player.nickname
+        score = self.game.player.score
+        moves = self.game.player.moves
+        difficulty = self.game.difficulty
+        self.leaderboard.save(nickname, score, moves, difficulty)
+        self._main_view.game_view.show_game_over()  # Da implementare
 
     def update_timer(self):
         if not self.game:
             return
         return self.game.timer.get_elapsed()
 
-    def handle_leaderboard_request(self):
-        if self.game:
-            return self.game.leaderboard
-        #else:
-            #return Leaderboard()
 
 
 if __name__ == '__main__':
