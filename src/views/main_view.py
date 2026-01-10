@@ -30,7 +30,8 @@ class MainView(EasyFrame):
         self._title = title
         self.controller = controller
 
-        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions, self.show_menu_bar]
+        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions,
+                        self.show_menu_bar]
 
         self.start_screen = None
         self.game_view = None
@@ -40,8 +41,7 @@ class MainView(EasyFrame):
         self.current_screen = None
         self.came_from = None
 
-        #self.change_screen(self.show_start_screen)
-        self.change_screen(self.show_leaderboard)
+        self.change_screen(self.show_start_screen)
 
     def change_screen(self, screen, *args):
         """Centralizza il cambio della finestra, salvando la finestra
