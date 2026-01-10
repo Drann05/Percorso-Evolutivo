@@ -26,8 +26,7 @@ class MainView(EasyFrame):
         self._title = title
         self.controller = controller
 
-        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions,
-                        self.show_menu_bar]
+        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions]
 
         self.start_screen = None
         self.game_view = None
@@ -83,14 +82,6 @@ class MainView(EasyFrame):
     def exit_game(self):
         self.quit()
         self.after(20, quit)
-
-    def show_menu_bar(self):
-        menu_bar = self.addMenuBar(row=0, column=0, columnspan=5)
-        file_menu = menu_bar.addMenu("Menu")
-        file_menu.addMenuItem("Nuova Partita", command=self.controller.handle_restart_game_request)
-        file_menu.addMenuItem("Esci", command=self.exit_game)
-        file_menu.addMenuItem("Istruzioni", command=self.show_instructions)
-        file_menu.addMenuItem("Classifica", command=self.show_leaderboard)
 
 
 

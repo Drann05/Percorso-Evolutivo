@@ -265,6 +265,14 @@ class GameView(Views):
                           background="#333333", foreground="white")
             button.grid_configure(padx=10, pady=20)
 
+    def show_menu_bar(self):
+        menu_bar = self._parent_view.addMenuBar(row=0, column=0, columnspan=5)
+        file_menu = menu_bar.addMenu("Menu")
+        file_menu.addMenuItem("Nuova Partita", command=self._parent_view.controller.handle_restart_game_request)
+        file_menu.addMenuItem("Esci", command=self._parent_view.exit_game)
+        file_menu.addMenuItem("Istruzioni", command=self._parent_view.show_instructions)
+        file_menu.addMenuItem("Classifica", command=self._parent_view.show_leaderboard)
+
     def update_special_labels(self, specials):
         def style(lbl, ready):
             lbl.configure(
