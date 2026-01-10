@@ -42,10 +42,10 @@ class MainView(EasyFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
-        rows, cols = self.grid_size()
+        #rows, cols = self.grid_size()
 
-        for r in range(rows + 1): self.rowconfigure(r, weight=0)
-        for c in range(cols + 1): self.columnconfigure(c, weight=0)
+        for r in range(20): self.rowconfigure(r, weight=0)
+        for c in range(20): self.columnconfigure(c, weight=0)
 
         if hasattr(self, "menubar"):
             self.menubar.destroy()
