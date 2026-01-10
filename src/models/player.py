@@ -13,8 +13,41 @@ class Player:
         self._position = position
         self._score = 0
         self._moves = 0
-        self.remove_wall_available = True
-        self.convert_trap_available = True
+        self._has_remove_wall = True
+        self._has_convert_trap = True
+
+
+    #----------------|
+    #   PROPERTIES   |
+    #----------------|
+
+    @property
+    def nickname(self):
+        return self._nickname
+
+    @property
+    def score(self):
+        return self._score
+
+    @property
+    def moves(self):
+        return self._moves
+
+    @property
+    def position(self):
+        return self._position
+
+    #------------|
+    #   SETTER   |
+    #------------|
+
+    @position.setter
+    def position(self, value):
+        self._position = value
+
+    #---------------------|
+    #   LOGICA DI GIOCO   |
+    #---------------------|
 
     def move_to(self, direction):
         """
@@ -25,37 +58,47 @@ class Player:
 
         :param direction: String con la direzione (N, S, E, W)
         """
-
         row, col = self._position
-        self._moves += 1
 
         match direction:
-            case "N":
-                row -= 1
-            case "S":
-                row += 1
-            case "E":
-                col += 1
-            case "W":
-                col -= 1
+            case "N": row -= 1
+            case "S": row += 1
+            case "E": col += 1
+            case "W": col -= 1
 
         self._position = (row, col)
+        self._moves += 1
 
     def change_score(self, value):
         """Aggiunge o sottrae punti al punteggio del giocatore"""
         self._score += value
 
+    #--------------------------------|
+    #   METODI PER AZIONI SPECIALI   |
+    #--------------------------------|
+
     def use_remove_wall(self):
-        self.remove_wall_available = False
+        self._has_remove_wall = False
 
     def use_convert_trap(self):
-        self.convert_trap_available = False
+        self._hasconvert_trap = False
 
     def is_remove_wall_available(self):
-        return self.remove_wall_available
+        return self._has_remove_wall
 
     def is_convert_trap_available(self):
-        return self.convert_trap_available
+        return self._has_convert_trap
+
+    #-----------------------------|
+    #   RESET DELLE STATISTICHE   |
+    #-----------------------------|
+
+
+    def reset_all_stats(self):
+        self.reset_score()
+        self.reset_moves()
+        self.reset_remove_wall()
+        self.reset_convert_trap()
 
     def reset_score(self):
         self._score = 0
@@ -64,33 +107,10 @@ class Player:
         self._moves = 0
 
     def reset_remove_wall(self):
-        self.remove_wall_available = True
+        self._has_remove_wall = True
 
     def reset_convert_trap(self):
-        self.convert_trap_available = True
+        self._has_convert_trap = True
 
-    def reset_all_stats(self):
-        self.reset_score()
-        self.reset_moves()
-        self.reset_remove_wall()
-        self.reset_convert_trap()
 
-    @property
-    def moves(self):
-        return self._moves
 
-    @property
-    def score(self):
-        return self._score
-
-    @property
-    def position(self):
-        return self._position
-
-    @position.setter
-    def position(self, value):
-        self._position = value
-
-    @property
-    def nickname(self):
-        return self._nickname
