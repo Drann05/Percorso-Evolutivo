@@ -203,8 +203,9 @@ class GameView(Views):
             elif cell_type == 'T':
                 action = "convert_trap"
 
-            if action:
-                self._controller.handle_special_action_request(action, (row, col))
+            action_success = self._controller.handle_special_action_request(action, (row, col))
+
+            if not action_success:
                 self.screen_flicker()
 
     def setup_menu(self):
