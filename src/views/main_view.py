@@ -70,9 +70,8 @@ class MainView(EasyFrame):
         self.clear()
         self.game_instructions = GameInstructions(self, self._title, self.controller)
 
-    def show_leaderboard(self):
-        self.clear()
-        self.leaderboard_view = LeaderboardView(self, self.controller, self._title)
+    def show_leaderboard(self, scores):
+        self.leaderboard_view = LeaderboardView(self, self.controller, self._title, scores)
 
     def exit_game(self):
         self.quit()
