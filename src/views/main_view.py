@@ -55,12 +55,12 @@ class MainView(EasyFrame):
             raise ValueError("funzione non valida")
 
         self.came_from = self.current_screen
-        self.clear()
+        self._clear_window()
         screen(*args)
         self.current_screen = screen
 
     def show_start_screen(self):
-        self.clear()
+        self._clear_window()
         self.start_screen = StartScreen(self, self.controller, self._title)
         self.current_screen = self.start_screen
 
@@ -74,7 +74,7 @@ class MainView(EasyFrame):
         self.after(20, self.update_timer)
 
     def show_instructions(self):
-        self.clear()
+        self._clear_window()
         self.game_instructions = GameInstructions(self, self.controller, self._title)
 
     def show_leaderboard(self, scores):
