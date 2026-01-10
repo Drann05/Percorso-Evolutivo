@@ -51,7 +51,8 @@ class StartScreen(Views):
 
         # Testo "Inserisci un nickname"
         self.input_label = self.input_area.addLabel(text="INSERISCI UN NICKNAME:",row=0, column=0)
-        self.input_label.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS["panel_bg"], foreground=self._parent_view.COLORS["panel_bg"])
+        self.input_label.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS["panel_bg"], foreground=self._parent_view.COLORS["text"])
+        self.input_label.grid_configure(sticky="")
 
         # Area di testo per il nickname
         self.nickname_field = self.input_area.addTextField(text="", row=1, column=0)
