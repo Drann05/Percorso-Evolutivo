@@ -67,7 +67,7 @@ class Controller:
             self._refresh_view()
 
             if move_result["game_over"]:
-                self.handle_game_over()
+                self._handle_game_over()
 
     def handle_special_action_request(self, action, target_position):
 

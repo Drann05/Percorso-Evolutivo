@@ -269,7 +269,7 @@ class GameView(Views):
         button_restart = button_panel.addButton(text="Riprova", row=0, column=0,
                                           command=self._controller.handle_restart_game_request)
         button_menu = button_panel.addButton(text="Menu Principale", row=0, column=1,
-                                       command=lambda: self._parent_view.change_screen(self._parent_view.show_start_screen))
+                                       command=self._parent_view.show_start_screen)
 
         # Stile pulsanti
         for button in [button_restart, button_menu]:
