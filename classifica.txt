@@ -3,6 +3,7 @@
 60:24:MEDIO:Gioele
 55:14:MEDIO:qdw
 50:15:Facile:andrea
+45:29:MEDIO:Christian
 40:15:MEDIO:qd
 40:21:DIFFICILE:Gioooo
 35:14:Difficile:Giusto
