@@ -5,7 +5,7 @@ from .start_screen import StartScreen
 from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
 from .game_view import GameView
-
+import tkinter as tk
 
 
 class MainView(EasyFrame):
@@ -46,6 +46,28 @@ class MainView(EasyFrame):
 
         for r in range(rows + 1): self.rowconfigure(r, weight=0)
         for c in range(cols + 1): self.columnconfigure(c, weight=0)
+
+        if hasattr(self, "menubar"):
+            self.menubar.destroy()
+
+    def setup_menu(self):
+        """Crea la menu bar"""
+        root = self.master
+        self.menubar = tk.Menu(root)
+
+        game_menu = tk.Menu(self.menubar, tearoff=0)
+        game_menu.add_command(label="Nuova partita", command=self.controller.handle_restart_game_request)
+        game_menu.add_separator()
+        game_menu.add_command(label="Torna al menu", command=self.controller.init_start_screen)
+        game_menu.add_command(label="Esci", command=root.quit)
+        self.menubar.add_cascade(label="Gioco", menu=game_menu)
+
+        help_menu = tk.Menu(self.menubar, tearoff=0)
+        help_menu.add_command(label="Istruzioni",
+                              command=lambda: self._switch_to(self.show_instructions))
+        self.menubar.add_cascade(label="Aiuto", menu=help_menu)
+
+        root.config(menu=self.menubar)
 
     def _switch_to(self, view_class, *args, **kwargs):
         """Distrugge la view attuale, salva lo stato della precedente
