@@ -66,7 +66,7 @@ class LeaderboardView(Views):
 
         self.leaderboard_area.grid_configure(sticky="NSEW", padx=20, pady=20, ipadx=10, ipady=10)
 
-        leaderboard_keys = ['pos', 'Giocatore', 'Mosse', 'Punti', 'Livello']
+        leaderboard_keys = ['pos', 'Giocatore', 'Punti', 'Mosse', 'Livello']
 
         # --- HEADER DELLA TABELLA ---
         for i, title in enumerate(leaderboard_keys):
