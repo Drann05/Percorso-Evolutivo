@@ -7,7 +7,7 @@ class DifficultyDialog:
         self.build_ui()
 
     def build_ui(self):
-        self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
+        self.overlay = self._parent_view.addPanel(row=1, column=0, background="#212121")
         self.overlay.grid_configure(padx=100, pady=100)
 
         # Titolo dell'overlay
@@ -18,7 +18,7 @@ class DifficultyDialog:
         self.title_lbl.configure(
             font=("Impact", 25),
             foreground=self._parent_view.COLORS['accent'],
-            background=self._parent_view.COLORS['bg']
+            background="#212121"
         )
         self.title_lbl.grid_configure(pady=(0, 30))
 
