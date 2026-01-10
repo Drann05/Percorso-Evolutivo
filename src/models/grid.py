@@ -69,7 +69,6 @@ class Grid:
         resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
         traps_target = int(self.DIFFICULTY[difficulty]["Trappole"] * self._grid_dimension / 100)
 
-        print(walls_target)
         self._adjust_cells(self.MURO, walls_target)
         self._adjust_cells(self.RISORSA, resources_target)
         self._adjust_cells(self.TRAPPOLA, traps_target)
@@ -98,11 +97,8 @@ class Grid:
         self.set_cell((1, 3), self.MURO)"""
 
 
-        #print(self.is_reachable(self._spawn_position, self._target_position, 4))
-
     def _adjust_cells(self, cell_type, target_count):
         current = self._count_cells(cell_type)
-        print(current)
         difference = target_count - current
 
         if difference > 0:
@@ -323,14 +319,3 @@ class Grid:
             for j in range(0, self._width):
                 print(self.grid[i][j].type, end=" ")
             print("")
-
-
-if __name__ == '__main__':
-    grid = Grid(20, 20)
-
-    grid.generate_grid("Difficile")
-    grid.print_grid()
-
-    print(grid._count_cells('X'))
-    print(grid._count_cells('R'))
-    print(grid._count_cells('T'))

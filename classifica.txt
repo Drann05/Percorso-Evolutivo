@@ -1,1 +1,5 @@
-50:15:FACILE:sonia
+60:17:Medio:dwq
+55:14:MEDIO:qdw
+50:15:Facile:andrea
+35:14:Difficile:Giusto
+30:12:DIFFICILE:silvia
