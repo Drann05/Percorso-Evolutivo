@@ -115,10 +115,7 @@ class Game:
         self.is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
 
 
-        return any([
-                self.is_moves_out_of_limit,
-                self.is_negative_score,
-                self.is_objective_reached])
+        return self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached
 
     def _move_result(self, moved, cell_data=None, game_over=False):
         """Formato standard della risposta di movimento"""
