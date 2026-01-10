@@ -1,8 +1,8 @@
-from .views import Views
+from .base_view import BaseView
 import tkinter as tk
 
 
-class GameView(Views):
+class GameView(BaseView):
     """
         Classe responsabile della visualizzazione dell'interfaccia di gioco.
         Gestisce la griglia, il giocatore, le statistiche e l'input dell'utente.

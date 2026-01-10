@@ -1,36 +1,15 @@
-from .views import Views
+from .base_view import BaseView
 
 
-class LeaderboardView(Views):
-    BG_COLOR = "#2C3E50"
-    ACCENT_COLOR = "#1ABC9C"
-    TEXT_COLOR = "#ECF0F1"
+class LeaderboardView(BaseView):
 
     def __init__(self, parent_view, controller, title, scores, width=500, height=600):
-        super().__init__(title, width, height)
+        self._scores = scores
+
+        super().__init__(parent_view, controller, title)
         self._parent_view = parent_view
         self._controller = controller
-        self._scores = scores
-        self._setup_layout()
-        self.build_ui()
 
-    def style(self, widget, is_header=False, is_top_three=False):
-        if is_header:
-            widget["font"] = self.TITLE_FONT
-            widget["foreground"] = self.ACCENT_COLOR
-        elif is_top_three:
-            widget["font"] = ("Segoe UI", 11, "bold")
-            widget["foreground"] = "#F1C40F"
-        else:
-            widget["font"] = self.MAIN_FONT
-            widget["foreground"] = self.TEXT_COLOR
-        widget["background"] = self.BG_COLOR
-
-    def _setup_layout(self):
-        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
-        self._parent_view.columnconfigure(0, weight=1)
-        self._parent_view.rowconfigure(0, weight=1)  # Spazio superiore
-        self._parent_view.rowconfigure(2, weight=1)  # Spazio inferiore
 
     def build_ui(self):
 

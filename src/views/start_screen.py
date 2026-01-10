@@ -1,16 +1,15 @@
-from .views import Views
+from .base_view import BaseView
 
 
-class StartScreen(Views):
+class StartScreen(BaseView):
 
     def __init__(self, parent_view, controller, title, width=800, height=600):
-        super().__init__(title, width, height)
+        super().__init__(parent_view, controller, title)
 
         self._parent_view = parent_view
         self._controller = controller
 
-        self._setup_layout()
-        self.build_ui()
+        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
 
     def style_button(self, button, is_primary=True):
         """Applies the GameView button aesthetic."""
@@ -19,12 +18,6 @@ class StartScreen(Views):
         button["background"] = self._parent_view.COLORS["accent"] if is_primary else "#444444"
         button["width"] = 20
         button["relief"] = "flat"
-
-    def _setup_layout(self):
-        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
-        self._parent_view.columnconfigure(0, weight=1)
-        self._parent_view.rowconfigure(0, weight=1) # Spazio superiore
-        self._parent_view.rowconfigure(2, weight=1) # Spazio inferiore
 
     def build_ui(self):
 
