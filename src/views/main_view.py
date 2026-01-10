@@ -83,8 +83,7 @@ class MainView(EasyFrame):
         self._switch_to(GameInstructions, self._title)
 
     def show_difficulty_dialog(self):
-        """Utilizza una finestra modale, non _switch_to"""
-        dialog = DifficultyDialog(self, self.controller)
+        self.dialog = DifficultyDialog(self, self.controller)
 
     def show_game_over(self, won):
         if isinstance(self.current_view, GameView):
