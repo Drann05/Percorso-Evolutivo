@@ -173,8 +173,8 @@ class GameView(Views):
     def screen_flicker(self):
         """Effetto visivo usato per indicare l'utilizzo di un'abilità speciale"""
         for rect in self.rects.values():
-        for rect in self.rects.values():
-            self.canvas.itemconfig(rect, stipple="gray50")
+            for rect in self.rects.values():
+                self.canvas.itemconfig(rect, stipple="gray50")
         self.canvas.after(200, lambda: [
             self.canvas.itemconfig(r, stipple="") for r in self.rects.values()
         ])
@@ -241,7 +241,7 @@ class GameView(Views):
 
         root.config(menu=menubar)
 
-    def show_game_over(self, won=True):
+    def display_game_over(self, won=True):
         """Mostra una schermata (overlay) di fine partita con i risultati"""
         self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
 
