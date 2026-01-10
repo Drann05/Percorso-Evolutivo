@@ -111,11 +111,16 @@ class Controller:
         return self.game.timer.get_elapsed()
 
     def handle_leaderboard_request(self):
-        if self.game:
-            return self.game.leaderboard
-        #else:
-            #return Leaderboard()
+        scores = self.leaderboard.get_top_10()
+        self._main_view.change_screen(self._main_view.show_leaderboard, scores)
 
+    def handle_game_over(self):
+        nickname = self.game.player.nickname
+        score = self.game.player.score
+        moves = self.game.player.moves
+        difficulty = self.game.difficulty
+        self.leaderboard.save(nickname, score, moves, difficulty)
+        self._main_view.game_view.show_game_over() #da implementare
 
 if __name__ == '__main__':
     app = Controller()
