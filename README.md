@@ -18,7 +18,6 @@ La griglia evolve nel tempo, rendendo il gioco più dinamico
     </td>
     <td align="center">
       <img src="https://github.com/user-attachments/assets/3de5935a-8627-4107-89cd-2a2b6dab4e5e" height="300px" alt="Game_View" />
-
       <br />
       <b>Gioco</b>
     </td>
