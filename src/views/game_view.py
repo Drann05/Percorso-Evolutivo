@@ -1,51 +1,60 @@
 from .views import Views
-from breezypythongui import EasyFrame
 import tkinter as tk
 
 
 class GameView(Views):
+    """
+        Classe responsabile della visualizzazione dell'interfaccia di gioco.
+        Gestisce la griglia, il giocatore, le statistiche e l'input dell'utente.
+        """
 
-    # Colori griglia
+     # Colori griglia
     CELL_COLORS = {
-        'X': "#1A1A1A",
-        'R': "#F1C40F",
-        'T': "#E74C3C",
-        'O': "#2ECC71",
-        '.': "#2C3E50",
-        'P': "#3498DB"
+        'X': "#1A1A1A",  # Muro
+        'R': "#F1C40F",  # Risorsa
+        'T': "#E74C3C",  # Trappola
+        'O': "#2ECC71",  # Obiettivo
+        '.': "#2C3E50",  # Percorso vuoto
+        'P': "#3498DB"   # Spawn point
     }
-    PLAYER_COLOR = "#E91E63"
-    SPECIAL_USED_COLOR = "#555555"
+    PLAYER_COLOR = "#E91E63"    # Giocatore
+    SPECIAL_USED_COLOR = "#555555"   # Colore per le abilità già utilizzate
 
     def __init__(self, parent_view, controller, title, width=1000, height=800):
         super().__init__(title, width, height)
         self._controller = controller
         self._parent_view = parent_view
+
         self._parent_view.setBackground(self._parent_view.COLORS['bg'])
 
-        self.game_state = self._controller.get_game_state()
+        self.game_state = self._controller.get_game_state()     # Recupera lo stato iniziale dal controller
 
+        # Inizializzazione variabili per la gestione grafica
         self.rects = {}
         self.player_display_id = None
         self.cell_size = 30
 
         self.setup_menu()
         self.build_ui()
+
+        # Bind degli eventi: resize della finestra e doppio click per abilità speciali
         self.canvas.bind("<Configure>", self.on_resize)
         self.canvas.bind("<Double-Button-1>", self.handle_double_click)
 
     def build_ui(self):
+        """Costruisce i componenti principali dell'interfaccia"""
         self._setup_layout()
         self._setup_title()
         self._setup_canvas()
         self._setup_hud()
 
     def _setup_layout(self):
-
+        """Configura il sistema a griglia della finestra principale"""
         self._parent_view.master.rowconfigure(0, weight=1)
         self._parent_view.master.columnconfigure(0, weight=1)
 
     def _setup_title(self):
+        """Crea l'intestazione con il titolo del gioco"""
         self.header_panel = self._parent_view.addPanel(row=0, column=0, background=self._parent_view.COLORS['bg'])
         self.header_panel.grid_configure(sticky="EW")
 
@@ -62,12 +71,13 @@ class GameView(Views):
         )
 
     def _setup_canvas(self):
+        """Inizializza l'area di disegno per la griglia di gioco"""
         self.canvas = self._parent_view.addCanvas(row=1, column=0)
         self.canvas.configure(background="#1A1A1A", highlightthickness=0)
         self.canvas.grid_configure(sticky="NSEW", padx=20, pady=(10, 5))
 
     def _setup_hud(self):
-        """Crea il panel per i comandi e le statistiche di gioco"""
+        """Crea il panel HUD (Heads-Up Display) per statistiche, comandi e abilità"""
         self.hud_panel = self._parent_view.addPanel(row=2, column=0, background=self._parent_view.COLORS['bg'])
         self.hud_panel.grid_configure(sticky="EW")
 
@@ -127,7 +137,7 @@ class GameView(Views):
             lbl.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS['bg'], foreground=self._parent_view.COLORS['text'])
 
     def on_resize(self, event):
-        """Centra la griglia dopo il resize della finestra"""
+        """Ricalcola la dimensione delle celle quando la finestra viene ridimensionata"""
         grid_info = self.game_state["grid"]
         self.cell_size = min((event.width - 40) // grid_info["cols"],
                              (event.height - 40) // grid_info["rows"])
@@ -136,13 +146,14 @@ class GameView(Views):
         self.update_player_position_display()
 
     def refresh_grid_display(self):
+        """Ridisegna l'intera griglia di gioco sul Canvas"""
         self.canvas.delete("all")
         self.rects = {}
 
         grid_info = self.game_state["grid"]
         grid_matrix = grid_info["grid"]
 
-        # Centra la griglia nel canvas
+        # Calcola l'offset per centrare la griglia nel canvas
         x_off = (self.canvas.winfo_width() - (grid_info["cols"] * self.cell_size)) // 2
         y_off = (self.canvas.winfo_height() - (grid_info["rows"] * self.cell_size)) // 2
 
@@ -154,19 +165,22 @@ class GameView(Views):
                 cell_type = grid_matrix[r][c]
                 color = self.CELL_COLORS.get(cell_type, "#FFFFFF")
 
+                # Disegna la cella e salva l'ID per aggiornamenti futuri
                 self.rects[(r, c)] = self.canvas.drawRectangle(
                     x1, y1, x2, y2, fill=color, outline="#121212"
                 )
 
     def screen_flicker(self):
+        """Effetto visivo usato per indicare l'utilizzo di un'abilità speciale"""
         for rect in self.rects.values():
-            self.canvas.itemconfig(rect, stipple="gray50")
+            for rect in self.rects.values():
+                self.canvas.itemconfig(rect, stipple="gray50")
         self.canvas.after(200, lambda: [
             self.canvas.itemconfig(r, stipple="") for r in self.rects.values()
         ])
 
     def draw_player(self):
-        """Disegna il giocatore"""
+        """Crea l'oggetto grafico che rappresenta il giocatore"""
         row, col = self.game_state["player_position"]
         grid_info = self.game_state["grid"]
 
@@ -227,10 +241,8 @@ class GameView(Views):
 
         root.config(menu=menubar)
 
-    def show_game_over(self, won=True):
-        """Mostra l'overlay di fine gioco"""
-
-
+    def display_game_over(self, won=True):
+        """Mostra una schermata (overlay) di fine partita con i risultati"""
         self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
 
         self.overlay.grid_configure(padx=100, pady=100)
@@ -265,15 +277,8 @@ class GameView(Views):
                           background="#333333", foreground="white")
             button.grid_configure(padx=10, pady=20)
 
-    def show_menu_bar(self):
-        menu_bar = self._parent_view.addMenuBar(row=0, column=0, columnspan=5)
-        file_menu = menu_bar.addMenu("Menu")
-        file_menu.addMenuItem("Nuova Partita", command=self._parent_view.controller.handle_restart_game_request)
-        file_menu.addMenuItem("Esci", command=self._parent_view.exit_game)
-        file_menu.addMenuItem("Istruzioni", command=self._parent_view.show_instructions)
-        file_menu.addMenuItem("Classifica", command=self._parent_view.show_leaderboard)
-
     def update_special_labels(self, specials):
+        """Aggiorna visivamente lo stato delle abilità speciali"""
         def style(lbl, ready):
             lbl.configure(
                 foreground=self._parent_view.COLORS['accent'] if ready else self.SPECIAL_USED_COLOR,
@@ -284,20 +289,19 @@ class GameView(Views):
         style(self.lbl_trap_abil, specials["convert_trap"])
 
     def update_stats(self):
+        """Aggiorna Score e Moves nell'HUD"""
         stats = self.game_state["stats"]
         self.lbl_score["text"] = f"Score: {stats['score']}"
         self.lbl_moves["text"] = f"Moves: {stats['moves']}"
 
     def update_timer(self, timer):
+        """Aggiorna il timer nell'interfaccia"""
         if hasattr(self, 'lbl_timer') and self.lbl_timer.winfo_exists():
             display_time = timer if timer is not None else 0
             self.lbl_timer["text"] = f"TIME: {display_time}s"
 
             specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
             self.update_special_labels(specials)
-
-    def reset_game(self):
-        pass
 
     def update_cell_display(self, position):
         """serve a modificare la cella su cui il giocatore si sposta nella view"""
@@ -307,10 +311,12 @@ class GameView(Views):
         self.canvas.itemconfig(self.rects[(x,y)], fill=new_color)
 
     def update_player_position_display(self):
+        """Sposta il giocatore cancellando il vecchio e disegnando il nuovo"""
         self.canvas.delete(self.player_display_id)
         self.player_display_id = self.draw_player()
 
     def update_game_view(self, new_state=None):
+        """Metodo principale per il refresh completo della view"""
         if new_state:
             self.game_state = new_state
 
@@ -321,4 +327,5 @@ class GameView(Views):
         self.update_stats()
 
     def set_game_state(self, game_state):
+        """Aggiorna il riferimento allo stato del gioco"""
         self.game_state = game_state
