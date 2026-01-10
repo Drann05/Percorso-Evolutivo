@@ -63,11 +63,10 @@ class MainView(EasyFrame):
         dialog = DifficultyDialog(self, self.controller)
 
     def show_game(self):
-        self.clear()
 
         self.game_view = GameView(self, self.controller, self._title)
-        self.after(2000, self.update_timer)
-
+        self.after(20, self.update_timer)
+        
     def show_instructions(self):
         self.clear()
         self.game_instructions = GameInstructions(self, self._title, self.controller)
