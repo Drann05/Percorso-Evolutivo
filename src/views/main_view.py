@@ -9,6 +9,10 @@ from .game_view import GameView
 
 
 class MainView(EasyFrame):
+    """Main View agisce come 'container' principale.
+    Gestisce lo switch tra le varie finestre e coordina i cicli di aggiornamento della UI"""
+
+    # Costanti estetiche centralizzate
     COLORS = {
         "bg": "#121212",
         "accent": "#00ADB5",
@@ -34,6 +38,15 @@ class MainView(EasyFrame):
         self.came_from = None
 
         self.change_screen(self.show_start_screen)
+
+    def _clear_window(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        rows, cols = self.grid_size()
+
+        for r in range(rows + 1): self.rowconfigure(r, weight=0)
+        for c in range(cols + 1): self.columnconfigure(c, weight=0)
 
     def change_screen(self, screen, *args):
         """Centralizza il cambio della finestra, salvando la finestra
@@ -79,13 +92,7 @@ class MainView(EasyFrame):
         file_menu.addMenuItem("Istruzioni", command=self.show_instructions)
         file_menu.addMenuItem("Classifica", command=self.show_leaderboard)
 
-    def clear(self):
-        for widget in self.winfo_children():
-            widget.destroy()
 
-        for i in range(20):
-            self.columnconfigure(i, weight=0)
-            self.rowconfigure(i, weight=0)
 
     def grid_init(self, row, column):
         for r in range(row):
