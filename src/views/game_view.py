@@ -99,6 +99,13 @@ class GameView(Views):
         self.ctrl_wrapper = self.hud_panel.addPanel(row=0, column=1, background=self._parent_view.COLORS['bg'])
         self.ctrl_wrapper.grid_configure(sticky="")
 
+        d_pad_layout = {
+            "▲": (0, 1, "N"),
+            "◀": (1, 0, "W"),
+            "▼": (1, 1, "S"),
+            "▶": (1, 2, "E")
+        }
+
         btn_s = {
             "font": ("Segoe UI", 14, "bold"),
             "width": 4,
@@ -107,25 +114,12 @@ class GameView(Views):
             "relief": "flat"
         }
 
-        self.ctrl_wrapper.addButton(
-            text="▲", row=0, column=1,
-            command=lambda: self._controller.handle_movement_request("N")
-        ).configure(**btn_s)
-
-        self.ctrl_wrapper.addButton(
-            text="◀", row=1, column=0,
-            command=lambda: self._controller.handle_movement_request("W")
-        ).configure(**btn_s)
-
-        self.ctrl_wrapper.addButton(
-            text="▼", row=1, column=1,
-            command=lambda: self._controller.handle_movement_request("S")
-        ).configure(**btn_s)
-
-        self.ctrl_wrapper.addButton(
-            text="▶", row=1, column=2,
-            command=lambda: self._controller.handle_movement_request("E")
-        ).configure(**btn_s)
+        for icon, (r, c, direction) in d_pad_layout.items():
+            btn = self.ctrl_wrapper.addButton(
+                text=icon, row=r, column=c,
+                command=lambda d=direction: self._controller.handle_movement_request(d)
+            )
+            btn.configure(**btn_s)
 
         # Abilità
         self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self._parent_view.COLORS['bg'])
