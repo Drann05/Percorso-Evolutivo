@@ -1,13 +1,9 @@
 from .views import Views
+from breezypythongui import EasyFrame
 import tkinter as tk
 
 
 class GameView(Views):
-    # Colori
-    BG_COLOR = "#121212"
-    ACCENT_COLOR = "#00ADB5"
-    TEXT_COLOR = "#EEEEEE"
-    USED_COLOR = "#555555"
 
     # Colori griglia
     CELL_COLORS = {
@@ -19,14 +15,14 @@ class GameView(Views):
         'P': "#3498DB"
     }
     PLAYER_COLOR = "#E91E63"
+    SPECIAL_USED_COLOR = "#555555"
 
     def __init__(self, parent_view, controller, title, width=1000, height=800):
         super().__init__(title, width, height)
         self._controller = controller
         self._parent_view = parent_view
-        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.setBackground(self._parent_view.COLORS['bg'])
 
-        self._parent_view.grid_init(30, 30)
         self.game_state = self._controller.get_game_state()
 
         self.rects = {}
@@ -39,8 +35,19 @@ class GameView(Views):
         self.canvas.bind("<Double-Button-1>", self.handle_double_click)
 
     def build_ui(self):
-        # Titolo
-        self.header_panel = self._parent_view.addPanel(row=0, column=0, columnspan=30, background=self.BG_COLOR)
+        self._setup_layout()
+        self._setup_title()
+        self._setup_canvas()
+        self._setup_hud()
+
+    def _setup_layout(self):
+
+        self._parent_view.master.rowconfigure(0, weight=1)
+        self._parent_view.master.columnconfigure(0, weight=1)
+
+    def _setup_title(self):
+        self.header_panel = self._parent_view.addPanel(row=0, column=0, background=self._parent_view.COLORS['bg'])
+        self.header_panel.grid_configure(sticky="EW")
 
         self.title_lbl = self.header_panel.addLabel(
             "P E R C O R S O  E V O L U T I V O",
@@ -49,81 +56,75 @@ class GameView(Views):
 
         self.title_lbl.configure(
             font=("Impact", 32),
-            foreground=self.ACCENT_COLOR,
-            background=self.BG_COLOR,
+            foreground=self._parent_view.COLORS['accent'],
+            background=self._parent_view.COLORS['bg'],
             padx=20, pady=20
         )
 
-        # Canvas
-        self.canvas = self._parent_view.addCanvas(row=3, column=5, columnspan=20, rowspan=15)
+    def _setup_canvas(self):
+        self.canvas = self._parent_view.addCanvas(row=1, column=0)
         self.canvas.configure(background="#1A1A1A", highlightthickness=0)
-        self.canvas.grid_configure(sticky="NSEW")
+        self.canvas.grid_configure(sticky="NSEW", padx=20, pady=(10, 5))
 
-
-        # HUD
-        self.setup_hud()
-
-    def setup_layout(self):
-        self._parent_view.master.rowconfigure(0, weight=1)
-        self._parent_view.master.columnconfigure(0, weight=1)
-
-
-    def setup_hud(self):
+    def _setup_hud(self):
         """Crea il panel per i comandi e le statistiche di gioco"""
-        self.hud_panel = self._parent_view.addPanel(row=22, column=2, columnspan=26, background=self.BG_COLOR)
-        self.hud_panel.grid_columnconfigure(1, weight=1)
+        self.hud_panel = self._parent_view.addPanel(row=2, column=0, background=self._parent_view.COLORS['bg'])
+        self.hud_panel.grid_configure(sticky="EW")
+
+        # Configurazione colonne
+        self.hud_panel.columnconfigure(0, weight=1, uniform="group1")
+        self.hud_panel.columnconfigure(1, weight=0)
+        self.hud_panel.columnconfigure(2, weight=1, uniform="group1")
 
         # Stats
-        self.stats_pnl = self.hud_panel.addPanel(row=0, column=0, background=self.BG_COLOR)
+        self.stats_pnl = self.hud_panel.addPanel(row=0, column=0, background=self._parent_view.COLORS['bg'])
+        self.stats_pnl.grid_configure(sticky="W", padx=60)
+
+
         self.lbl_score = self.stats_pnl.addLabel("SCORE: 0", row=0, column=0, sticky="W")
         self.lbl_moves = self.stats_pnl.addLabel("MOVES: 0", row=1, column=0, sticky="W")
         self.lbl_timer = self.stats_pnl.addLabel("TIME: 0s", row=2, column=0, sticky="W")
 
         # Comandi
-        self.ctrl_pnl = self.hud_panel.addPanel(row=0, column=1, background=self.BG_COLOR)
-        self.ctrl_pnl.grid_configure(sticky="NSEW", padx=20)
+        self.ctrl_wrapper = self.hud_panel.addPanel(row=0, column=1, background=self._parent_view.COLORS['bg'])
+        self.ctrl_wrapper.grid_configure(sticky="")
 
-
-        for i in range(3):
-            self.ctrl_pnl.grid_columnconfigure(i, weight=1)
-        for i in range(3):
-            self.ctrl_pnl.grid_rowconfigure(i, weight=1)
         btn_s = {
             "font": ("Segoe UI", 14, "bold"),
-            "width": 3,
-            "height": 1,
-            "background": self.ACCENT_COLOR,
+            "width": 4,
+            "background": self._parent_view.COLORS['accent'],
             "foreground": "white",
             "relief": "flat"
         }
 
-        self.ctrl_pnl.addButton(
+        self.ctrl_wrapper.addButton(
             text="▲", row=0, column=1,
             command=lambda: self._controller.handle_movement_request("N")
         ).configure(**btn_s)
 
-        self.ctrl_pnl.addButton(
+        self.ctrl_wrapper.addButton(
             text="◀", row=1, column=0,
             command=lambda: self._controller.handle_movement_request("W")
         ).configure(**btn_s)
 
-        self.ctrl_pnl.addButton(
+        self.ctrl_wrapper.addButton(
             text="▼", row=1, column=1,
             command=lambda: self._controller.handle_movement_request("S")
         ).configure(**btn_s)
 
-        self.ctrl_pnl.addButton(
+        self.ctrl_wrapper.addButton(
             text="▶", row=1, column=2,
             command=lambda: self._controller.handle_movement_request("E")
         ).configure(**btn_s)
 
-        # Abilitià
-        self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self.BG_COLOR)
+        # Abilità
+        self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self._parent_view.COLORS['bg'])
+        self.abil_pnl.grid_configure(sticky="E", padx=60)
         self.lbl_wall_abil = self.abil_pnl.addLabel("BREAK WALL: READY", row=0, column=0, sticky="E")
         self.lbl_trap_abil = self.abil_pnl.addLabel("CONVERT TRAP: READY", row=1, column=0, sticky="E")
 
         for lbl in [self.lbl_score, self.lbl_moves, self.lbl_timer, self.lbl_wall_abil, self.lbl_trap_abil]:
-            lbl.configure(font=("Consolas", 11, "bold"), background=self.BG_COLOR, foreground=self.TEXT_COLOR)
+            lbl.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS['bg'], foreground=self._parent_view.COLORS['text'])
 
     def on_resize(self, event):
         """Centra la griglia dopo il resize della finestra"""
@@ -153,7 +154,7 @@ class GameView(Views):
                 cell_type = grid_matrix[r][c]
                 color = self.CELL_COLORS.get(cell_type, "#FFFFFF")
 
-                self.rects[(r, c)] = self.canvas.create_rectangle(
+                self.rects[(r, c)] = self.canvas.drawRectangle(
                     x1, y1, x2, y2, fill=color, outline="#121212"
                 )
 
@@ -228,7 +229,7 @@ class GameView(Views):
     def update_special_labels(self, specials):
         def style(lbl, ready):
             lbl.configure(
-                foreground=self.ACCENT_COLOR if ready else self.USED_COLOR,
+                foreground=self._parent_view.COLORS['accent'] if ready else self.SPECIAL_USED_COLOR,
                 text=f"{lbl.cget('text').split(':')[0]}: {'READY' if ready else 'USED'}"
             )
 

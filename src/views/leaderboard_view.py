@@ -6,17 +6,15 @@ class LeaderboardView(Views):
     ACCENT_COLOR = "#1ABC9C"
     TEXT_COLOR = "#ECF0F1"
 
-    def __init__(self, parent_view, leaderboard, title, width=500, height=600):
+    def __init__(self, parent_view, controller, title, width=500, height=600):
         super().__init__(title, width, height)
         self._parent_view = parent_view
-        self._leaderboard = leaderboard
+        self._controller = controller
 
         self.MAIN_FONT = ("Segoe UI", 11)
         self.TITLE_FONT = ("Segoe UI", 20, "bold")
         self.HEADER_FONT = ("Segoe UI", 10, "bold")
 
-        self.widgets = []
-        self._parent_view.grid_init(25, 12)
         self._parent_view.setBackground(self.BG_COLOR)
 
         self.build_ui()
@@ -33,10 +31,37 @@ class LeaderboardView(Views):
             widget["foreground"] = self.TEXT_COLOR
         widget["background"] = self.BG_COLOR
 
+    def _setup_layout(self):
+        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.columnconfigure(0, weight=1)
+        self._parent_view.rowconfigure(0, weight=1) # Spazio superiore
+        self._parent_view.rowconfigure(2, weight=1) # Spazio inferiore
+
     def build_ui(self):
+
+
+        self.main_container = self._parent_view.addPanel(row=0, column=0, background=self.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         title = self._parent_view.addLabel(
             "CLASSIFICA",
-            row=1, column=0, columnspan=12
+            row=1, column=0
         )
         self.style(title, is_header=True)
 
@@ -50,10 +75,10 @@ class LeaderboardView(Views):
             header["foreground"] = self.ACCENT_COLOR
             header["background"] = self.BG_COLOR
 
-        top_players = self._leaderboard.get_top_10()
+        #top_players = self._leaderboard.get_top_10()
 
         start_row = 6
-        for i, (name, stats) in enumerate(top_players, start=1):
+        """for i, (name, stats) in enumerate(top_players, start=1):
             score, moves, level = stats
 
             is_top = i <= 3
@@ -65,8 +90,7 @@ class LeaderboardView(Views):
             lbl_moves = self._parent_view.addLabel(text=str(moves), row=current_y, column=10)
 
             for lbl in [lbl_rank, lbl_name, lbl_score, lbl_moves]:
-                self.style(lbl, is_top_three=is_top)
-                self.widgets.append(lbl)
+                self.style(lbl, is_top_three=is_top)"""
 
 
         close_btn = self._parent_view.addButton(

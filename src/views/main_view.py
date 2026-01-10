@@ -17,6 +17,14 @@ class MainView(EasyFrame):
         "panel_bg": "#1A1A1A"
     }
 
+    COLORS = {
+        "bg": "#121212",  # Same dark background as GameView
+        "accent": "#00ADB5",  # Neon Teal (Mint)
+        "text": "#EEEEEE",  # Off-white text
+        "error": "#FF3131",  # Red matching your timer color
+        "panel_bg": "#1A1A1A"  # Slightly lighter dark for panels
+    }
+
     def __init__(self, controller, title="Percorso Evolutivo"):
         super().__init__(title=title, width=500, height=500)
         self._title = title
@@ -32,7 +40,8 @@ class MainView(EasyFrame):
         self.current_screen = None
         self.came_from = None
 
-        self.change_screen(self.show_start_screen)
+        #self.change_screen(self.show_start_screen)
+        self.change_screen(self.show_leaderboard)
 
     def change_screen(self, screen):
         """Centralizza il cambio della finestra, salvando la finestra
@@ -53,6 +62,7 @@ class MainView(EasyFrame):
 
     def show_game(self):
         self.clear()
+
         self.game_view = GameView(self, self.controller, self._title)
         self.after(2000, self.update_timer)
 
@@ -79,6 +89,10 @@ class MainView(EasyFrame):
     def clear(self):
         for widget in self.winfo_children():
             widget.destroy()
+
+        for i in range(21):
+            self.columnconfigure(i, weight=0)
+            self.rowconfigure(i, weight=0)
 
     def grid_init(self, row, column):
         for r in range(row):
