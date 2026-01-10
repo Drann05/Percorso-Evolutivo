@@ -85,8 +85,8 @@ class GameInstructions(Views):
             current_row += 1
 
         close_btn = self._parent_view.addButton(
-            text="TORNA AL GIOCO", row=23, column=3, columnspan=4,
-            command=self._parent_view.show_game
+            text="TORNA INDIETRO", row=23, column=3, columnspan=4,
+            command=self._parent_view.go_back
         )
         close_btn.configure(
             background=self._parent_view.COLORS["accent"],
