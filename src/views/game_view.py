@@ -91,9 +91,9 @@ class GameView(Views):
         self.stats_pnl.grid_configure(sticky="W", padx=60)
 
 
-        self.lbl_score = self.stats_pnl.addLabel("SCORE: 0", row=0, column=0, sticky="W")
-        self.lbl_moves = self.stats_pnl.addLabel("MOVES: 0", row=1, column=0, sticky="W")
-        self.lbl_timer = self.stats_pnl.addLabel("TIME: 0s", row=2, column=0, sticky="W")
+        self.lbl_score = self.stats_pnl.addLabel("PUNTI: 0", row=0, column=0, sticky="W")
+        self.lbl_moves = self.stats_pnl.addLabel("MOSSE: 0", row=1, column=0, sticky="W")
+        self.lbl_timer = self.stats_pnl.addLabel("TEMPO: 0s", row=2, column=0, sticky="W")
 
         # Comandi
         self.ctrl_wrapper = self.hud_panel.addPanel(row=0, column=1, background=self._parent_view.COLORS['bg'])
@@ -130,8 +130,8 @@ class GameView(Views):
         # Abilità
         self.abil_pnl = self.hud_panel.addPanel(row=0, column=2, background=self._parent_view.COLORS['bg'])
         self.abil_pnl.grid_configure(sticky="E", padx=60)
-        self.lbl_wall_abil = self.abil_pnl.addLabel("BREAK WALL: READY", row=0, column=0, sticky="E")
-        self.lbl_trap_abil = self.abil_pnl.addLabel("CONVERT TRAP: READY", row=1, column=0, sticky="E")
+        self.lbl_wall_abil = self.abil_pnl.addLabel("DISTRUGGI IL MURO: PRONTA", row=0, column=0, sticky="E")
+        self.lbl_trap_abil = self.abil_pnl.addLabel("CONVERTI TRAPPOLA: PRONTA", row=1, column=0, sticky="E")
 
         for lbl in [self.lbl_score, self.lbl_moves, self.lbl_timer, self.lbl_wall_abil, self.lbl_trap_abil]:
             lbl.configure(font=("Consolas", 11, "bold"), background=self._parent_view.COLORS['bg'], foreground=self._parent_view.COLORS['text'])
@@ -228,16 +228,16 @@ class GameView(Views):
         menubar = tk.Menu(root)
 
         game_menu = tk.Menu(menubar, tearoff=0)
-        game_menu.add_command(label="Restart Game", command=self._controller.handle_restart_game_request)
+        game_menu.add_command(label="Nuova partita", command=self._controller.handle_restart_game_request)
         game_menu.add_separator()
-        game_menu.add_command(label="Exit to Menu", command=self._controller.init_start_screen)
-        game_menu.add_command(label="Quit", command=root.quit)
-        menubar.add_cascade(label="Game", menu=game_menu)
+        game_menu.add_command(label="Torna al menu", command=self._controller.init_start_screen)
+        game_menu.add_command(label="Esci", command=root.quit)
+        menubar.add_cascade(label="Gioco", menu=game_menu)
 
         help_menu = tk.Menu(menubar, tearoff=0)
-        help_menu.add_command(label="How to Play",
+        help_menu.add_command(label="Istruzioni",
                               command=lambda: self._parent_view.change_screen(self._parent_view.show_instructions))
-        menubar.add_cascade(label="Help", menu=help_menu)
+        menubar.add_cascade(label="Aiuto", menu=help_menu)
 
         root.config(menu=menubar)
 
@@ -282,7 +282,7 @@ class GameView(Views):
         def style(lbl, ready):
             lbl.configure(
                 foreground=self._parent_view.COLORS['accent'] if ready else self.SPECIAL_USED_COLOR,
-                text=f"{lbl.cget('text').split(':')[0]}: {'READY' if ready else 'USED'}"
+                text=f"{lbl.cget('text').split(':')[0]}: {'PRONTA' if ready else 'USATA'}"
             )
 
         style(self.lbl_wall_abil, specials["remove_wall"])
@@ -291,14 +291,14 @@ class GameView(Views):
     def update_stats(self):
         """Aggiorna Score e Moves nell'HUD"""
         stats = self.game_state["stats"]
-        self.lbl_score["text"] = f"Score: {stats['score']}"
-        self.lbl_moves["text"] = f"Moves: {stats['moves']}"
+        self.lbl_score["text"] = f"Punti: {stats['score']}"
+        self.lbl_moves["text"] = f"Mosse: {stats['moves']}"
 
     def update_timer(self, timer):
         """Aggiorna il timer nell'interfaccia"""
         if hasattr(self, 'lbl_timer') and self.lbl_timer.winfo_exists():
             display_time = timer if timer is not None else 0
-            self.lbl_timer["text"] = f"TIME: {display_time}s"
+            self.lbl_timer["text"] = f"TEMPO: {display_time}s"
 
             specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
             self.update_special_labels(specials)
