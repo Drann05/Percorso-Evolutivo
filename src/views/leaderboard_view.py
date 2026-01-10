@@ -6,17 +6,12 @@ class LeaderboardView(Views):
     ACCENT_COLOR = "#1ABC9C"
     TEXT_COLOR = "#ECF0F1"
 
-    def __init__(self, parent_view, controller, title, width=500, height=600):
+    def __init__(self, parent_view, controller, title, scores, width=500, height=600):
         super().__init__(title, width, height)
         self._parent_view = parent_view
         self._controller = controller
-
-        self.MAIN_FONT = ("Segoe UI", 11)
-        self.TITLE_FONT = ("Segoe UI", 20, "bold")
-        self.HEADER_FONT = ("Segoe UI", 10, "bold")
-
-        self._parent_view.setBackground(self.BG_COLOR)
-
+        self._scores = scores
+        self._setup_layout()
         self.build_ui()
 
     def style(self, widget, is_header=False, is_top_three=False):
