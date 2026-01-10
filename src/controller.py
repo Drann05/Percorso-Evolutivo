@@ -115,14 +115,18 @@ class Controller:
         self._main_view.change_screen(self._main_view.show_leaderboard, scores)
 
     def handle_game_over(self):
+        won = True
+        if self.game.is_moves_out_of_limit or self.game.is_negative_score:
+            won = False
+
         nickname = self.game.player.nickname
         score = self.game.player.score
         moves = self.game.player.moves
         difficulty = self.game.difficulty
-        if self.game.is_objective_reached:
+        if won:
             self.leaderboard.save(nickname, score, moves, difficulty)
 
-        self._main_view.game_view.show_game_over()
+        self._main_view.game_view.show_game_over(won)
 
 if __name__ == '__main__':
     app = Controller()
