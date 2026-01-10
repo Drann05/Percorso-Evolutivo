@@ -15,7 +15,7 @@ class Controller:
     """
     def __init__(self):
 
-        self._start_screen = None
+        self.leaderboard = Leaderboard()
         self.game = None
 
         self._main_view = MainView(self)
@@ -90,7 +90,7 @@ class Controller:
 
         self._main_view.update_game(self.get_game_state())
         if moved["game_over"]:
-            self._main_view.show_game_over(moved)
+            self.handle_leaderboard_request()
 
     def handle_special_action_request(self, action, target_position):
 
