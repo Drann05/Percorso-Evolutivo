@@ -106,9 +106,9 @@ class Controller:
         return True
 
     def update_timer(self):
-        if not self.game:
-            return
-        return self.game.timer.get_elapsed()
+        if self.game and self.game.timer:
+            return self.game.timer.get_elapsed()
+        return False
 
     def handle_leaderboard_request(self):
         scores = self.leaderboard.get_top_10()

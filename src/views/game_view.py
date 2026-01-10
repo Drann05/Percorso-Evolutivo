@@ -281,10 +281,12 @@ class GameView(Views):
         self.lbl_moves["text"] = f"Moves: {stats['moves']}"
 
     def update_timer(self, timer):
-        self.lbl_timer["text"] = f"Timer: {timer}s"
+        if hasattr(self, 'lbl_timer') and self.lbl_timer.winfo_exists():
+            display_time = timer if timer is not None else 0
+            self.lbl_timer["text"] = f"TIME: {display_time}s"
 
-        specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
-        self.update_special_labels(specials)
+            specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
+            self.update_special_labels(specials)
 
     def reset_game(self):
         pass
