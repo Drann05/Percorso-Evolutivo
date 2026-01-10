@@ -39,67 +39,18 @@ class LeaderboardView(Views):
 
     def build_ui(self):
 
+        # --- MAIN CONTAINER ---
+        self.main_container = self._parent_view.addPanel(row=0, column=0, background=self._parent_view.COLORS["bg"])
+        self.main_container.grid_configure(sticky="")
 
-        self.main_container = self._parent_view.addPanel(row=0, column=0, background=self.)
+        # Titolo
+        self.title = self.main_container.addLabel(text="Classifica", row=0, column=0)
+        self.title.configure(font=("Impact", 32), background=self._parent_view.COLORS["bg"],
+                             foreground=self._parent_view.COLORS["accent"])
+        self.title.grid_configure(sticky="")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        title = self._parent_view.addLabel(
-            "CLASSIFICA",
-            row=1, column=0
-        )
-        self.style(title, is_header=True)
-
-        h_rank = self._parent_view.addLabel("LIVELLO", row=4, column=1)
-        h_name = self._parent_view.addLabel("GIOCATORE", row=4, column=3)
-        h_score = self._parent_view.addLabel("PUNTI", row=4, column=7)
-        h_moves = self._parent_view.addLabel("MOSSE", row=4, column=10)
-
-        for header in [h_rank, h_name, h_score, h_moves]:
-            header["font"] = self.HEADER_FONT
-            header["foreground"] = self.ACCENT_COLOR
-            header["background"] = self.BG_COLOR
-
-        #top_players = self._leaderboard.get_top_10()
-
-        start_row = 6
-        """for i, (name, stats) in enumerate(top_players, start=1):
-            score, moves, level = stats
-
-            is_top = i <= 3
-            current_y = start_row + i
-
-            lbl_rank = self._parent_view.addLabel(text=f"#{i}", row=current_y, column=1)
-            lbl_name = self._parent_view.addLabel(text=name, row=current_y, column=3)
-            lbl_score = self._parent_view.addLabel(text=str(score), row=current_y, column=7)
-            lbl_moves = self._parent_view.addLabel(text=str(moves), row=current_y, column=10)
-
-            for lbl in [lbl_rank, lbl_name, lbl_score, lbl_moves]:
-                self.style(lbl, is_top_three=is_top)"""
-
-
-        close_btn = self._parent_view.addButton(
-            text="TORNA AL MENU", row=22, column=4, columnspan=4,
-            command=self._parent_view.destroy
-        )
-        close_btn["background"] = self.ACCENT_COLOR
-        close_btn["foreground"] = "white"
-        close_btn["font"] = ("Segoe UI", 10, "bold")
+        # --- LEADERBOARD AREA ---
+        self._setup_leaderboard()
 
 
     def _setup_leaderboard(self):
