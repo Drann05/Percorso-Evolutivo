@@ -1,101 +1,94 @@
-from .views import Views
+from .base_view import BaseView
 
 
-class GameInstructions(Views):
+class GameInstructions(BaseView):
 
-    def __init__(self, parent_view, controller, title, width=600, height=700):
-        super().__init__(title, width, height)
-        self._parent_view = parent_view
-        self._controller = controller
-
-        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
-
-        self.build_ui()
-        self._parent_view.bind("<Configure>", self.on_resize)
-
-    def style(self, widget, is_header=False):
-        if is_header:
-            widget["font"] = ("Impact", 24)
-            widget["foreground"] = self._parent_view.COLORS["accent"]
-        else:
-            widget["font"] = ("Segoe UI", 11)
-            widget["foreground"] = self._parent_view.COLORS["text"]
-        widget["background"] = self._parent_view.COLORS["bg"]
+    def __init__(self, parent_view, controller, title):
+        # Il super().__init__ gestisce già parent_view, controller e background
+        super().__init__(parent_view, controller, title)
 
     def build_ui(self):
-        title = self._parent_view.addLabel(
+        """Costruisce i componenti dell'interfaccia delle istruzioni"""
+        self._setup_title()
+        self._setup_text_area()
+        self._setup_legend()
+        self._setup_navigation()
+
+    def _setup_title(self):
+        title_lbl = self._parent_view.addLabel(
             "I S T R U Z I O N I",
-            row=1, column=0, columnspan=10, sticky="NSEW",
+            row=0, column=0, sticky="NSEW"
         )
-        self.style(title, is_header=True)
+        title_lbl.configure(
+            font=("Impact", 32),
+            foreground=self._parent_view.COLORS["accent"],
+            background=self._parent_view.COLORS["bg"],
+            pady=20
+        )
 
-
+    def _setup_text_area(self):
         istruzioni = (
             "> MOVIMENTO: Usa il D-Pad per muoverti all'interno della griglia.\n"
-            "> OBIETTIVO (O): Raggiungi l'obiettivo entro 30 mosse.\n"
+            "> OBIETTIVO (O): Raggiungi l'obiettivo entro il limite di mosse.\n"
             "> RISORSE (R): Raccogli le risorse per aumentare il punteggio.\n"
-            "> TRAPPOL<e (T): Fai attenzione alle trappole! Se ci passi sopra, ti toglieranno punti.\n"
-            "> MURI (X): Non puoi attraversarli, ma puoi romperli con la mossa speciale.\n"
-            "> MOSSE SPECIALI: Ne hai due a disposizione. Usa il Double-click su un muro o una trappola per utilizzarle."
+            "> TRAPPOLE (T): Tolgono punti se calpestate.\n"
+            "> MURI (X): Ostacoli distruttibili con mossa speciale.\n"
+            "> SPECIALI: Double-click su un muro o trappola per usare le abilità."
         )
 
         self.txt_area = self._parent_view.addTextArea(
-            text=istruzioni, row=4, column=2, columnspan=6, width=60, height=8
+            text=istruzioni, row=1, column=0, width=60, height=8
         )
         self.txt_area.configure(
             font=("Consolas", 11),
-            background=self._parent_view.COLORS["bg"],
+            background=self._parent_view.COLORS["panel_bg"],
             foreground=self._parent_view.COLORS["text"],
-            borderwidth=1,
-            relief="flat"
+            padx=20, pady=20, borderwidth=0, relief="flat"
         )
-        self.txt_area.grid_configure(sticky="NSEW", padx=20, pady=10)
+        self.txt_area.grid_configure(padx=40, pady=10, sticky="NSEW")
 
-        legend_title = self._parent_view.addLabel(
-            text="ELEMENTI PRINCIPALI", row=13, column=0, columnspan=10
-        )
-        self.style(legend_title)
-        legend_title.configure(font=("Impact", 16), foreground=self._parent_view.COLORS["accent"])
-        self.legend_panel = self._parent_view.addPanel(row=14, column=2, columnspan=6, rowspan=7,
-                                                       background=self._parent_view.COLORS["bg"])
+    def _setup_legend(self):
+        # Panel contenitore per la legenda
+        legend_pnl = self._parent_view.addPanel(row=2, column=0, background=self._parent_view.COLORS["bg"])
 
         elementi = [
             ("GIOCATORE", "#E91E63", "oval"),
             ("MURO (X)", "#1A1A1A", "rect"),
             ("RISORSA (R)", "#F1C40F", "rect"),
             ("TRAPPOLA (T)", "#E74C3C", "rect"),
-            ("OBIETTIVO (O)", "#2ECC71", "rect"),
-            ("CELLA VUOTA (.)", "#2C3E50", "rect")
+            ("OBIETTIVO (O)", "#2ECC71", "rect")
         ]
 
-        current_row = 15
-        for nome, colore, shape in elementi:
-            canvas = self._parent_view.addCanvas(
-                row=current_row, column=3, width=25, height=25
-            )
+        for i, (nome, colore, shape) in enumerate(elementi):
+            canvas = legend_pnl.addCanvas(row=i, column=0, width=30, height=30)
             canvas.configure(background=self._parent_view.COLORS["bg"], highlightthickness=0)
 
             if shape == "rect":
-                canvas.create_rectangle(4, 4, 21, 21, fill=colore, outline="gray")
+                canvas.create_rectangle(5, 5, 25, 25, fill=colore, outline="gray")
             else:
-                canvas.create_oval(4, 4, 21, 21, fill=colore, outline="white", width=2)
+                canvas.create_oval(5, 5, 25, 25, fill=colore, outline="white", width=2)
 
-            lbl = self._parent_view.addLabel(text=nome, row=current_row, column=4, sticky="W")
-            lbl.configure(font=("Consolas", 10, "bold"), background=self._parent_view.COLORS["bg"], foreground=self._parent_view.COLORS["text"])
-            current_row += 1
+            lbl = legend_pnl.addLabel(text=nome, row=i, column=1, sticky="W")
+            lbl.configure(
+                font=("Consolas", 10, "bold"),
+                background=self._parent_view.COLORS["bg"],
+                foreground=self._parent_view.COLORS["text"],
+                padx=10
+            )
 
-        close_btn = self._parent_view.addButton(
-            text="TORNA INDIETRO", row=23, column=3, columnspan=4,
+    def _setup_navigation(self):
+        back_btn = self._parent_view.addButton(
+            text="TORNA INDIETRO", row=3, column=0,
             command=self._parent_view.go_back
         )
-        close_btn.configure(
+        # Usiamo lo stile centralizzato se presente in Views, altrimenti lo definiamo qui
+        back_btn.configure(
             background=self._parent_view.COLORS["accent"],
             foreground="white",
             font=("Segoe UI", 10, "bold"),
-            relief="flat",
-            width=20
+            relief="flat", width=20
         )
-
+        back_btn.grid_configure(pady=20)
     def on_resize(self, event):
         total_rows = 25
         total_cols = 10
