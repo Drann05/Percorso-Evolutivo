@@ -20,8 +20,10 @@ class Game:
     SCORES = {
         "O": 20,    # Obiettivo
         "R": 10,    # Risorsa
-        "T": -5     # Trappola
-        # Il resto è 0
+        "T": -5,    # Trappola
+        "X": 0,     # Muro
+        ".": 0,     # Cella vuota
+        "P": 0      # Punto di partenza
     }
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
@@ -147,16 +149,15 @@ class Game:
         return self.grid.is_valid_movement(position)
 
     def apply_cell_effect(self, cell_data):
-        cell_type = cell_data["type"]
-        cell_position = cell_data["position"]
+        cell_type = cell_data["type"].upper()
 
-        cell_type = cell_type.upper()
+        points = self.SCORES.get(cell_type, 0)
 
-        if cell_type in self.SCORES:
-            self.player.change_score(self.SCORES[cell_type])
+        if points != 0:
+            self.player.change_score(points)
 
         if cell_type == self.grid.RISORSA:
-            self.grid.set_cell(cell_position, self.grid.CELLA_VUOTA)
+            self.grid.set_cell(cell_data["position"], self.grid.CELLA_VUOTA)
 
     def get_game_config(self):
         return {
