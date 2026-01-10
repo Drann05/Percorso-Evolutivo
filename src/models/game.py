@@ -187,7 +187,7 @@ class Game:
         p_row, p_col = self.player.position
         t_row, t_col = target_position
 
-        return abs(p_row - t_row) + abs(p_col - t_col)
+        return abs(p_row - t_row) + abs(p_col - t_col) == 1
 
     def _move_result(self, moved, cell_data=None, game_over=False):
         """Formato standard della risposta di movimento"""
