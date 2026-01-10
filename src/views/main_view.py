@@ -115,8 +115,3 @@ class MainView(EasyFrame):
             self.after(1000, self.update_timer_loop)
         except Exception as e:
             print(f"Timer interrotto: {e}")
-
-
-
-    def exit_game(self):
-        self.quit()
