@@ -29,7 +29,7 @@ class Pathfinder:
         H: Height
         W: Width
         B: Breakable Walls
-        T: Converted Traps
+        T: Convertable Traps
         """
 
         # Coda BFS: nodi da esplorare

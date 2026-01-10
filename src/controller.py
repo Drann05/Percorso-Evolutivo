@@ -14,8 +14,8 @@ class Controller:
     """
     def __init__(self):
 
-        self.leaderboard = Leaderboard()
-        self.game = None
+        self._leaderboard = Leaderboard()
+        self._game = None
 
         self._session_data = {"nickname": None}
 
@@ -34,7 +34,7 @@ class Controller:
         self._main_view.show_start_screen()
 
     def handle_leaderboard_request(self):
-        scores = self.leaderboard.get_top_10()
+        scores = self._leaderboard.get_top_10()
         self._main_view.show_leaderboard(scores)
 
     def handle_instruction_request(self):
@@ -50,18 +50,18 @@ class Controller:
 
     def handle_selected_difficulty(self, difficulty):
         nickname = self._session_data["nickname"]
-        self.game = Game(nickname, difficulty)
-        self.game.start_game()
+        self._game = Game(nickname, difficulty)
+        self._game.start_game()
         self._main_view.show_game()
 
     def handle_movement_request(self, direction):
         """Gestisce il movimento del giocatore e aggiorna
         l'interfaccia grafica di GameView"""
 
-        if not self.game:
+        if not self._game:
             return
 
-        move_result = self.game.move_player(direction)
+        move_result = self._game.move_player(direction)
 
         if move_result["moved"]:
             self._refresh_view()
@@ -71,10 +71,10 @@ class Controller:
 
     def handle_special_action_request(self, action, target_position):
 
-        if not self.game:
+        if not self._game:
             return False
 
-        is_success = self.game.use_special_action(action, target_position)
+        is_success = self._game.use_special_action(action, target_position)
         if is_success:
             self._refresh_view()
             return True
@@ -82,8 +82,8 @@ class Controller:
         return False
 
     def handle_restart_game_request(self):
-        if self.game:
-            self.game.restart_game()
+        if self._game:
+            self._game.restart_game()
             self._main_view.show_game()
 
     #---------------|
@@ -96,37 +96,37 @@ class Controller:
 
     def get_game_state(self):
         return {
-            "grid": self.game.grid.serialize(),
-            "player_position": self.game.player.position,
+            "grid": self._game.grid.serialize(),
+            "player_position": self._game.player.position,
             "stats": {
-                "score": self.game.player.score,
-                "moves": self.game.player.moves,
-                "timer": self.game.timer.get_elapsed()
+                "score": self._game.player.score,
+                "moves": self._game.player.moves,
+                "timer": self._game.timer.get_elapsed()
             },
             "special_moves": {
-                "remove_wall": self.game.player.is_remove_wall_available(),
-                "convert_trap": self.game.player.is_convert_trap_available()
+                "remove_wall": self._game.player.is_remove_wall_available(),
+                "convert_trap": self._game.player.is_convert_trap_available()
             },
-            "is_moves_out_of_limit": self.game.is_moves_out_of_limit,
-            "is_negative_score": self.game.is_negative_score,
-            "is_objective_reached": self.game.is_objective_reached
+            "is_moves_out_of_limit": self._game.is_moves_out_of_limit,
+            "is_negative_score": self._game.is_negative_score,
+            "is_objective_reached": self._game.is_objective_reached
         }
 
     def update_timer(self):
-        if self.game and self.game.timer:
-            return self.game.timer.get_elapsed()
+        if self._game and self._game.timer:
+            return self._game.timer.get_elapsed()
         return "00:00"
 
     def _handle_game_over(self):
-        won = self.game.is_objective_reached
+        won = self._game.is_objective_reached
 
         if won:
             try:
-                self.leaderboard.save(
-                    name = self.game.player.nickname,
-                    score = self.game.player.score,
-                    moves = self.game.player.moves,
-                    level = self.game.difficulty
+                self._leaderboard.save(
+                    name = self._game.player.nickname,
+                    score = self._game.player.score,
+                    moves = self._game.player.moves,
+                    level = self._game.difficulty
                 )
             except Exception as e:
                 print(f"Errore durante il salvataggio della classifica: {e}")

@@ -1,5 +1,8 @@
 65:18:MEDIO:silvia
 60:17:Medio:dwq
+60:24:MEDIO:Gioele
 55:14:MEDIO:qdw
 50:15:Facile:andrea
+40:15:MEDIO:qd
+40:21:DIFFICILE:Gioooo
 35:14:Difficile:Giusto
