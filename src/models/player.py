@@ -8,8 +8,8 @@ class Player:
 
         Non contiene la logica di gioco né modifica direttamente la griglia
     """
-    def __init__(self, name, position):
-        self._name = name
+    def __init__(self, nickname, position):
+        self._nickname = nickname
         self._position = position
         self._score = 0
         self._moves = 0
@@ -69,3 +69,6 @@ class Player:
     def position(self):
         return self._position
 
+    @property
+    def nickname(self):
+        return self._nickname
