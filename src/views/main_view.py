@@ -54,6 +54,7 @@ class MainView(EasyFrame):
     def show_difficulty_dialog(self):
         dialog = DifficultyDialog(self, self.controller)
 
+
     def show_game(self):
 
         self.game_view = GameView(self, self.controller, self._title)
@@ -110,6 +111,7 @@ class MainView(EasyFrame):
             self.after(1000, self.update_timer)
         except Exception:
             pass
+
 
     def show_error(self):
         pass

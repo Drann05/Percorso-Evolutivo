@@ -39,21 +39,38 @@ class Controller:
             #    START SCREEN    #
             # -------------------#
 
-    def start_game_request(self, nickname):
-        self.pending_nickname = nickname
-        self._main_view.show_difficulty_dialog()
 
-    def handle_difficulty_selected(self, difficulty):
-        """Inizializza il gioco passando all'istanza gli attributi
-        nickname e difficulty, ottenuti dalla classe Start Screen"""
 
-        self.game = Game(self.pending_nickname, difficulty)
-        self.game.start_game()
-        self._main_view.show_game()
+
+
 
                 #------------#
                 #    GAME    #
                 #------------#
+
+
+    def start_game_request(self, nickname):
+        self.pending_nickname = nickname
+        self._main_view.show_difficulty_dialog()
+
+    def handle_selected_difficulty(self, difficulty):
+        self.start_game(self.pending_nickname, difficulty)
+
+    def start_game(self, nickname, difficulty):
+        """Inizializza il gioco passando all'istanza gli attributi
+        nickname e difficulty, ottenuti dalla classe Start Screen"""
+
+        self.game = Game(nickname, difficulty)
+        self.game.start_game()
+        self._main_view.change_screen(self._main_view.show_game)
+
+    def handle_restart_game_request(self):
+        #game_config = self.game.get_game_config()
+        #del self.game
+        #self.start_game(game_config["nickname"],game_config["difficulty"])
+        self.game.restart_game()
+        self._main_view.change_screen(self._main_view.show_game)
+
     def get_game_state(self):
         return {
             "grid": self.game.grid.serialize(),
@@ -72,9 +89,7 @@ class Controller:
             "is_objective_reached": self.game.is_objective_reached
         }
 
-    def handle_restart_game_request(self):
-        self.game.start_game()
-        self._main_view.change_screen(self._main_view.show_game)
+
 
     def handle_movement_request(self, direction):
         """Gestisce il movimento del giocatore e aggiorna

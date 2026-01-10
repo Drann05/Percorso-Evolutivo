@@ -37,7 +37,6 @@ class Game:
 
         self._pathfinder = Pathfinder(self.grid)
 
-
     def start_game(self):
         """Inizializza griglia, giocatore e timer"""
         self._started = True
@@ -48,12 +47,18 @@ class Game:
 
         self.timer.start_timer()
 
-        print(self.can_reach(self.grid._target_position,0,0))
+        if not self.can_reach(self.grid._target_position,0,0)[0]:
+            self.restart_game()
 
     def end_game(self):
         """Termina la partita e ferma il timer"""
         self._started = False
         self.timer.stop_timer()
+
+    def restart_game(self):
+        del self.grid
+        self.grid = Grid(20,20)
+        self.start_game()
 
     def move_player(self, direction):
         """Muove il giocatore, se possibile, e applica gli effetti della cella.
@@ -139,6 +144,11 @@ class Game:
         if cell_type == self.grid.RISORSA:
             self.grid.set_cell(cell_position, self.grid.CELLA_VUOTA)
 
+    def get_game_config(self):
+        return {
+            "nickname": self.player.nickname,
+            "difficulty": self.difficulty,
+        }
 
     def use_special_action(self, action, target_position):
         if not self._started:
