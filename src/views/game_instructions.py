@@ -2,17 +2,13 @@ from .views import Views
 
 
 class GameInstructions(Views):
-    BG_COLOR = "#121212"
-    ACCENT_COLOR = "#00ADB5"
-    TEXT_COLOR = "#EEEEEE"
-    AREA_BG = "#1A1A1A"
 
     def __init__(self, parent_view, controller, title, width=600, height=700):
         super().__init__(title, width, height)
         self._parent_view = parent_view
         self._controller = controller
 
-        self._parent_view.setBackground(self.BG_COLOR)
+        self._parent_view.setBackground(self._parent_view.COLORS["bg"])
 
         self.build_ui()
         self._parent_view.bind("<Configure>", self.on_resize)
@@ -20,11 +16,11 @@ class GameInstructions(Views):
     def style(self, widget, is_header=False):
         if is_header:
             widget["font"] = ("Impact", 24)
-            widget["foreground"] = self.ACCENT_COLOR
+            widget["foreground"] = self._parent_view.COLORS["accent"]
         else:
             widget["font"] = ("Segoe UI", 11)
-            widget["foreground"] = self.TEXT_COLOR
-        widget["background"] = self.BG_COLOR
+            widget["foreground"] = self._parent_view.COLORS["text"]
+        widget["background"] = self._parent_view.COLORS["bg"]
 
     def build_ui(self):
         title = self._parent_view.addLabel(
@@ -48,8 +44,8 @@ class GameInstructions(Views):
         )
         self.txt_area.configure(
             font=("Consolas", 11),
-            background=self.AREA_BG,
-            foreground=self.TEXT_COLOR,
+            background=self._parent_view.COLORS["bg"],
+            foreground=self._controller.COLORS["text"],
             borderwidth=1,
             relief="flat"
         )
@@ -59,9 +55,9 @@ class GameInstructions(Views):
             text="ELEMENTI PRINCIPALI", row=13, column=0, columnspan=10
         )
         self.style(legend_title)
-        legend_title.configure(font=("Impact", 16), foreground=self.ACCENT_COLOR)
+        legend_title.configure(font=("Impact", 16), foreground=self._parent_view.COLORS["accent"])
         self.legend_panel = self._parent_view.addPanel(row=14, column=2, columnspan=6, rowspan=7,
-                                                       background=self.BG_COLOR)
+                                                       background=self._controller.COLORS["bg"])
 
         elementi = [
             ("GIOCATORE", "#E91E63", "oval"),
@@ -77,7 +73,7 @@ class GameInstructions(Views):
             canvas = self._parent_view.addCanvas(
                 row=current_row, column=3, width=25, height=25
             )
-            canvas.configure(background=self.BG_COLOR, highlightthickness=0)
+            canvas.configure(background=self._parent_view.COLORS["bg"], highlightthickness=0)
 
             if shape == "rect":
                 canvas.create_rectangle(4, 4, 21, 21, fill=colore, outline="gray")
@@ -85,7 +81,7 @@ class GameInstructions(Views):
                 canvas.create_oval(4, 4, 21, 21, fill=colore, outline="white", width=2)
 
             lbl = self._parent_view.addLabel(text=nome, row=current_row, column=4, sticky="W")
-            lbl.configure(font=("Consolas", 10, "bold"), background=self.BG_COLOR, foreground=self.TEXT_COLOR)
+            lbl.configure(font=("Consolas", 10, "bold"), background=self._parent_view.COLORS["bg"], foreground=self._parent_view.COLORS["text"])
             current_row += 1
 
         close_btn = self._parent_view.addButton(
@@ -93,7 +89,7 @@ class GameInstructions(Views):
             command=self._parent_view.show_game
         )
         close_btn.configure(
-            background=self.ACCENT_COLOR,
+            background=self._parent_view.COLORS["accent"],
             foreground="white",
             font=("Segoe UI", 10, "bold"),
             relief="flat",
