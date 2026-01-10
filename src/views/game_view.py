@@ -171,7 +171,7 @@ class GameView(Views):
                 )
 
     def screen_flicker(self):
-        """Effetto visivo usato per indicare l'utilizzo di un'abilità speciale"""
+        """Effetto visivo usato per indicare l'utilizzo di un'abilità speciale in una cella non prevista"""
         for rect in self.rects.values():
             for rect in self.rects.values():
                 self.canvas.itemconfig(rect, stipple="gray50")
