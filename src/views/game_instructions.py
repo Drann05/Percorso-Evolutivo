@@ -45,7 +45,7 @@ class GameInstructions(Views):
         self.txt_area.configure(
             font=("Consolas", 11),
             background=self._parent_view.COLORS["bg"],
-            foreground=self._controller.COLORS["text"],
+            foreground=self._parent_view.COLORS["text"],
             borderwidth=1,
             relief="flat"
         )
@@ -57,7 +57,7 @@ class GameInstructions(Views):
         self.style(legend_title)
         legend_title.configure(font=("Impact", 16), foreground=self._parent_view.COLORS["accent"])
         self.legend_panel = self._parent_view.addPanel(row=14, column=2, columnspan=6, rowspan=7,
-                                                       background=self._controller.COLORS["bg"])
+                                                       background=self._parent_view.COLORS["bg"])
 
         elementi = [
             ("GIOCATORE", "#E91E63", "oval"),

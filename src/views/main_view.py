@@ -62,7 +62,7 @@ class MainView(EasyFrame):
 
     def show_instructions(self):
         self.clear()
-        self.game_instructions = GameInstructions(self, self._title, self.controller)
+        self.game_instructions = GameInstructions(self, self.controller, self._title)
 
     def show_leaderboard(self, scores):
         self.leaderboard_view = LeaderboardView(self, self.controller, self._title, scores)
