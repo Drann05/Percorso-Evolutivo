@@ -50,6 +50,9 @@ class GameInstructions(BaseView):
     def _setup_legend(self):
         # Panel contenitore per la legenda
         legend_pnl = self._parent_view.addPanel(row=2, column=0, background=self._parent_view.COLORS["bg"])
+        legend_pnl.columnconfigure(0, weight=0)
+        legend_pnl.columnconfigure(1, weight=0)
+        legend_pnl.grid_configure(sticky="")
 
         elementi = [
             ("GIOCATORE", "#E91E63", "oval"),
@@ -60,7 +63,10 @@ class GameInstructions(BaseView):
         ]
 
         for i, (nome, colore, shape) in enumerate(elementi):
-            canvas = legend_pnl.addCanvas(row=i, column=0, width=30, height=30)
+            canvas = legend_pnl.addCanvas(
+                row=i, column=0, width=30, height=30
+            )
+
             canvas.configure(background=self._parent_view.COLORS["bg"], highlightthickness=0)
 
             if shape == "rect":
@@ -73,8 +79,9 @@ class GameInstructions(BaseView):
                 font=("Consolas", 10, "bold"),
                 background=self._parent_view.COLORS["bg"],
                 foreground=self._parent_view.COLORS["text"],
-                padx=10
+                padx=50
             )
+
 
     def _setup_navigation(self):
         back_btn = self._parent_view.addButton(
