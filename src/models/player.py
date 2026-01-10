@@ -57,6 +57,18 @@ class Player:
     def is_convert_trap_available(self):
         return self.convert_trap_available
 
+    def reset_score(self):
+        self._score = 0
+
+    def reset_moves(self):
+        self._moves = 0
+
+    def reset_wall_available(self):
+        self.remove_wall_available = True
+
+    def reset_convert_trap(self):
+        self.convert_trap_available = True
+
     @property
     def moves(self):
         return self._moves
