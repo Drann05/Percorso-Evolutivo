@@ -17,14 +17,6 @@ class MainView(EasyFrame):
         "panel_bg": "#1A1A1A"
     }
 
-    COLORS = {
-        "bg": "#121212",  # Same dark background as GameView
-        "accent": "#00ADB5",  # Neon Teal (Mint)
-        "text": "#EEEEEE",  # Off-white text
-        "error": "#FF3131",  # Red matching your timer color
-        "panel_bg": "#1A1A1A"  # Slightly lighter dark for panels
-    }
-
     def __init__(self, controller, title="Percorso Evolutivo"):
         super().__init__(title=title, width=500, height=500)
         self._title = title
