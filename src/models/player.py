@@ -69,6 +69,12 @@ class Player:
     def reset_convert_trap(self):
         self.convert_trap_available = True
 
+    def reset_all_stats(self):
+        self.reset_score()
+        self.reset_moves()
+        self.reset_remove_wall()
+        self.reset_convert_trap()
+
     @property
     def moves(self):
         return self._moves
@@ -80,6 +86,10 @@ class Player:
     @property
     def position(self):
         return self._position
+
+    @position.setter
+    def position(self, value):
+        self._position = value
 
     @property
     def nickname(self):
