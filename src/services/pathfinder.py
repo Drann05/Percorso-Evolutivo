@@ -32,8 +32,6 @@ class Pathfinder:
         T: Converted Traps
         """
 
-        DEBUG = False
-
         # Coda BFS: nodi da esplorare
         to_visit = [(start, 0, 0, player_score)]
 
@@ -48,7 +46,7 @@ class Pathfinder:
         count_moves = 0
         MAX_MOVES = 30
 
-        if DEBUG:
+        if self.DEBUG:
             print(f"\n=== BFS START ===")
             print(f"Start: {start}, Target: {target}")
             print(f"Score iniziale: {player_score}")
@@ -59,7 +57,7 @@ class Pathfinder:
 
             current_level = len(to_visit)
 
-            if DEBUG:
+            if self.DEBUG:
                 print(f"\n--- LIVELLO BFS {count_moves} ---")
                 print(f"Nodi nel livello: {current_level}")
                 print(f"Coda: {to_visit}")
@@ -71,7 +69,7 @@ class Pathfinder:
                 state = to_visit.pop(0)
                 (current_x, current_y), broken_walls, converted_traps, score = state
 
-                if DEBUG:
+                if self.DEBUG:
                     print(f"\nEspando nodo:")
                     print(f"  Posizione: ({current_x}, {current_y})")
                     print(f"  Muri rotti: {broken_walls}")
@@ -90,7 +88,7 @@ class Pathfinder:
                 for new_state in neighbors:
                     # Se lo stato è già stato visitato, non lo riesploro
                     if new_state in visited:
-                        if DEBUG:
+                        if self.DEBUG:
                             print(f"    Stato {new_state} già visitato -> scarto")
                         continue
 
@@ -98,12 +96,12 @@ class Pathfinder:
                     parent[new_state] = prev_key  # Aggiorno il parent per poter ricostruire il percorso
                     to_visit.append(new_state)  # Aggiungo il nuovo nodo alla coda BFS
 
-                    if DEBUG:
+                    if self.DEBUG:
                         print(f"    Aggiunto in coda: {new_state}")
 
             count_moves += 1
 
-        if DEBUG:
+        if self.DEBUG:
             print("\n Target NON raggiungibile")
 
         # Se esco dal while senza aver raggiunto il target, non è raggiungibile
@@ -180,7 +178,6 @@ class Pathfinder:
         path = []
 
         while state:
-            print(state)
             pos, _, _, _ = state
             path.append(pos)
             state = parent[state]
