@@ -18,14 +18,5 @@ class BaseView(ABC):
         self._parent_view.columnconfigure(0, weight=1)
         self._parent_view.rowconfigure(0, weight=1)
 
-    def style_primary_button(self, button):
-        """Helper centralizzato per non ripetere lo stile dei bottoni ovunque"""
-        button.configure(
-            font=("Segoe UI", 12, "bold"),
-            foreground="white",
-            background=self._parent_view.COLORS["accent"],
-            relief="flat",
-            width=20
-        )
 
 
