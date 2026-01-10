@@ -64,7 +64,7 @@ class Controller:
         move_result = self.game.move_player(direction)
 
         if move_result["moved"]:
-            self._main_view.update_game(self.get_game_state())
+            self._refresh_view()
 
             if move_result["game_over"]:
                 self.handle_game_over()
@@ -76,7 +76,7 @@ class Controller:
 
         is_success = self.game.use_special_action(action, target_position)
         if is_success:
-            self._main_view.update_game(self.get_game_state())
+            self._refresh_view()
             return True
 
         return False
@@ -85,6 +85,14 @@ class Controller:
         if self.game:
             self.game.restart_game()
             self._main_view.show_game()
+
+    #---------------|
+    #   UTILITIES   |
+    #---------------|
+
+    def _refresh_view(self):
+        state = self.get_game_state()
+        self._main_view.update_game(state)
 
     def get_game_state(self):
         return {
@@ -104,35 +112,22 @@ class Controller:
             "is_objective_reached": self.game.is_objective_reached
         }
 
-
     def update_timer(self):
         if self.game and self.game.timer:
             return self.game.timer.get_elapsed()
-        return False
+        return "00:00"
 
-
-
-    def handle_game_over(self):
-        won = True
-        if self.game.is_moves_out_of_limit or self.game.is_negative_score:
-            won = False
-        if self.game.is_objective_reached:
-            won = True
-
-        nickname = self.game.player.nickname
-        score = self.game.player.score
-        moves = self.game.player.moves
-        difficulty = self.game.difficulty
+    def _handle_game_over(self):
+        won = self.game.is_objective_reached
 
         if won:
             try:
                 self.leaderboard.save(
-                    name = nickname,
-                    score = score,
-                    moves = moves,
-                    level = difficulty
+                    name = self.game.player.nickname,
+                    score = self.game.player.score,
+                    moves = self.game.player.moves,
+                    level = self.game.difficulty
                 )
-                print(f"Dati salvati per {nickname}: {score} punti.")
             except Exception as e:
                 print(f"Errore durante il salvataggio della classifica: {e}")
         self._main_view.show_game_over(won)
