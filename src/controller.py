@@ -90,7 +90,7 @@ class Controller:
 
         self._main_view.update_game(self.get_game_state())
         if moved["game_over"]:
-            self.handle_leaderboard_request()
+            self.handle_game_over()
 
     def handle_special_action_request(self, action, target_position):
 
@@ -119,8 +119,10 @@ class Controller:
         score = self.game.player.score
         moves = self.game.player.moves
         difficulty = self.game.difficulty
-        self.leaderboard.save(nickname, score, moves, difficulty)
-        self._main_view.game_view.show_game_over() #da implementare
+        if self.game.is_objective_reached:
+            self.leaderboard.save(nickname, score, moves, difficulty)
+
+        self._main_view.game_view.show_game_over()
 
 if __name__ == '__main__':
     app = Controller()

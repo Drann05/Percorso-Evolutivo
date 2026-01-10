@@ -181,4 +181,4 @@ class Game:
 
     @property
     def difficulty(self):
-        return self.player.difficulty
+        return self._difficulty

@@ -48,7 +48,7 @@ class Leaderboard:
 
             sorted_items = sorted(
                 self._scores.items(),
-                key=lambda x: (-x[1][0], x[1][1], -x[1][2]),
+                key=lambda x: (x[1][0], -x[1][1], x[1][2]),
                 reverse=True
             )
 
