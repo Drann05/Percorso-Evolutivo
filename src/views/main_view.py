@@ -43,14 +43,16 @@ class MainView(EasyFrame):
         #self.change_screen(self.show_start_screen)
         self.change_screen(self.show_leaderboard)
 
-    def change_screen(self, screen):
+    def change_screen(self, screen, *args):
         """Centralizza il cambio della finestra, salvando la finestra
         che viene prima"""
         if screen not in self.SCREENS:
             raise ValueError("funzione non valida")
 
         self.came_from = self.current_screen
-        screen()
+        self.clear()
+        screen(*args)
+        self.current_screen = screen
 
     def show_start_screen(self):
         self.clear()
