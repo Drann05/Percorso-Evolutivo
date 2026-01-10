@@ -26,20 +26,19 @@ class MainView(EasyFrame):
         self._title = title
         self.controller = controller
 
-        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions,
-                        self.show_menu_bar]
+        self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions]
 
-        self.start_screen = None
-        self.game_view = None
-        self.game_instructions = None
-        self.leaderboard_view = None
 
-        self.current_screen = None
+
+        # Gestione Navigazione
+        self.current_screen_func = None
+        self.current_view = None
         self.came_from = None
 
-        self.change_screen(self.show_start_screen)
+        self.show_start_screen()
 
     def _clear_window(self):
+        """Elimina i widget e resetta la griglia di breezypythongui"""
         for widget in self.winfo_children():
             widget.destroy()
 
@@ -48,77 +47,77 @@ class MainView(EasyFrame):
         for r in range(rows + 1): self.rowconfigure(r, weight=0)
         for c in range(cols + 1): self.columnconfigure(c, weight=0)
 
-    def change_screen(self, screen, *args):
-        """Centralizza il cambio della finestra, salvando la finestra
-        che viene prima"""
-        if screen not in self.SCREENS:
-            raise ValueError("funzione non valida")
+    def _switch_to(self, view_class, *args, **kwargs):
+        """Distrugge la view attuale, salva lo stato della precedente
+        e istanzia la nuova view"""
 
-        self.came_from = self.current_screen
-        self.clear()
-        screen(*args)
-        self.current_screen = screen
+        # Se stiamo visualizzando qualcosa, salviamo come tornarci
+        if self.current_view:
+            self.came_from = self.current_screen_func
+
+        self._clear_window()
+
+        # Istanzia la classe che viene passata come argomento
+        self.current_view = view_class(self, self.controller, *args, **kwargs)
+
+        # Salviamo la chiamata attuale alla funzione _switch_to per poterla utilizzare per il futuro con came_from
+        self.current_screen_func = lambda: self._switch_to(view_class, *args, **kwargs)
+
+    #-----------------|
+    #   NAVIGAZIONE   |
+    #-----------------|
 
     def show_start_screen(self):
-        self.clear()
-        self.start_screen = StartScreen(self, self.controller, self._title)
-        self.current_screen = self.start_screen
-
-    def show_difficulty_dialog(self):
-        dialog = DifficultyDialog(self, self.controller)
-
+        self._switch_to(StartScreen, self._title)
 
     def show_game(self):
 
-        self.game_view = GameView(self, self.controller, self._title)
-        self.after(20, self.update_timer)
-
-    def show_instructions(self):
-        self.clear()
-        self.game_instructions = GameInstructions(self, self.controller, self._title)
+        self._switch_to(GameView, self._title)
+        self.update_timer_loop()
 
     def show_leaderboard(self, scores):
-        self.leaderboard_view = LeaderboardView(self, self.controller, self._title, scores)
+        self._switch_to(LeaderboardView, self._title, scores)
+
+    def show_instructions(self):
+
+        self._switch_to(GameInstructions, self._title)
+
+    def show_difficulty_dialog(self):
+        """Utilizza una finestra modale, non _switch_to"""
+        dialog = DifficultyDialog(self, self.controller)
+
+    def show_game_over(self, won):
+        if isinstance(self.current_view, GameView):
+            self.current_view.display_game_over(won)
+
+    def go_back(self):
+        """Esegue il comando di ritorno salvato in _switch_to"""
+        if self.came_from:
+            self.came_from()
+            self.came_from = None
+
+    #--------------------------|
+    #  CICLI DI AGGIORNAMENTO  |
+    #--------------------------|
+
+    def update_game(self, game_state):
+        if isinstance(self.current_view, GameView):
+            self.current_view.set_game_state(game_state)
+            self.current_view.update_game_view()
+
+    def update_timer_loop(self):
+        # Ferma il loop se l'utente cambia fermata
+        if not isinstance(self.current_view, GameView) or not self.winfo_exists():
+            return
+        elapsed_time = self.controller.update_timer()
+        try:
+            self.current_view.update_timer(elapsed_time)
+
+            self.after(1000, self.update_timer_loop)
+        except Exception as e:
+            print(f"Timer interrotto: {e}")
+
+
 
     def exit_game(self):
         self.quit()
-        self.after(20, quit)
-
-    def show_menu_bar(self):
-        menu_bar = self.addMenuBar(row=0, column=0, columnspan=5)
-        file_menu = menu_bar.addMenu("Menu")
-        file_menu.addMenuItem("Nuova Partita", command=self.controller.handle_restart_game_request)
-        file_menu.addMenuItem("Esci", command=self.exit_game)
-        file_menu.addMenuItem("Istruzioni", command=self.show_instructions)
-        file_menu.addMenuItem("Classifica", command=self.show_leaderboard)
-
-
-
-    def grid_init(self, row, column):
-        for r in range(row):
-            self.rowconfigure(r, weight=1)
-        for c in range(column):
-            self.columnconfigure(c, weight=1)
-
-    def update_game(self, game_state):
-        if not self.game_view:
-            return
-        else:
-            self.game_view.set_game_state(game_state)
-            self.game_view.update_game_view()
-
-    def update_timer(self):
-        if not self.game_view or not self.winfo_exists():
-            return
-
-        timer = self.controller.update_timer()
-
-        try:
-            self.game_view.update_timer(timer)
-            self.after(1000, self.update_timer)
-        except Exception:
-            pass
-
-
-    def go_back(self):
-        self.change_screen(self.came_from)
