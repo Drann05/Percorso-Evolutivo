@@ -81,7 +81,6 @@ class GameInstructions(BaseView):
             text="TORNA INDIETRO", row=3, column=0,
             command=self._parent_view.go_back
         )
-        # Usiamo lo stile centralizzato se presente in Views, altrimenti lo definiamo qui
         back_btn.configure(
             background=self._parent_view.COLORS["accent"],
             foreground="white",
