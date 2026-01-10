@@ -19,30 +19,28 @@ class Leaderboard:
                     parts = line.strip().split(":")
                     if len(parts) == 4:
                         try:
-                            score, moves, level, name = parts
-                            scores[name] = (int(score), int(moves), int(level))
+                            score, moves, difficulty, name = parts
+                            scores[name] = (int(score), int(moves), difficulty)
                         except ValueError:
                             continue
         return scores
 
+    @staticmethod
     def is_better(self, n_score, n_moves, n_level, o_score, o_moves, o_level):
         """
         Logica: punteggio alto meglio.
         A parità di punti, meno mosse meglio.
         A parità di mosse, livello più alto meglio.
         """
-        if n_score > o_score:
-            return True
-        if n_score == o_score:
-            if n_moves < o_moves:
-                return True
-            if n_moves == o_moves:
-                return n_level > o_level
-        return False
+        return (n_score, n_moves, n_level) > (o_score, o_moves, o_level)
 
     def save(self, name, score, moves, level):
         """Aggiorna la classifica se il punteggio è migliore e salva su file."""
         name = name.strip()
+        if os.path.exists(self._filepath):
+            with open(self._filepath, "w") as f:
+                f.write(f"{name}:{score}:{moves}:{level}:{name}\n")
+
         old_data = self._scores.get(name)
 
         if not old_data or self.is_better(score, moves, level, *old_data):
@@ -50,7 +48,8 @@ class Leaderboard:
 
             sorted_items = sorted(
                 self._scores.items(),
-                key=lambda x: (-x[1][0], x[1][1], -x[1][2])
+                key=lambda x: (-x[1][0], x[1][1], -x[1][2]),
+                reverse=True
             )
 
             with open(self._filepath, "w") as f:
@@ -59,7 +58,15 @@ class Leaderboard:
 
     def get_top_10(self, n=10):
         """Ritorna i primi N giocatori ordinati."""
-        return sorted(
-            self._scores.items(),
-            key=lambda x: (-x[1][0], x[1][1], -x[1][2])
-        )[:n]
+        return [(nome, *valori) for i, (nome, valori) in enumerate(self._scores.items()) if i < n]
+
+    @staticmethod
+    def difficulty_to_int(difficulty):
+        if difficulty.lower() == 'facile':
+            return 1
+        elif difficulty.lower() == 'medio':
+            return 2
+        elif difficulty.lower() == 'difficile':
+            return 3
+
+        raise ValueError(f"La difficoltà {difficulty} non esiste")
