@@ -74,11 +74,13 @@ class MainView(EasyFrame):
     #   NAVIGAZIONE   |
     #-----------------|
 
+    """Le funzioni di navigazione passano a _switch_to la classe relativa
+    alla finestra da mostrare, e _switch_to dà le istruzioni per mostrarle nell'interfaccia"""
+
     def show_start_screen(self):
         self._switch_to(StartScreen, self._title)
 
     def show_game(self):
-
         self._switch_to(GameView, self._title)
         self.update_timer_loop()
 
@@ -86,13 +88,24 @@ class MainView(EasyFrame):
         self._switch_to(LeaderboardView, self._title, scores)
 
     def show_instructions(self):
-
         self._switch_to(GameInstructions, self._title)
 
+    def go_back(self):
+        """Esegue il comando di ritorno salvato in _switch_to"""
+        if self.came_from:
+            self.came_from()
+            self.came_from = None
+
+    #-------------|
+    #   OVERLAY   |
+    #-------------|
+
     def show_difficulty_dialog(self):
+        """Mostra l'overlay della scelta della difficoltà"""
         self.dialog = DifficultyDialog(self, self.controller)
 
     def show_game_over(self, won: bool):
+        """Mostra l'overlay di fine gioco"""
         if isinstance(self.current_view, GameView):
             self.current_view.display_game_over(won)
 
@@ -115,11 +128,7 @@ class MainView(EasyFrame):
 
         root.config(menu=self.menubar)
 
-    def go_back(self):
-        """Esegue il comando di ritorno salvato in _switch_to"""
-        if self.came_from:
-            self.came_from()
-            self.came_from = None
+
 
     #--------------------------|
     #  CICLI DI AGGIORNAMENTO  |
