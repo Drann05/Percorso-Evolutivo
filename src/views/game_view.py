@@ -221,39 +221,32 @@ class GameView(BaseView):
     def display_game_over(self, won: bool =True, reason: str = ""):
         """Mostra una schermata (overlay) di fine partita con i risultati"""
         self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
-
         self.overlay.grid_configure(padx=100, pady=100)
 
-        # Colore e Testo in base al risultato
         title_text = "VITTORIA!" if won else "GAME OVER"
-        title_color = self._parent_view.COLORS['accent'] if won else "#FF3131" # rosso
+        title_color = self._parent_view.COLORS['accent'] if won else "#FF3131"
 
-
-        # Titolo dell'overlay
         label_title = self.overlay.addLabel(text=title_text, row=0, column=0)
         label_title.configure(font=("Impact", 48), foreground=title_color, background=self._parent_view.COLORS['bg'])
-        label_title.grid_configure(sticky="")
+        label_title.grid_configure(pady=(0, 10))
 
-        current_row = 1
         if reason:
-            label_reason = self.overlay.addLabel(text=reason.upper(), row=current_row, column=0)
+            label_reason = self.overlay.addLabel(text=reason.upper(), row=1, column=0)
             label_reason.configure(
                 font=("Consolas", 12, "bold"),
-                foreground="#FFD700" if not won else "white",
+                foreground="#FFD700",
                 background=self._parent_view.COLORS['bg']
             )
-            label_reason.grid_configure(pady=(0, 10))
-            current_row += 1
+            label_reason.grid_configure(pady=(0, 20))
 
         # Statistiche finali
         stats = self.game_state["stats"]
         final_info = f"Punteggio Finale: {stats['score']} | Mosse: {stats['moves']}"
-        label_info = self.overlay.addLabel(text=final_info, row=current_row, column=0)
+        label_info = self.overlay.addLabel(text=final_info, row=2, column=0)
         label_info.configure(font=("Consolas", 14), foreground="white", background=self._parent_view.COLORS['bg'])
 
-        # Pulsanti di azione
-        button_panel = self.overlay.addPanel(row=current_row+1, column=0, background=self._parent_view.COLORS['bg'])
-
+        # Panel pulsanti
+        button_panel = self.overlay.addPanel(row=3, column=0, background=self._parent_view.COLORS['bg'])
         button_restart = button_panel.addButton(text="Riprova", row=0, column=0,
                                           command=self._controller.handle_restart_game_request)
         button_menu = button_panel.addButton(text="Menu Principale", row=0, column=1,

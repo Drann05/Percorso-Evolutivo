@@ -104,10 +104,10 @@ class MainView(EasyFrame):
         """Mostra l'overlay della scelta della difficoltà"""
         self.dialog = DifficultyDialog(self, self.controller)
 
-    def show_game_over(self, won: bool):
+    def show_game_over(self, won: bool, reason: str):
         """Mostra l'overlay di fine gioco"""
         if isinstance(self.current_view, GameView):
-            self.current_view.display_game_over(won)
+            self.current_view.display_game_over(won, reason)
 
     def setup_menu(self):
         """Crea la menu bar"""
