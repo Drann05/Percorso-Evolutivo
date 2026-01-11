@@ -1,11 +1,14 @@
+import tkinter as tk
+from typing import Any, Type
 from breezypythongui import EasyFrame
-
 from .leaderboard_view import LeaderboardView
 from .start_screen import StartScreen
+from .base_view import BaseView
 from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
 from .game_view import GameView
-import tkinter as tk
+
+
 
 
 class MainView(EasyFrame):
@@ -51,7 +54,7 @@ class MainView(EasyFrame):
         if hasattr(self, "menubar"):
             self.menubar.destroy()
 
-    def _switch_to(self, view_class, *args, **kwargs):
+    def _switch_to(self, view_class: Type[BaseView], *args: Any, **kwargs: Any):
         """Distrugge la view attuale, salva lo stato della precedente
         e istanzia la nuova view"""
 
@@ -79,7 +82,7 @@ class MainView(EasyFrame):
         self._switch_to(GameView, self._title)
         self.update_timer_loop()
 
-    def show_leaderboard(self, scores):
+    def show_leaderboard(self, scores: list):
         self._switch_to(LeaderboardView, self._title, scores)
 
     def show_instructions(self):
@@ -89,7 +92,7 @@ class MainView(EasyFrame):
     def show_difficulty_dialog(self):
         self.dialog = DifficultyDialog(self, self.controller)
 
-    def show_game_over(self, won):
+    def show_game_over(self, won: bool):
         if isinstance(self.current_view, GameView):
             self.current_view.display_game_over(won)
 
@@ -107,7 +110,7 @@ class MainView(EasyFrame):
 
         help_menu = tk.Menu(self.menubar, tearoff=0)
         help_menu.add_command(label="Istruzioni",
-                              command=lambda: self._switch_to(self.show_instructions))
+                              command=lambda: self._switch_to(GameInstructions, self._title))
         self.menubar.add_cascade(label="Aiuto", menu=help_menu)
 
         root.config(menu=self.menubar)
@@ -122,7 +125,7 @@ class MainView(EasyFrame):
     #  CICLI DI AGGIORNAMENTO  |
     #--------------------------|
 
-    def update_game(self, game_state):
+    def update_game(self, game_state: dict):
         if isinstance(self.current_view, GameView):
             self.current_view.set_game_state(game_state)
             self.current_view.update_game_view()

@@ -11,7 +11,7 @@ class StartScreen(BaseView):
 
         self._parent_view.setBackground(self._parent_view.COLORS["bg"])
 
-    def style_button(self, button, is_primary=True):
+    def style_button(self, button, is_primary: bool =True):
         """Applies the GameView button aesthetic."""
         button["font"] = ("Segoe UI", 12, "bold")
         button["foreground"] = "white"
@@ -95,14 +95,13 @@ class StartScreen(BaseView):
 
         return True, name
 
-    def show_error(self, result):
+    def show_error(self, result: str):
         self.error_label.grid_remove()
         self.error_label["text"] = result
         self.error_label.grid()
 
     def clear_messages(self):
         self.error_label.grid_remove()
-        self.correct_label.grid_remove()
 
     def handle_start_btn(self):
         """Gestisce il funzionamento del pulsante Start e la logica degli errori"""

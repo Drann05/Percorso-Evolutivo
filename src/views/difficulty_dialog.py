@@ -47,6 +47,6 @@ class DifficultyDialog(BaseView):
             btn.grid_configure(padx=10)
             self.buttons.append(btn)
 
-    def set_difficulty(self, difficulty):
+    def set_difficulty(self, difficulty: str):
         self.overlay.destroy()
         self._controller.handle_selected_difficulty(difficulty)
