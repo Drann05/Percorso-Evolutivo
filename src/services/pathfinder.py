@@ -11,7 +11,7 @@ class Pathfinder:
     def __init__(self, grid):
         self.grid = grid
 
-    def is_reachable(self, start: tuple[int,int], target: tuple[int,int], player_score: int, max_breakable_walls=0, max_convertible_traps=0):
+    def is_reachable(self, start: tuple[int,int], target: tuple[int,int], player_score: int, max_breakable_walls: int = 0, max_convertible_traps: int = 0):
         """
         Algoritmo per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
@@ -108,7 +108,9 @@ class Pathfinder:
         return False, []
 
 
-    def _extend_neighbors(self, current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertible_traps):
+    def _extend_neighbors(self, current_x: int, current_y: int, broken_walls: int,
+                          converted_traps: int, score: int, breakable_walls: int,
+                          convertible_traps: int):
         neighbors = []
 
         # Salvo le posizioni dei vicini (celle adiacenti a (current_x, current_y))
@@ -177,7 +179,7 @@ class Pathfinder:
                 continue
         return neighbors
 
-    def _reconstruct_path(self, state, parent):
+    def _reconstruct_path(self, state: tuple[tuple[int, int], int, int, int], parent):
         if self.DEBUG:
             print("\n TARGET RAGGIUNTO!")
         # Ricostruzione del percorso partendo dal target (current_x, current_y)
