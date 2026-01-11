@@ -13,8 +13,8 @@ class Player:
         self._position = position
         self._score = 0
         self._moves = 0
-        self._has_remove_wall = True
-        self._has_convert_trap = True
+        self._remove_wall_count = 1
+        self._convert_trap_count = 1
 
 
     #----------------|
@@ -37,6 +37,13 @@ class Player:
     def position(self):
         return self._position
 
+    @property
+    def remove_wall_count(self):
+        return self._remove_wall_count
+
+    def convert_trap_count(self):
+        return self._convert_trap_count
+    
     #------------|
     #   SETTER   |
     #------------|
@@ -78,16 +85,10 @@ class Player:
     #--------------------------------|
 
     def use_remove_wall(self):
-        self._has_remove_wall = False
+        self._remove_wall_count -= 1
 
     def use_convert_trap(self):
-        self._has_convert_trap = False
-
-    def is_remove_wall_available(self):
-        return self._has_remove_wall
-
-    def is_convert_trap_available(self):
-        return self._has_convert_trap
+        self._convert_trap_count -= 1
 
     #-----------------------------|
     #   RESET DELLE STATISTICHE   |
