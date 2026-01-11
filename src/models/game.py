@@ -27,6 +27,8 @@ class Game:
         Grid.PUNTO_DI_PARTENZA: 0
     }
 
+    MOVES_BEFORE_EVOLUTION = 5
+
     def __init__(self, player_name, difficulty):
         self._player_name = player_name
         self._difficulty = difficulty
@@ -104,9 +106,13 @@ class Game:
         cell_data = self.grid.get_cell_data(self.player.position)
         self._apply_cell_effect(cell_data)
 
-        # Evoluzione della griglia ogni 5 moves
-        if self.player.moves % 5 == 0:
+        # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
+        if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
+
+        if not self.can_reach(self.player.position, 0, 0)[0]:
+            self.end_game()
+
 
         # Controllo terminazione
         game_over = self.check_game_over()
