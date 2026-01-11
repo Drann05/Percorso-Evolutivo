@@ -3,7 +3,7 @@ from .base_view import BaseView
 
 class LeaderboardView(BaseView):
 
-    def __init__(self, parent_view, controller, title, scores, width=500, height=600):
+    def __init__(self, parent_view, controller, title, scores):
         self._scores = scores
 
         super().__init__(parent_view, controller, title)

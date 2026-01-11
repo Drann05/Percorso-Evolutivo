@@ -19,7 +19,7 @@ class GameView(BaseView):
     PLAYER_COLOR = "#E91E63"    # Giocatore
     SPECIAL_USED_COLOR = "#555555"   # Colore per le abilità già utilizzate
 
-    def __init__(self, parent_view, controller, title, width=1000, height=800):
+    def __init__(self, parent_view, controller, title):
 
         # Inizializzazione variabili per la gestione grafica
         self.rects = {}

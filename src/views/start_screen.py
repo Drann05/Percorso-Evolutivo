@@ -3,7 +3,7 @@ from .base_view import BaseView
 
 class StartScreen(BaseView):
 
-    def __init__(self, parent_view, controller, title, width=800, height=600):
+    def __init__(self, parent_view, controller, title):
         super().__init__(parent_view, controller, title)
 
         self._parent_view = parent_view
