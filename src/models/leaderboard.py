@@ -6,11 +6,11 @@ class Leaderboard:
     Formato file: punteggio:mosse:livello:nome
     """
 
-    def __init__(self, filepath="classifica.txt"):
+    def __init__(self, filepath: str ="classifica.txt"):
         self._filepath = filepath
-        self._scores = self.load()
+        self._scores: dict[str, tuple[int, int, str]] = self.load()
 
-    def load(self):
+    def load(self) -> dict[str, tuple[int, int, str]]:
         """Carica i dati dal file, verifica che siano nel formato corretto,
          trasforma le statistiche in interi e restituisce un dizionario."""
 
@@ -27,7 +27,7 @@ class Leaderboard:
                             continue
         return scores
 
-    def save(self, name, score, moves, level):
+    def save(self, name: str, score: int, moves: int, level: str):
         """
         Aggiorna la classifica solo se il punteggio è migliore del precedente,
         richiama la funzione di sorting per ordinare volta per volta
@@ -46,7 +46,7 @@ class Leaderboard:
                     f.write(f"{s_score}:{s_moves}:{s_level}:{s_name}\n")
             self._scores = dict(sorted_items) #aggiorna il dizionario per mantenere l'ordine corretto
 
-    def sorting(self):
+    def sorting(self) -> list[tuple[str, tuple[int, int, str]]]:
         """
         Usa l'algoritmo Insertion Sort.
         Restituisce una lista di tuple (nome, (punti, mosse, livello))
@@ -73,7 +73,7 @@ class Leaderboard:
                 sorted_data.append(item) #se non è stato inserito viene messo in coda
         return sorted_data
 
-    def get_top_10(self, n=10):
+    def get_top_10(self, n=10) -> list[tuple[str, tuple[int, int, str]]]:
         """
         Ritorna i primi N giocatori ordinati.
         Crea una lista di tuple appiattite con lo Splat Operator
@@ -84,7 +84,7 @@ class Leaderboard:
         return [(nome, *valori) for i, (nome, valori) in enumerate(self._scores.items()) if i < n]
 
     @staticmethod
-    def is_better(n_score, n_moves, n_level, o_score, o_moves, o_level):
+    def is_better(n_score: int, n_moves: int, n_level:str, o_score:int, o_moves:int, o_level:str) -> bool:
         """
         Logica: punteggio alto meglio.
         A parità di punti, meno mosse meglio.
@@ -96,7 +96,7 @@ class Leaderboard:
         return (n_score, -n_moves, n_l) > (o_score, -o_moves, o_l)
 
     @staticmethod
-    def difficulty_to_int(difficulty):
+    def difficulty_to_int(difficulty: str) -> int:
         """Associa a ogni livello un numero intero per effettuare i confronti"""
         if difficulty.lower() == 'facile':
             return 1
