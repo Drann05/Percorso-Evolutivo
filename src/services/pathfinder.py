@@ -66,7 +66,7 @@ class Pathfinder:
             # Ogni livello equivale agli stati nelle celle adiacenti del livello precedente
             for _ in range(current_level):
                 # Prendo il primo nodo dalla coda (FIFO)
-                state = to_visit.pop(0)
+                state: None | tuple[tuple[int, int], int, int, int] = to_visit.pop(0)
                 (current_x, current_y), broken_walls, converted_traps, score = state
 
                 if self.DEBUG:
@@ -83,7 +83,7 @@ class Pathfinder:
                 neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, max_breakable_walls, max_convertible_traps)
 
                 # Chiave dello stato logico per visited e parent (senza score)
-                prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
+                prev_key: None | tuple[tuple[int, int], int, int, int] = ((current_x, current_y), broken_walls, converted_traps, score)
 
                 for new_state in neighbors:
                     # Se lo stato è già stato visitato, non lo riesploro
@@ -148,7 +148,7 @@ class Pathfinder:
                         if score >= 5:  # E lo score dell'utente è maggiore a quello che sottrae la trappola
                             new_score -= 5  # Attraversala
                             if self.DEBUG:
-                                print(F"    Trappola -> perdo 5 punti: {new_score}")
+                                print(f"    Trappola -> perdo 5 punti: {new_score}")
                         elif converted_traps < convertible_traps:  # Altrimenti, se puoi, convertila
                             new_converted_traps += 1
                             new_score += 10
