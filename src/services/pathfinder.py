@@ -25,7 +25,6 @@ class Pathfinder:
         self.grid = grid
 
     def is_reachable(self, start: tuple[int,int], target: tuple[int,int], player_score: int, max_breakable_walls: int = 0, max_convertible_traps: int = 0):
-        target=(21,21)
         """
         Algoritmo per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
