@@ -120,19 +120,33 @@ class Controller:
         return "00:00"
 
     def _handle_game_over(self):
+        """Gestisce la fine della partita leggendo gli attributi di Game"""
         won = self._game.is_objective_reached
-        reason = self._game.get_game_over_reason()
+        is_moves_out_of_limit = self._game.is_moves_out_of_limit
+        is_negative_score = self._game.is_negative_score
+        is_objective_unreachable = self._game.is_objective_unreachable
+        reason = ""
+
+        if won:
+            reason = "Hai raggiunto l'obiettivo!"
+        elif is_moves_out_of_limit:
+            reason = "Hai esaurito le mosse disponibili (Max 30)!"
+        elif is_negative_score:
+            reason = "Il tuo punteggio è sceso sotto lo zero!"
+        elif is_objective_unreachable:
+            reason = "L'obiettivo non è più raggiungibile!"
 
         if won:
             try:
                 self._leaderboard.save(
-                    name = self._game.player.nickname,
-                    score = self._game.player.score,
-                    moves = self._game.player.moves,
-                    level = self._game.difficulty
+                    name=self._game.player.nickname,
+                    score=self._game.player.score,
+                    moves=self._game.player.moves,
+                    level=self._game.difficulty
                 )
             except Exception as e:
-                print(f"Errore durante il salvataggio della classifica: {e}")
+                print(f"Errore durante il salvataggio: {e}")
+
         self._main_view.show_game_over(won, reason)
 
 if __name__ == '__main__':
