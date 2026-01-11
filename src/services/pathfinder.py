@@ -11,7 +11,7 @@ class Pathfinder:
     def __init__(self, grid):
         self.grid = grid
 
-    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls=0, convertible_traps=0):
+    def is_reachable(self, start: tuple[int,int], target: tuple[int,int], player_score: int, max_breakable_walls=0, max_convertible_traps=0):
         """
         Algoritmo per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
@@ -50,7 +50,7 @@ class Pathfinder:
             print(f"\n=== BFS START ===")
             print(f"Start: {start}, Target: {target}")
             print(f"Score iniziale: {player_score}")
-            print(f"Muri rompibili: {breakable_walls}, Trappole convertibili: {convertible_traps}\n")
+            print(f"Muri rompibili: {max_breakable_walls}, Trappole convertibili: {max_convertible_traps}\n")
 
         # Ciclo principale: continua finché non rimangono altri nodi da visitare, oppure finché non superiamo il limite di mosse
         while len(to_visit) > 0 and count_moves <= MAX_MOVES:
@@ -80,7 +80,7 @@ class Pathfinder:
                 if (current_x, current_y) == target:
                     return True, self._reconstruct_path(state, parent)
 
-                neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertible_traps)
+                neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, max_breakable_walls, max_convertible_traps)
 
                 # Chiave dello stato logico per visited e parent (senza score)
                 prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
@@ -137,38 +137,44 @@ class Pathfinder:
             if self.DEBUG:
                 print(f"\n  Analizzo vicino ({nx},{ny})")
 
-            if cell.is_walkable():
-                if cell.type == self.grid.TRAPPOLA:  # Se la cella è una trappola
-                    if score >= 5:  # E lo score dell'utente è maggiore a quello che sottrae la trappola
-                        new_score -= 5  # Attraversala
+            if score >= 1:
+                new_score -= 1
+                if cell.is_walkable():
+
+
+                    if cell.type == self.grid.TRAPPOLA:  # Se la cella è una trappola
+                        if score >= 5:  # E lo score dell'utente è maggiore a quello che sottrae la trappola
+                            new_score -= 5  # Attraversala
+                            if self.DEBUG:
+                                print(F"    Trappola -> perdo 5 punti: {new_score}")
+                        elif converted_traps < convertible_traps:  # Altrimenti, se puoi, convertila
+                            new_converted_traps += 1
+                            new_score += 10
+                            if self.DEBUG:
+                                print("    Trappola -> convertita")
+                        else:
+                            # Se non si può attraversare e non si può convertire, cerca un'altra strada
+                            continue
+                    if cell.type == self.grid.RISORSA:
+                        new_score += 10
                         if self.DEBUG:
-                            print(F"    Trappola -> perdo 5 punti: {new_score}")
-                    elif converted_traps < convertible_traps:  # Altrimenti, se puoi, convertila
-                        new_converted_traps += 1
-                        if self.DEBUG:
-                            print("    Trappola -> convertita")
-                    else:
-                        # Se non si può attraversare e non si può convertire, cerca un'altra strada
-                        continue
-                if cell.type == self.grid.RISORSA:
-                    new_score += 10
+                            print(f"    Risorsa -> prendo 10 punti: {new_score}")
+
+                # Se la cella non è camminabile (muro) e posso distruggere dei muri
+                elif broken_walls < breakable_walls:
+                    new_broken_walls += 1
                     if self.DEBUG:
-                        print(f"    Risorsa -> prendo 10 punti: {new_score}")
+                        print("    Muro -> distrutto")
 
-            # Se la cella non è camminabile (muro) e posso distruggere dei muri
-            elif broken_walls < breakable_walls:
-                new_broken_walls += 1
-                if self.DEBUG:
-                    print("    Muro -> distrutto")
+                else:
+                    if self.DEBUG:
+                        print("    Muro non distruggibile -> scarto")
+                    # Se non posso attraversare e non posso rompere, cerca un'altra strada
+                    continue
 
+                neighbors.append(((nx,ny), new_broken_walls, new_converted_traps, new_score))
             else:
-                if self.DEBUG:
-                    print("    Muro non distruggibile -> scarto")
-                # Se non posso attraversare e non posso rompere, cerca un'altra strada
                 continue
-
-            neighbors.append(((nx,ny), new_broken_walls, new_converted_traps, new_score))
-
         return neighbors
 
     def _reconstruct_path(self, state, parent):
