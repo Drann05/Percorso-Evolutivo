@@ -145,9 +145,15 @@ class Grid:
                 stack.pop()
 
     def step(self, player_position):
+        """Evolve lo stato della griglia ogni 5 mosse seguendo queste regole:
+        - Due risorse non raccolte vengono trasformate in celle vuote
+        - Una cella vuota casuale viene trasformata in risorsa
+        - Due celle vuote casuali vengono trasformate in trappole
+        - Una trappola casuale viene trasformata in cella vuota
+        - L'evoluzione non può modificare la posizione iniziale (P), l'obiettivo (O) i muri (X) e la Safe Zone"""
 
         def pick_cells(positions, number_of_cells):
-
+            """Seleziona 'number_of_cells' posizioni casuali da una lista 'positions'"""
             player_neighbors = self.get_neighbors(player_position)
             safe_zone = set(player_neighbors)
             safe_zone.add(player_position)
@@ -156,7 +162,7 @@ class Grid:
 
             if not positions:
                 return []
-            while any(position in cells_picked for position in safe_zone):
+            while any(position in cells_picked for position in safe_zone):  # Finché la posizione scelta appartiene alla safe zone
                 cells_picked = random.sample(list(positions), min(len(positions), number_of_cells))
 
             return cells_picked
@@ -179,6 +185,7 @@ class Grid:
     #---------------------#
 
     def set_cell(self, position, cell_type):
+        """Modifica il tipo di una cella data la sua posizione e il nuovo tipo"""
         row, col = position
         old_type = self.grid[row][col].type
 
@@ -188,6 +195,7 @@ class Grid:
         self._register_position(cell_type, position)
 
     def _register_position(self, cell_type, pos):
+        """Registra le posizioni delle celle nei rispettivi insiemi (set)"""
 
         if cell_type in self._positions:
             self._positions[cell_type].add(pos)
@@ -203,11 +211,14 @@ class Grid:
                     self._empty_cells_positions.add((r, c))"""
 
     def _unregister_position(self, cell_type, pos):
-
+        """Rimuove dalla registrazione degli insiemi di 'cell_type'
+        la cella in posizione 'pos'"""
         if cell_type in self._positions:
             self._positions[cell_type].discard(pos)
 
     def _place_special_cells(self):
+        """Sceglie randomicamente dall'insieme delle celle vuote, una posizione
+        per la spawn_position e una per la target_position"""
         self._spawn_position = random.choice(list(self._positions[self.CELLA_VUOTA]))
         self.set_cell(self._spawn_position, self.PUNTO_DI_PARTENZA)
 
