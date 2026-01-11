@@ -205,7 +205,7 @@ class GameView(BaseView):
                 action = "remove_wall"
             elif cell_type == 'T':
                 action = "convert_trap"
-
+            print(action)
             action_success = self._controller.handle_special_action_request(action, (row, col))
 
             if not action_success:
@@ -257,8 +257,8 @@ class GameView(BaseView):
                 text=f"{lbl.cget('text').split(':')[0]}: {'PRONTA' if ready else 'USATA'}"
             )
 
-        style(self.lbl_wall_abil, specials["remove_wall"])
-        style(self.lbl_trap_abil, specials["convert_trap"])
+        style(self.lbl_wall_abil, specials["remove_wall_count"])
+        style(self.lbl_trap_abil, specials["convert_trap_count"])
 
     def update_stats(self):
         """Aggiorna Score e Moves nell'HUD"""
@@ -272,7 +272,7 @@ class GameView(BaseView):
             display_time = timer if timer is not None else 0
             self.lbl_timer["text"] = f"TEMPO: {display_time}s"
 
-            specials = self.game_state.get("special_moves", {"remove_wall": False, "convert_trap": False})
+            specials = self.game_state.get("special_moves", {"remove_wall_count": 0, "convert_trap_count": 0})
             self.update_special_labels(specials)
 
     def update_cell_display(self, position):

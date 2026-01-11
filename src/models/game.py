@@ -139,6 +139,10 @@ class Game:
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
         if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
+            self.grid.set_cell((self.player.position[0] + 1, self.player.position[1]), self.grid.MURO)
+            self.grid.set_cell((self.player.position[0] - 1, self.player.position[1]), self.grid.MURO)
+            self.grid.set_cell((self.player.position[0], self.player.position[1] + 1), self.grid.MURO)
+            self.grid.set_cell((self.player.position[0], self.player.position[1] - 1), self.grid.MURO)
 
         if not self.can_reach(self.player.position, 0, 0)[0]:
             self.end_game()
@@ -153,13 +157,13 @@ class Game:
 
         cell = self.grid.get_cell(target_position)
 
-        if action == "remove_wall" and self.player.is_remove_wall_available():
+        if action == "remove_wall" and self.player.remove_wall_count > 0:
             if cell.type == self.grid.MURO:
                 self.grid.set_cell(target_position, self.grid.CELLA_VUOTA)
                 self.player.use_remove_wall()
                 return True
 
-        elif action == "convert_trap" and self.player.is_convert_trap_available():
+        elif action == "convert_trap" and self.player.convert_trap_count > 0:
             if cell.type == self.grid.TRAPPOLA:
                 self.grid.set_cell(target_position, self.grid.RISORSA)
                 self.player.use_convert_trap()

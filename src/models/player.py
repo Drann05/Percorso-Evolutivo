@@ -41,9 +41,10 @@ class Player:
     def remove_wall_count(self):
         return self._remove_wall_count
 
+    @property
     def convert_trap_count(self):
         return self._convert_trap_count
-    
+
     #------------|
     #   SETTER   |
     #------------|

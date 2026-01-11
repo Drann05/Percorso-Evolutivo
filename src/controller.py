@@ -105,8 +105,8 @@ class Controller:
                 "timer": self._game.timer.get_elapsed()
             },
             "special_moves": {
-                "remove_wall": self._game.player.is_remove_wall_available(),
-                "convert_trap": self._game.player.is_convert_trap_available()
+                "remove_wall_count": self._game.player.remove_wall_count,
+                "convert_trap_count": self._game.player.convert_trap_count
             },
             "is_moves_out_of_limit": self._game.is_moves_out_of_limit,
             "is_negative_score": self._game.is_negative_score,
