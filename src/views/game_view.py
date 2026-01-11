@@ -1,5 +1,4 @@
 from .base_view import BaseView
-import tkinter as tk
 
 
 class GameView(BaseView):
