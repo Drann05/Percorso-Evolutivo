@@ -147,13 +147,16 @@ class Grid:
     def step(self, player_position):
 
         def pick_cells(positions, number_of_cells):
+
             player_neighbors = self.get_neighbors(player_position)
+            safe_zone = set(player_neighbors)
+            safe_zone.add(player_position)
 
             cells_picked = player_neighbors.copy()
 
             if not positions:
                 return []
-            while any(position in cells_picked for position in player_neighbors):
+            while any(position in cells_picked for position in safe_zone):
                 cells_picked = random.sample(list(positions), min(len(positions), number_of_cells))
 
             return cells_picked
