@@ -136,10 +136,10 @@ class Game:
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
         if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
-            """self.grid.set_cell((self.player.position[0]-1,self.player.position[1]), self.grid.TRAPPOLA)
-            self.grid.set_cell((self.player.position[0] + 1, self.player.position[1]), self.grid.TRAPPOLA)
-            self.grid.set_cell((self.player.position[0], self.player.position[1]+1), self.grid.TRAPPOLA)
-            self.grid.set_cell((self.player.position[0], self.player.position[1]-1), self.grid.TRAPPOLA)"""
+            self._is_objective_unreachable = not self.can_reach()[0]
+            if self._is_objective_unreachable:
+                return self._move_result(True, cell_data, True)
+
 
         # Controllo terminazione (viene fatto prima di step per evitare l'evoluzione della griglia a fine partita)
         game_over = self.check_game_over()
@@ -178,11 +178,10 @@ class Game:
         """Controlla tutte le condizioni di fine partita"""
         self._is_moves_out_of_limit = self.player.moves >= 30
         self._is_negative_score = self.player.score < 0
-        self._is_objective_unreachable = not self.can_reach()[0]
         self._is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
 
 
-        return self._is_moves_out_of_limit or self._is_negative_score or self._is_objective_unreachable or self._is_objective_reached
+        return self._is_moves_out_of_limit or self._is_negative_score or self._is_objective_reached
 
     def can_reach(self):
         """Interroga il pathfinder per la raggiungibilità di un target"""
@@ -190,8 +189,8 @@ class Game:
             start = self.player.position,
             target = self.grid.target_position,
             player_score = self.player.score,
-            breakable_walls = self.player.remove_wall_count,
-            convertible_traps = self.player.convert_trap_count
+            max_breakable_walls= self.player.remove_wall_count,
+            max_convertible_traps= self.player.convert_trap_count
         )
 
     def _apply_cell_effect(self, cell_data):
