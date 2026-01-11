@@ -6,7 +6,7 @@ class Cell:
         - una posizione (posx, posy)
         - un tipo, che stabilisce il colore e se è attraversabile o meno
     """
-    CELL_TYPES = {
+    CELL_TYPES= {
         'O': 'green',   # Obiettivo
         'P': 'blue',    # Punto di partenza
         'X': 'black',   # Muro (non attraversabile)
@@ -33,7 +33,7 @@ class Cell:
         else:
             return True
 
-    def set_type(self, cell_type):
+    def set_type(self, cell_type: str):
         if cell_type not in self.CELL_TYPES.keys():
             raise ValueError("Il tipo deve essere uno tra: 'O', 'P', 'X', 'T', 'R', '.'")
         else:

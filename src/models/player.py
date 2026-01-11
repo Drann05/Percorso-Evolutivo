@@ -15,7 +15,7 @@ class Player:
         "convert_trap_count": 1
     }
 
-    def __init__(self, nickname, position):
+    def __init__(self, nickname: str, position: tuple[int, int]):
         self._nickname = nickname
         self._position = position
         self._score = self.INITIAL_VALUES["score"]
@@ -64,7 +64,7 @@ class Player:
     #   LOGICA DI GIOCO   |
     #---------------------|
 
-    def move_to(self, direction):
+    def move_to(self, direction: str):
         """
         Aggiorna la posizione del giocatore
 
@@ -84,7 +84,7 @@ class Player:
         self._position = (row, col)
         self._moves += 1
 
-    def change_score(self, value):
+    def change_score(self, value: int):
         """Aggiunge o sottrae punti al punteggio del giocatore"""
         self._score += value
 
