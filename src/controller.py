@@ -121,6 +121,7 @@ class Controller:
 
     def _handle_game_over(self):
         won = self._game.is_objective_reached
+        reason = self._game.get_game_over_reason()
 
         if won:
             try:
@@ -132,7 +133,7 @@ class Controller:
                 )
             except Exception as e:
                 print(f"Errore durante il salvataggio della classifica: {e}")
-        self._main_view.show_game_over(won)
+        self._main_view.show_game_over(won, reason)
 
 if __name__ == '__main__':
     app = Controller()

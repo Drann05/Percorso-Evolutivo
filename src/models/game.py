@@ -232,4 +232,15 @@ class Game:
             "game_over": game_over
         }
 
+    def get_game_over_reason(self):
+        """Ritorna una stringa con il motivo della fine della partita"""
+        if self._is_objective_reached:
+            return "Obiettivo raggiunto!"
+        if self._is_moves_out_of_limit:
+            return "Hai esaurito le mosse disponibili (Max 30)!"
+        if self._is_negative_score:
+            return "Il tuo punteggio è sceso sotto lo zero!"
+        if self._is_objective_unreachable:
+            return "L'obiettivo non è più raggiungibile!"
+        return ""
 
