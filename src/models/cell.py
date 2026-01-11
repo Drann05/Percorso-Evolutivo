@@ -40,9 +40,9 @@ class Cell:
             self._cell_type = cell_type
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self._cell_type
 
     @property
-    def position(self):
+    def position(self) -> tuple[int, int]:
         return self._posx, self._posy
