@@ -49,7 +49,7 @@ class Grid:
             self.TRAPPOLA: set(),
             self.CELLA_VUOTA: set()
         }
-    def generate_grid(self, difficulty):
+    def generate_grid(self, difficulty: str):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
 
@@ -97,7 +97,7 @@ class Grid:
         self.set_cell((1, 3), self.MURO)"""
 
 
-    def _adjust_cells(self, cell_type, target_count):
+    def _adjust_cells(self, cell_type: str, target_count: int):
         current = self._count_cells(cell_type)
         difference = target_count - current
 
@@ -144,7 +144,7 @@ class Grid:
             else:
                 stack.pop()
 
-    def step(self, player_position):
+    def step(self, player_position: tuple[int,int]):
         """Evolve lo stato della griglia ogni 5 mosse seguendo queste regole:
         - Due risorse non raccolte vengono trasformate in celle vuote
         - Una cella vuota casuale viene trasformata in risorsa
@@ -152,7 +152,7 @@ class Grid:
         - Una trappola casuale viene trasformata in cella vuota
         - L'evoluzione non può modificare la posizione iniziale (P), l'obiettivo (O) i muri (X) e la Safe Zone"""
 
-        def pick_cells(positions, number_of_cells):
+        def pick_cells(positions: set, number_of_cells: int):
             """Seleziona 'number_of_cells' posizioni casuali da una lista 'positions'"""
             player_neighbors = self.get_neighbors(player_position)
             safe_zone = set(player_neighbors)
@@ -184,7 +184,7 @@ class Grid:
     #   CELL MANAGEMENT   #
     #---------------------#
 
-    def set_cell(self, position, cell_type):
+    def set_cell(self, position: tuple[int,int], cell_type: str):
         """Modifica il tipo di una cella data la sua posizione e il nuovo tipo"""
         row, col = position
         old_type = self.grid[row][col].type
@@ -194,7 +194,7 @@ class Grid:
         self._unregister_position(old_type, position)
         self._register_position(cell_type, position)
 
-    def _register_position(self, cell_type, pos):
+    def _register_position(self, cell_type: str, pos: tuple[int,int]):
         """Registra le posizioni delle celle nei rispettivi insiemi (set)"""
 
         if cell_type in self._positions:
@@ -210,7 +210,7 @@ class Grid:
                 if self.grid[row][col].type == self.CELLA_VUOTA:
                     self._empty_cells_positions.add((r, c))"""
 
-    def _unregister_position(self, cell_type, pos):
+    def _unregister_position(self, cell_type: str, pos: tuple[int,int]):
         """Rimuove dalla registrazione degli insiemi di 'cell_type'
         la cella in posizione 'pos'"""
         if cell_type in self._positions:
@@ -235,14 +235,16 @@ class Grid:
     #-----------------------#
 
 
-    def _add_random_cells(self, cell_type, count):
+    def _add_random_cells(self, cell_type: str, count: int):
+        """Aggiunge alla griglia 'count' volte 'cell_type', occupando celle vuote randomiche"""
         candidates = list(self._positions[self.CELLA_VUOTA])
-        random.shuffle(candidates)
+        random.shuffle(candidates)  # Mescola la lista di candidati (celle vuote)
 
         for pos in candidates[:count]:
             self.set_cell(pos, cell_type)
 
-    def _remove_random_cells(self, cell_type, count):
+    def _remove_random_cells(self, cell_type: str, count: int):
+        """Rimuove dalla griglia 'count' volte 'cell_type'"""
         positions = list(self._get_positions_by_type(cell_type))
         random.shuffle(positions)
 
@@ -253,30 +255,22 @@ class Grid:
     #     UTILITIES    #
     #------------------#
 
-    def _count_cells(self, cell_type):
+    def _count_cells(self, cell_type: str):
+        """Conta il numero totale di 'cell_type' contenute nella griglia"""
         return len(self._get_positions_by_type(cell_type))
 
-    def _get_positions_by_type(self, cell_type):
+    def _get_positions_by_type(self, cell_type: str):
         """Restituisce il set di posizioni per il tipo di cella specificato.
             Usa il metodo dict.get() per evitare KeyError se il tipo non esiste."""
         return self._positions.get(cell_type, set())
 
-    @staticmethod
-    def _manhattan_distance(a, b):
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-    def get_cell(self, position):
+    def get_cell(self, position: tuple[int,int]):
+        """Restituisce il riferimento alla cella in posizione 'position'"""
         return self.grid[position[0]][position[1]]
 
-    def get_neighbors(self, position):
-        return [
-            (position[0] - 1, position[1]),  # N
-            (position[0] + 1, position[1]),  # S
-            (position[0], position[1] - 1),  # O
-            (position[0], position[1] + 1)  # E
-        ]
 
-    def get_cell_data(self, position):
+    def get_cell_data(self, position: tuple[int,int]):
+        """Restituisce informazioni sulla cella in posizione 'position'"""
         cell = self.get_cell(position)
         return {
             "type": cell.type,
@@ -284,7 +278,8 @@ class Grid:
             "walkable": cell.is_walkable()
         }
 
-    def is_valid_movement(self, position):
+    def is_valid_movement(self, position: tuple[int,int]):
+        """Verifica se un movimento in direzione cardinale è valido"""
         row, col = position
         if not (0 <= row < self._height and 0 <= col < self._width):
             return False
@@ -298,6 +293,8 @@ class Grid:
     #----------------------#
 
     def serialize(self):
+        """Ritorna un dizionario con informazioni utili sulla griglia,
+        IMPORTANTE: non deve passare alcun riferimento alla griglia o alle celle, solo dati primitivi"""
         grid_data = [
             [cell.type for cell in row]
             for row in self.grid
@@ -328,8 +325,23 @@ class Grid:
     def width(self):
         return self._width
 
+    @staticmethod
+    def get_neighbors(position: tuple[int,int]):
+        return [
+            (position[0] - 1, position[1]),  # N
+            (position[0] + 1, position[1]),  # S
+            (position[0], position[1] - 1),  # O
+            (position[0], position[1] + 1)  # E
+        ]
+
+    @staticmethod
+    def _manhattan_distance(a: tuple[int,int], b: tuple[int,int]):
+        """Calcola la distanza tra due celle"""
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
     def print_grid(self):
         for i in range(0, self._height):
             for j in range(0, self._width):
                 print(self.grid[i][j].type, end=" ")
             print("")
+
