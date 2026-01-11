@@ -17,7 +17,7 @@ class Controller:
         self._leaderboard = Leaderboard()
         self._game = None
 
-        self._session_data = {"nickname": None}
+        self._session_data: dict[str, str | None] = {"nickname": None}
 
         self._main_view = MainView(self)
 
@@ -45,17 +45,17 @@ class Controller:
     #   LOGICA DI GIOCO   |
     #---------------------|
 
-    def start_game_request(self, nickname):
+    def start_game_request(self, nickname: str):
         self._session_data["nickname"] = nickname
         self._main_view.show_difficulty_dialog()
 
-    def handle_selected_difficulty(self, difficulty):
+    def handle_selected_difficulty(self, difficulty: str):
         nickname = self._session_data["nickname"]
         self._game = Game(nickname, difficulty)
         self._game.start_game()
         self._main_view.show_game()
 
-    def handle_movement_request(self, direction):
+    def handle_movement_request(self, direction: str):
         """Gestisce il movimento del giocatore e aggiorna
         l'interfaccia grafica di GameView"""
 
@@ -70,7 +70,7 @@ class Controller:
         if move_result["game_over"]:
             self._handle_game_over()
 
-    def handle_special_action_request(self, action, target_position):
+    def handle_special_action_request(self, action: str, target_position: tuple[int, int]):
 
         if not self._game:
             return False
