@@ -216,7 +216,7 @@ class GameView(BaseView):
 
 
 
-    def display_game_over(self, won: bool =True, reason: str = ""):
+    def display_game_over(self, won: bool = True, reason: str = ""):
         """Mostra una schermata (overlay) di fine partita con i risultati"""
         self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
         self.overlay.grid_configure(padx=100, pady=100)
@@ -246,10 +246,10 @@ class GameView(BaseView):
         # Panel pulsanti
         button_panel = self.overlay.addPanel(row=3, column=0, background=self._parent_view.COLORS['bg'])
         button_restart = button_panel.addButton(text="Riprova", row=0, column=0,
-                                                command=lambda: self._handle_end_action("restart"))
+                                                command=lambda: self._controller.handle_game_over_buttons("restart"))
 
         button_menu = button_panel.addButton(text="Menu Principale", row=0, column=1,
-                                             command=lambda: self._handle_end_action("menu"))
+                                             command=lambda: self._controller.handle_game_over_buttons("menu"))
 
         # Stile pulsanti
         for button in [button_restart, button_menu]:
@@ -309,14 +309,3 @@ class GameView(BaseView):
     def set_game_state(self, game_state: dict):
         """Aggiorna il riferimento allo stato del gioco"""
         self.game_state = game_state
-
-    def _handle_end_action(self, action_type):
-        if self.game_state.get("is_objective_reached"):
-            dialog = RestartDialog(self._parent_view)
-            if dialog.get_result():
-                self._controller.handle_save_request()
-
-        if action_type == "restart":
-            self._controller.handle_restart_game_request()
-        else:
-            self._parent_view.show_start_screen()

@@ -138,6 +138,19 @@ class Controller:
 
         self._main_view.show_game_over(won, reason)
 
+    def handle_game_over_buttons(self, action_type):
+        """Gestisce i pulsanti di game over.
+        Permette di far scegliere se salvare o meno lo score"""
+        if self._game.is_objective_reached:
+            self._main_view.show_restart_dialog()
+            if self._main_view.restart_dialog.get_result():
+                self.handle_save_request()
+
+        if action_type == "restart":
+            self.handle_restart_game_request()
+        else:
+            self._main_view.show_start_screen()
+
     def handle_save_request(self):
         try:
             self._leaderboard.save(

@@ -6,6 +6,7 @@ from .start_screen import StartScreen
 from .base_view import BaseView
 from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
+from .restart_dialog import RestartDialog
 from .game_view import GameView
 
 
@@ -31,8 +32,6 @@ class MainView(EasyFrame):
 
         # Lista delle Views su cui si può cambiare schermata
         self.SCREENS = [self.show_start_screen, self.show_game, self.show_leaderboard, self.show_instructions, self.show_difficulty_dialog]
-
-
 
         # Gestione Navigazione
         self.current_screen_func = None
@@ -102,12 +101,15 @@ class MainView(EasyFrame):
 
     def show_difficulty_dialog(self):
         """Mostra l'overlay della scelta della difficoltà"""
-        self.dialog = DifficultyDialog(self, self.controller)
+        self.difficulty_dialog = DifficultyDialog(self, self.controller)
 
     def show_game_over(self, won: bool, reason: str):
         """Mostra l'overlay di fine gioco"""
         if isinstance(self.current_view, GameView):
             self.current_view.display_game_over(won, reason)
+
+    def show_restart_dialog(self):
+        self.restart_dialog = RestartDialog(self)
 
     def setup_menu(self):
         """Crea la menu bar"""
