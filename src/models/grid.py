@@ -27,7 +27,7 @@ class Grid:
     PUNTO_DI_PARTENZA = 'P'
     CELLA_VUOTA = '.'
 
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int):
         """
         Inizializza la griglia con le dimensioni specificate
 

@@ -118,7 +118,7 @@ class Game:
         """Scorciatoia per riavviare il gioco con gli stessi parametri"""
         self.start_game()
 
-    def move_player(self, direction):
+    def move_player(self, direction: str):
         """Muove il giocatore, se possibile, e applica gli effetti della cella.
         Ritorna un dizionario utile per l'interfaccia grafica"""
         if not self._started:
@@ -148,7 +148,7 @@ class Game:
 
         return self._move_result(True, cell_data, game_over)
 
-    def use_special_action(self, action, target_position):
+    def use_special_action(self, action: str, target_position: tuple[int, int]):
         """Gestisce l'uso di abilità speciali alle celle adiacenti (N, S, O, E)"""
 
         if not self._started or not self._is_adjacent(target_position):
@@ -193,7 +193,7 @@ class Game:
             max_convertible_traps= self.player.convert_trap_count
         )
 
-    def _apply_cell_effect(self, cell_data):
+    def _apply_cell_effect(self, cell_data: dict):
         """Applica i bonus/malus della cella calpestata"""
         cell_type = cell_data["type"].upper()
         points = self.SCORES.get(cell_type, 0)
@@ -204,7 +204,7 @@ class Game:
         if cell_type == self.grid.RISORSA:
             self.grid.set_cell(cell_data["position"], self.grid.CELLA_VUOTA)
 
-    def _is_neighbor_reachable(self, direction):
+    def _is_neighbor_reachable(self, direction: str):
         """Verifica se la cella adiacente è raggiungibile"""
         row, col = self.player.position
 
@@ -216,14 +216,14 @@ class Game:
 
         return self.grid.is_valid_movement((row,col))
 
-    def _is_adjacent(self, target_position):
+    def _is_adjacent(self, target_position: tuple[int, int]) -> bool:
         """Verifica se una coordinata è a distanza 1 da 'target_position'"""
         p_row, p_col = self.player.position
         t_row, t_col = target_position
 
         return abs(p_row - t_row) + abs(p_col - t_col) == 1
 
-    def _move_result(self, moved, cell_data=None, game_over=False):
+    def _move_result(self, moved: bool, cell_data: dict =None, game_over: bool =False):
         """Formato standard della risposta di movimento"""
         return {
             "moved": moved,
