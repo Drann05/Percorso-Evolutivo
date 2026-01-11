@@ -1,4 +1,7 @@
+from tkinter import Event
+
 from .base_view import BaseView
+import tkinter as tk
 
 
 class GameView(BaseView):
@@ -215,7 +218,7 @@ class GameView(BaseView):
 
 
 
-    def display_game_over(self, won=True):
+    def display_game_over(self, won: bool =True):
         """Mostra una schermata (overlay) di fine partita con i risultati"""
         self.overlay = self._parent_view.addPanel(row=1, column=0, background=self._parent_view.COLORS['bg'])
 
@@ -251,7 +254,7 @@ class GameView(BaseView):
                           background="#333333", foreground="white")
             button.grid_configure(padx=10, pady=20)
 
-    def update_special_labels(self, specials):
+    def update_special_labels(self, specials: dict[str, int]):
         """Aggiorna visivamente lo stato delle abilità speciali"""
         def style(lbl, ready):
             lbl.configure(
@@ -268,7 +271,7 @@ class GameView(BaseView):
         self.lbl_score["text"] = f"Punti: {stats['score']}"
         self.lbl_moves["text"] = f"Mosse: {stats['moves']}"
 
-    def update_timer(self, timer):
+    def update_timer(self, timer: int):
         """Aggiorna il timer nell'interfaccia"""
         if hasattr(self, 'lbl_timer') and self.lbl_timer.winfo_exists():
             display_time = timer if timer is not None else 0
@@ -277,7 +280,7 @@ class GameView(BaseView):
             specials = self.game_state.get("special_moves", {"remove_wall_count": 0, "convert_trap_count": 0})
             self.update_special_labels(specials)
 
-    def update_cell_display(self, position):
+    def update_cell_display(self, position: tuple[int, int]):
         """serve a modificare la cella su cui il giocatore si sposta nella view"""
         x, y = position
         cell_type = self.game_state["grid"][x][y]
@@ -289,7 +292,7 @@ class GameView(BaseView):
         self.canvas.delete(self.player_display_id)
         self.player_display_id = self.draw_player()
 
-    def update_game_view(self, new_state=None):
+    def update_game_view(self, new_state: dict =None):
         """Metodo principale per il refresh completo della view"""
         if new_state:
             self.game_state = new_state
@@ -300,6 +303,6 @@ class GameView(BaseView):
 
         self.update_stats()
 
-    def set_game_state(self, game_state):
+    def set_game_state(self, game_state: dict):
         """Aggiorna il riferimento allo stato del gioco"""
         self.game_state = game_state
