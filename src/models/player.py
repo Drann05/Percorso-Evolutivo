@@ -81,7 +81,7 @@ class Player:
         self._has_remove_wall = False
 
     def use_convert_trap(self):
-        self._hasconvert_trap = False
+        self._has_convert_trap = False
 
     def is_remove_wall_available(self):
         return self._has_remove_wall

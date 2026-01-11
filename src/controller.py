@@ -28,6 +28,7 @@ class Controller:
     #---------------------------------|
     #   GESTIONE NAVIGAZIONE E MENU   |
     #---------------------------------|
+
     def init_start_screen(self):
         """Imposta lo stato iniziale dell'app e mostra
         la shermata di avvio attraverso MainView"""
@@ -109,7 +110,8 @@ class Controller:
             },
             "is_moves_out_of_limit": self._game.is_moves_out_of_limit,
             "is_negative_score": self._game.is_negative_score,
-            "is_objective_reached": self._game.is_objective_reached
+            "is_objective_reached": self._game.is_objective_reached,
+            "is_objective_unreachable": self._game.is_objective_unreachable
         }
 
     def update_timer(self):

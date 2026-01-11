@@ -1,14 +1,16 @@
-class DifficultyDialog:
-    def __init__(self, parent_view, controller):
+from .base_view import BaseView
+
+class DifficultyDialog(BaseView):
+    def __init__(self, parent_view, controller, title="Percorso Evolutivo"):
+        super().__init__(parent_view, controller, title)
         self._parent_view = parent_view
         self._controller = controller
         self.build_ui()
 
-        self._parent_view.bind("<Configure>", self.on_resize)
-
     def build_ui(self):
         self.overlay = self._parent_view.addPanel(row=1, column=0, background="#212121")
 
+        self.overlay.grid_configure(padx=20, pady=20, sticky="N")
         self.buttons = []
 
         # Titolo dell'overlay
@@ -45,22 +47,6 @@ class DifficultyDialog:
             btn.grid_configure(padx=10)
             self.buttons.append(btn)
 
-
-    def on_resize(self, event):
-        padx = max(20, event.width // 5)
-        pady = max(20, event.height // 5)
-
-        self.overlay.grid_configure(padx=padx, pady=pady)
-
-        new_header_size = max(18, event.width // 35)
-        new_btn_size = max(10, event.width // 60)
-
-        self.title_lbl.configure(font=("Impact", new_header_size))
-
-        for btn in self.buttons:
-            btn.configure(font=("Segoe UI", new_btn_size, "bold"))
-
     def set_difficulty(self, difficulty):
-        self._parent_view.unbind("<Configure>")
         self.overlay.destroy()
         self._controller.handle_selected_difficulty(difficulty)

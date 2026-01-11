@@ -11,12 +11,12 @@ class Pathfinder:
     def __init__(self, grid):
         self.grid = grid
 
-    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls=0, convertable_traps=0):
+    def is_reachable(self, start: tuple, target: tuple, player_score, breakable_walls=0, convertible_traps=0):
         """
         Algoritmo per trovare un percorso minimo in passi dalla cella 'start' alla cella 'target'.
         Tiene conto di:
         - Muri che possono essere distrutti (fino a breakable_walls)
-        - Trappole che possono essere convertite (fino a convertable_traps)
+        - Trappole che possono essere convertite (fino a convertible_traps)
         - Punteggio del giocatore (non deve andare in negativo)
 
         Ogni nodo esplorato contiene:
@@ -29,7 +29,7 @@ class Pathfinder:
         H: Height
         W: Width
         B: Breakable Walls
-        T: Convertable Traps
+        T: Convertible Traps
         """
 
         # Coda BFS: nodi da esplorare
@@ -50,7 +50,7 @@ class Pathfinder:
             print(f"\n=== BFS START ===")
             print(f"Start: {start}, Target: {target}")
             print(f"Score iniziale: {player_score}")
-            print(f"Muri rompibili: {breakable_walls}, Trappole convertibili: {convertable_traps}\n")
+            print(f"Muri rompibili: {breakable_walls}, Trappole convertibili: {convertible_traps}\n")
 
         # Ciclo principale: continua finché non rimangono altri nodi da visitare, oppure finché non superiamo il limite di mosse
         while len(to_visit) > 0 and count_moves <= MAX_MOVES:
@@ -80,7 +80,7 @@ class Pathfinder:
                 if (current_x, current_y) == target:
                     return True, self._reconstruct_path(state, parent)
 
-                neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertable_traps)
+                neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertible_traps)
 
                 # Chiave dello stato logico per visited e parent (senza score)
                 prev_key = ((current_x, current_y), broken_walls, converted_traps, score)
@@ -108,7 +108,7 @@ class Pathfinder:
         return False, []
 
 
-    def _extend_neighbors(self, current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertable_traps):
+    def _extend_neighbors(self, current_x, current_y, broken_walls, converted_traps, score, breakable_walls, convertible_traps):
         neighbors = []
 
         # Salvo le posizioni dei vicini (celle adiacenti a (current_x, current_y))
@@ -143,7 +143,7 @@ class Pathfinder:
                         new_score -= 5  # Attraversala
                         if self.DEBUG:
                             print(F"    Trappola -> perdo 5 punti: {new_score}")
-                    elif converted_traps < convertable_traps:  # Altrimenti, se puoi, convertila
+                    elif converted_traps < convertible_traps:  # Altrimenti, se puoi, convertila
                         new_converted_traps += 1
                         if self.DEBUG:
                             print("    Trappola -> convertita")
@@ -181,6 +181,7 @@ class Pathfinder:
             pos, _, _, _ = state
             path.append(pos)
             state = parent[state]
+            print(state)
         path.reverse()  # Percorso dall'inizio del target
 
         if self.DEBUG:
