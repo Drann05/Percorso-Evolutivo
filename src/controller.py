@@ -136,18 +136,18 @@ class Controller:
         elif is_objective_unreachable:
             reason = "L'obiettivo non è più raggiungibile!"
 
-        if won:
-            try:
-                self._leaderboard.save(
-                    name=self._game.player.nickname,
-                    score=self._game.player.score,
-                    moves=self._game.player.moves,
-                    level=self._game.difficulty
-                )
-            except Exception as e:
-                print(f"Errore durante il salvataggio: {e}")
-
         self._main_view.show_game_over(won, reason)
+
+    def handle_save_request(self):
+        try:
+            self._leaderboard.save(
+                name=self._game.player.nickname,
+                score=self._game.player.score,
+                moves=self._game.player.moves,
+                level=self._game.difficulty
+            )
+        except Exception as e:
+            print(f"Errore nel salvataggio: {e}")
 
 if __name__ == '__main__':
     app = Controller()
