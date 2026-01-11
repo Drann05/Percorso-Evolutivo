@@ -2,7 +2,6 @@ from .player import Player
 from .grid import Grid
 from .timer import Timer
 from ..services.pathfinder import Pathfinder
-from .leaderboard import Leaderboard
 
 class Game:
     """

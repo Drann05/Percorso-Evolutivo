@@ -1,5 +1,4 @@
 from .base_view import BaseView
-from .restart_dialog import RestartDialog
 
 
 class GameView(BaseView):
