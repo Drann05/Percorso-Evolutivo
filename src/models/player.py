@@ -8,13 +8,20 @@ class Player:
 
         Non contiene la logica di gioco né modifica direttamente la griglia
     """
+    INITIAL_VALUES = {
+        "score": 0,
+        "moves": 0,
+        "remove_wall_count": 1,
+        "convert_trap_count": 1
+    }
+
     def __init__(self, nickname, position):
         self._nickname = nickname
         self._position = position
-        self._score = 0
-        self._moves = 0
-        self._remove_wall_count = 1
-        self._convert_trap_count = 1
+        self._score = self.INITIAL_VALUES["score"]
+        self._moves = self.INITIAL_VALUES["moves"]
+        self._remove_wall_count = self.INITIAL_VALUES["remove_wall_count"]
+        self._convert_trap_count = self.INITIAL_VALUES["convert_trap_count"]
 
 
     #----------------|
@@ -103,16 +110,16 @@ class Player:
         self.reset_convert_trap()
 
     def reset_score(self):
-        self._score = 0
+        self._score = self.INITIAL_VALUES["score"]
 
     def reset_moves(self):
-        self._moves = 0
+        self._moves = self.INITIAL_VALUES["moves"]
 
     def reset_remove_wall(self):
-        self._has_remove_wall = True
+        self._remove_wall_count = self.INITIAL_VALUES["remove_wall_count"]
 
     def reset_convert_trap(self):
-        self._has_convert_trap = True
+        self._convert_trap_count = self.INITIAL_VALUES["convert_trap_count"]
 
 
 

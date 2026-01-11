@@ -24,7 +24,8 @@ class Game:
         Grid.TRAPPOLA: -5,
         Grid.MURO: 0,
         Grid.CELLA_VUOTA: 0,
-        Grid.PUNTO_DI_PARTENZA: 0
+        Grid.PUNTO_DI_PARTENZA: 0,
+        "movement": -1
     }
 
     MOVES_BEFORE_EVOLUTION = 5
@@ -97,7 +98,7 @@ class Game:
                 self.player.position = spawn_point
                 self.player.reset_all_stats()
 
-            valid_map,_ = self.can_reach(self.grid.target_position,0,0)
+            valid_map,_ = self.can_reach()
 
         if not valid_map:
             raise RuntimeError("Impossibile generare una mappa valida")
@@ -131,20 +132,17 @@ class Game:
         cell_data = self.grid.get_cell_data(self.player.position)
         self._apply_cell_effect(cell_data)
 
-        # Controllo terminazione (viene fatto prima di step per evitare l'evoluzione della griglia a fine partita)
-        game_over = self.check_game_over()
-        if game_over:
-            self.end_game()
-
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
         if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
-            self.grid.set_cell((self.player.position[0] + 1, self.player.position[1]), self.grid.MURO)
-            self.grid.set_cell((self.player.position[0] - 1, self.player.position[1]), self.grid.MURO)
-            self.grid.set_cell((self.player.position[0], self.player.position[1] + 1), self.grid.MURO)
-            self.grid.set_cell((self.player.position[0], self.player.position[1] - 1), self.grid.MURO)
+            self.grid.set_cell((self.player.position[0]-1,self.player.position[1]), self.grid.TRAPPOLA)
+            self.grid.set_cell((self.player.position[0] + 1, self.player.position[1]), self.grid.TRAPPOLA)
+            self.grid.set_cell((self.player.position[0], self.player.position[1]+1), self.grid.TRAPPOLA)
+            self.grid.set_cell((self.player.position[0], self.player.position[1]-1), self.grid.TRAPPOLA)
 
-        if not self.can_reach(self.player.position, 0, 0)[0]:
+        # Controllo terminazione (viene fatto prima di step per evitare l'evoluzione della griglia a fine partita)
+        game_over = self.check_game_over()
+        if game_over:
             self.end_game()
 
         return self._move_result(True, cell_data, game_over)
@@ -179,18 +177,20 @@ class Game:
         """Controlla tutte le condizioni di fine partita"""
         self._is_moves_out_of_limit = self.player.moves >= 30
         self._is_negative_score = self.player.score < 0
+        self._is_objective_unreachable = not self.can_reach()[0]
         self._is_objective_reached = self.grid.get_cell(self.player.position).type == self.grid.OBIETTIVO
 
-        return self.is_moves_out_of_limit or self.is_negative_score or self.is_objective_reached
 
-    def can_reach(self, target, breakable_walls, convertible_traps):
+        return self._is_moves_out_of_limit or self._is_negative_score or self._is_objective_unreachable or self._is_objective_reached
+
+    def can_reach(self):
         """Interroga il pathfinder per la raggiungibilità di un target"""
         return self._pathfinder.is_reachable(
             start = self.player.position,
-            target = target,
+            target = self.grid.target_position,
             player_score = self.player.score,
-            breakable_walls = breakable_walls,
-            convertible_traps = convertible_traps
+            breakable_walls = self.player.remove_wall_count,
+            convertible_traps = self.player.convert_trap_count
         )
 
     def _apply_cell_effect(self, cell_data):
