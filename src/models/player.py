@@ -9,7 +9,7 @@ class Player:
         Non contiene la logica di gioco né modifica direttamente la griglia
     """
     INITIAL_VALUES = {
-        "score": 0,
+        "score": 10,
         "moves": 0,
         "remove_wall_count": 1,
         "convert_trap_count": 1

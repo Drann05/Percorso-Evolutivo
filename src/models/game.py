@@ -129,16 +129,17 @@ class Game:
 
         # Esecuzione movimento
         self.player.move_to(direction)
+        self.player.change_score(self.SCORES["movement"])
         cell_data = self.grid.get_cell_data(self.player.position)
         self._apply_cell_effect(cell_data)
 
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
         if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
-            self.grid.set_cell((self.player.position[0]-1,self.player.position[1]), self.grid.TRAPPOLA)
+            """self.grid.set_cell((self.player.position[0]-1,self.player.position[1]), self.grid.TRAPPOLA)
             self.grid.set_cell((self.player.position[0] + 1, self.player.position[1]), self.grid.TRAPPOLA)
             self.grid.set_cell((self.player.position[0], self.player.position[1]+1), self.grid.TRAPPOLA)
-            self.grid.set_cell((self.player.position[0], self.player.position[1]-1), self.grid.TRAPPOLA)
+            self.grid.set_cell((self.player.position[0], self.player.position[1]-1), self.grid.TRAPPOLA)"""
 
         # Controllo terminazione (viene fatto prima di step per evitare l'evoluzione della griglia a fine partita)
         game_over = self.check_game_over()

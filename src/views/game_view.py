@@ -25,13 +25,15 @@ class GameView(BaseView):
         self.rects = {}
         self.player_display_id = None
         self.cell_size = 30
+        self._controller = controller
+        self.game_state = self._controller.get_game_state()  # Recupera lo stato iniziale dal controller
 
         super().__init__(parent_view, controller, title)
 
-        self._controller = controller
+
         self._parent_view = parent_view
         self._parent_view.setBackground(self._parent_view.COLORS['bg'])
-        self.game_state = self._controller.get_game_state()  # Recupera lo stato iniziale dal controller
+
 
         self._parent_view.setup_menu()
 
@@ -84,8 +86,8 @@ class GameView(BaseView):
         self.stats_pnl.grid_configure(sticky="W", padx=60)
 
 
-        self.lbl_score = self.stats_pnl.addLabel("PUNTI: 0", row=0, column=0, sticky="W")
-        self.lbl_moves = self.stats_pnl.addLabel("MOSSE: 0", row=1, column=0, sticky="W")
+        self.lbl_score = self.stats_pnl.addLabel(f"PUNTI: {self.game_state["stats"]["score"]}", row=0, column=0, sticky="W")
+        self.lbl_moves = self.stats_pnl.addLabel(f"MOSSE: {self.game_state["stats"]["moves"]}", row=1, column=0, sticky="W")
         self.lbl_timer = self.stats_pnl.addLabel("TEMPO: 0s", row=2, column=0, sticky="W")
 
         # Comandi
