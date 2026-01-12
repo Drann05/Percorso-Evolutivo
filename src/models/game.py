@@ -70,11 +70,11 @@ class Game:
 
     def setup_game(self):
         """Inizializza una nuova sessione garantendo una mappa risolvibile"""
-
         # Istanzia il giocatore, se non esiste già
         if not self.player:
             self.player = Player(self._player_name)
 
+        self.player.reset_all_stats()
 
         self.grid = Grid(20, 20)
         self._pathfinder = Pathfinder(self.grid)    # Istanzia il pathfinder per determinare se esiste un percorso valido
@@ -83,7 +83,7 @@ class Game:
 
         # Imposta i valori iniziali del giocatore
         self.player.position = spawn_point
-        self.player.reset_all_stats()
+
 
     def start_game(self):
         """Avvia la partita e il cronometro"""
