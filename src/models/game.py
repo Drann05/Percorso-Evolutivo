@@ -180,7 +180,6 @@ class Game:
         self.player.change_score(cell.get_score_modifier())
 
         if cell.type == self.grid.RISORSA:
-            print(cell.position)
             self.grid.set_cell(cell.position, self.grid.CELLA_VUOTA)
 
     def _is_neighbor_reachable(self, direction: str):
