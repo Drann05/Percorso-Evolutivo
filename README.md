@@ -45,3 +45,26 @@ Per capire al meglio la struttura del progetto, è stato redatto il diagramma UM
 
 <img width="5063" height="6767" alt="Class Diagram" src="docs/Class Diagram.png" />
 
+---
+
+## Requisiti
+
+- Python 3.x
+- Librerie standard di Python
+- `breezypythongui` (per l'interfaccia grafica)
+
+---
+
+## Avvio del progetto
+
+1. Clonare il repository:
+   ```bash
+   git clone https://github.com/username/percorso-evolutivo.git
+
+2. Spostarsi nella cartella del progetto:
+   ```bash
+   cd Team-1-Percorso-Evolutivo
+   
+3. Avviare il gioco
+   ```bash
+   python main.py
