@@ -18,16 +18,8 @@ class Game:
     """
 
     # Costanti di configurazione punteggi
-    SCORES = {
-        Grid.OBIETTIVO: 20,
-        Grid.RISORSA: 10,
-        Grid.TRAPPOLA: -5,
-        Grid.MURO: 0,
-        Grid.CELLA_VUOTA: 0,
-        Grid.PUNTO_DI_PARTENZA: 0,
-        "movement": -1
-    }
 
+    MOVEMENT_SCORE = -1
     MOVES_BEFORE_EVOLUTION = 5
 
     def __init__(self, player_name, difficulty):
@@ -119,7 +111,7 @@ class Game:
 
         # Esecuzione movimento
         self.player.move_to(direction)
-        self.player.change_score(self.SCORES["movement"])
+        self.player.change_score(self.MOVEMENT_SCORE)
         self._handle_cell(self.grid.get_cell(self.player.position)) # Passa il riferimento della cella
 
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
