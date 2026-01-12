@@ -12,17 +12,17 @@ La griglia evolve nel tempo, rendendo il gioco più dinamico
 <table style="width:100%; table-layout: fixed;">
   <tr valign="top">
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/738707d8-c8cb-4290-adcb-549e6fb4361f" height="300px" alt="Start_Screen" />
+      <img src="screenshots/Start_Screen.PNG" height="300px" alt="Start_Screen" />
       <br />
       <b>Menù Principale</b>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/3de5935a-8627-4107-89cd-2a2b6dab4e5e" height="300px" alt="Game_View" />
+      <img src="screenshots/Game_View.PNG" height="300px" alt="Game_View" />
       <br />
       <b>Gioco</b>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/be9d73d3-230a-4a42-ba69-9bbe4b657466" height="300px" alt="Leaderboard" />
+      <img src="screenshots/Leaderboard.PNG" height="300px" alt="Leaderboard" />
       <br />
       <b>Classifica</b>
     </td>
@@ -43,5 +43,28 @@ Nello specifico di questo progetto:
 ## Diagramma UML
 Per capire al meglio la struttura del progetto, è stato redatto il diagramma UML delle classi. Questo documento descrive dettagliatamente le relazioni tra le classi, insieme ai loro attributi e metodi rendendo esplicita l'implementazione del Pattern MVC
 
-<img width="5063" height="6767" alt="Class Diagram" src="https://github.com/user-attachments/assets/61518042-af3b-46a5-9573-0a2f3bd5195a" />
+<img width="5063" height="6767" alt="Class Diagram" src="docs/Class Diagram.png" />
 
+---
+
+## Requisiti
+
+- Python 3.x
+- Librerie standard di Python
+- `breezypythongui` (per l'interfaccia grafica)
+
+---
+
+## Avvio del progetto
+
+1. Clonare il repository:
+   ```bash
+   git clone https://github.com/username/percorso-evolutivo.git
+
+2. Spostarsi nella cartella del progetto:
+   ```bash
+   cd Team-1-Percorso-Evolutivo
+   
+3. Avviare il gioco
+   ```bash
+   python main.py

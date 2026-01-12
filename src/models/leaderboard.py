@@ -11,8 +11,7 @@ class Leaderboard:
         self._scores: dict[str, tuple[int, int, str]] = self.load()
 
     def load(self) -> dict[str, tuple[int, int, str]]:
-        """Carica i dati dal file, verifica che siano nel formato corretto,
-         trasforma le statistiche in interi e restituisce un dizionario."""
+        """Carica i dati dal file, verifica che siano nel formato corretto, e restituisce un dizionario."""
 
         scores = {}
         if os.path.exists(self._filepath):
