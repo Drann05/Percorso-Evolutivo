@@ -15,9 +15,9 @@ class Player:
         "convert_trap_count": 1
     }
 
-    def __init__(self, nickname: str, position: tuple[int, int]):
+    def __init__(self, nickname: str):
         self._nickname = nickname
-        self._position = position
+        self._position = None
         self._score = self.INITIAL_VALUES["score"]
         self._moves = self.INITIAL_VALUES["moves"]
         self._remove_wall_count = self.INITIAL_VALUES["remove_wall_count"]
