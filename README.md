@@ -58,10 +58,12 @@ Per capire al meglio la struttura del progetto, è stato redatto il diagramma UM
 ## Avvio del progetto
 
 1. Clonare il repository:
+   
    ```bash
    git clone https://github.com/username/percorso-evolutivo.git
 
 2. Spostarsi nella cartella del progetto:
+   
    ```bash
    cd Team-1-Percorso-Evolutivo
    
