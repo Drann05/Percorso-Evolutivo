@@ -110,5 +110,5 @@ class StartScreen(BaseView):
             self.show_error(result)
             return
 
-        self._controller.start_game_request(result)
+        self._controller.handle_start_game_request(result)
 

@@ -59,7 +59,7 @@ class Controller:
     #   LOGICA DI GIOCO   |
     #---------------------|
 
-    def start_game_request(self, nickname: str):
+    def handle_start_game_request(self, nickname: str):
         self._session_data["nickname"] = nickname
         self._main_view.show_difficulty_dialog()
 
