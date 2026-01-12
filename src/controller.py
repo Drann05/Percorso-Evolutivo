@@ -34,6 +34,7 @@ class Controller:
 
     def handle_game_view_request(self):
         self._main_view.show_game()
+        self._refresh_view()
 
     def handle_leaderboard_request(self):
         scores = self._leaderboard.get_top_10()
@@ -67,7 +68,7 @@ class Controller:
         nickname = self._session_data["nickname"]
         self._game = Game(nickname, difficulty)
         self._game.start_game()
-        self._main_view.show_game()
+        self.handle_game_view_request()
 
     def handle_movement_request(self, direction: str):
         """Gestisce il movimento del giocatore e aggiorna
@@ -116,6 +117,7 @@ class Controller:
         self._main_view.show_game_over(is_objective_reached, reason)
 
     def handle_save_request(self):
+        print("asd")
         try:
             self._leaderboard.save(
                 name=self._game.player.nickname,

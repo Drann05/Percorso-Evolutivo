@@ -207,7 +207,6 @@ class GameView(BaseView):
                 action = "remove_wall"
             elif cell_type == 'T':
                 action = "convert_trap"
-            print(action)
             action_success = self._controller.handle_special_action_request(action, (row, col))
 
             if not action_success:
@@ -238,7 +237,7 @@ class GameView(BaseView):
 
         # Statistiche finali
         stats = self.game_state["stats"]
-        final_info = f"Punteggio Finale: {stats['score']} | Mosse: {stats['moves']}"
+        final_info = f"Punteggio Finale: {stats['score']} | Mosse: {stats['moves']} | Tempo: {stats['timer']}s"
         label_info = self.overlay.addLabel(text=final_info, row=2, column=0)
         label_info.configure(font=("Consolas", 14), foreground="white", background=self._parent_view.COLORS['bg'])
 
@@ -263,7 +262,6 @@ class GameView(BaseView):
                 foreground=self._parent_view.COLORS['accent'] if ready else self.SPECIAL_USED_COLOR,
                 text=f"{lbl.cget('text').split(':')[0]}: {'PRONTA' if ready else 'USATA'}"
             )
-
         style(self.lbl_wall_abil, specials["remove_wall_count"])
         style(self.lbl_trap_abil, specials["convert_trap_count"])
 
@@ -279,8 +277,6 @@ class GameView(BaseView):
             display_time = timer if timer is not None else 0
             self.lbl_timer["text"] = f"TEMPO: {display_time}s"
 
-            specials = self.game_state.get("special_moves", {"remove_wall_count": 0, "convert_trap_count": 0})
-            self.update_special_labels(specials)
 
     def update_cell_display(self, position: tuple[int, int]):
         """serve a modificare la cella su cui il giocatore si sposta nella view"""
@@ -294,7 +290,7 @@ class GameView(BaseView):
         self.canvas.delete(self.player_display_id)
         self.player_display_id = self.draw_player()
 
-    def update_game_view(self, new_state: dict =None):
+    def update_game_view(self, new_state: dict = None):
         """Metodo principale per il refresh completo della view"""
         if new_state:
             self.game_state = new_state
@@ -302,6 +298,8 @@ class GameView(BaseView):
         self.refresh_grid_display()
 
         self.update_player_position_display()
+
+        self.update_special_labels(self.game_state.get("special_moves", {"remove_wall_count": 0, "convert_trap_count": 0}))
 
         self.update_stats()
 

@@ -29,10 +29,10 @@ class GameInstructions(BaseView):
     def _setup_text_area(self):
         istruzioni = (
             "> MOVIMENTO: Usa il D-Pad per muoverti all'interno della griglia.\n"
-            "> OBIETTIVO (O): Raggiungi l'obiettivo entro il limite di mosse.\n"
-            "> RISORSE (R): Raccogli le risorse per aumentare il punteggio.\n"
-            "> TRAPPOLE (T): Tolgono punti se calpestate.\n"
-            "> MURI (X): Ostacoli distruttibili con mossa speciale.\n"
+            "> OBIETTIVO (O): Raggiungi l'obiettivo entro il limite di mosse (+20 punti).\n"
+            "> RISORSE (R): Raccogli le risorse per aumentare il punteggio (+10 punti).\n"
+            "> TRAPPOLE (T): Penalizzano se calpestate (-5 punti).\n"
+            "> MURI (X): Ostacoli non attraversabili. Sono distruggibili con una mossa speciale.\n"
             "> SPECIALI: Double-click su un muro o trappola per usare le abilità."
         )
 
@@ -59,7 +59,8 @@ class GameInstructions(BaseView):
             ("MURO (X)", "#1A1A1A", "rect"),
             ("RISORSA (R)", "#F1C40F", "rect"),
             ("TRAPPOLA (T)", "#E74C3C", "rect"),
-            ("OBIETTIVO (O)", "#2ECC71", "rect")
+            ("OBIETTIVO (O)", "#2ECC71", "rect"),
+            ("PUNTO DI PARTENZA (P)", "#3498DB", "rect")
         ]
 
         for i, (nome, colore, shape) in enumerate(elementi):

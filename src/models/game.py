@@ -98,6 +98,8 @@ class Game:
 
     def restart_game(self):
         """Scorciatoia per riavviare il gioco con gli stessi parametri"""
+        if self._started:
+            self.end_game()
         self.start_game()
 
     def move_player(self, direction: str):

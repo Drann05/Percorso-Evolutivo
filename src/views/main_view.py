@@ -93,6 +93,9 @@ class MainView(EasyFrame):
         """Esegue il comando di ritorno salvato in _switch_to"""
         if self.came_from:
             self.came_from()
+            if isinstance(self.current_view, GameView):
+                self.current_view.update_game_view()
+                self.update_timer_loop()
             self.came_from = None
 
     #-------------|
