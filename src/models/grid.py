@@ -38,7 +38,7 @@ class Grid:
 
         self._columns = cols
         self._rows = rows
-        self.grid = [[Cell(row, col, self.MURO) for row in range(self._rows)] for col in range(self._columns)]
+        self.grid = [[Cell(row, col, self.MURO) for col in range(self._columns)] for row in range(self._rows)]
         self._grid_dimension = cols * rows
         self._safe_zone = []
         self._spawn_position = None
