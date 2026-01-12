@@ -137,7 +137,8 @@ class MainView(EasyFrame):
     #--------------------------|
 
     def update_game(self, game_state: dict):
-        if isinstance(self.current_view, GameView):
+        """Aggiorna il game state di GameView e richiama la sua funzione update_game_view"""
+        if isinstance(self.current_view, GameView): # Se current_view è GameView
             self.current_view.set_game_state(game_state)
             self.current_view.update_game_view()
 

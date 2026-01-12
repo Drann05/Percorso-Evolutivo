@@ -79,17 +79,16 @@ class Pathfinder:
             # Ogni livello equivale agli stati nelle celle adiacenti del livello precedente
             for _ in range(current_level):
                 # Prendo il primo nodo dalla coda (FIFO)
-                state: None | Pathfinder.State = to_visit.pop(0)
-                (current_x, current_y), broken_walls, converted_traps, score = state
+                parent_state: None | Pathfinder.State = to_visit.pop(0)
+                (current_x, current_y), broken_walls, converted_traps, score = parent_state
 
                 # Controllo se abbiamo raggiunto il target
                 if (current_x, current_y) == target:
-                    return True, self._reconstruct_path(state, parent)
+                    return True, self._reconstruct_path(parent_state, parent)
 
                 neighbors = self._extend_neighbors(current_x, current_y, broken_walls, converted_traps, score, max_breakable_walls, max_convertible_traps)
 
-                # Chiave dello stato logico per visited e parent (senza score)
-                prev_key: None | Pathfinder.State = ((current_x, current_y), broken_walls, converted_traps, score)
+                # Chiave dello stato logico per visited e parent
 
                 for new_state in neighbors:
                     # Se lo stato è già stato visitato, non lo riesploro
@@ -97,7 +96,7 @@ class Pathfinder:
                         continue
 
                     visited.add(new_state)  # Salvo il nodo visitato per non rivisitarlo
-                    parent[new_state] = prev_key  # Aggiorno il parent per poter ricostruire il percorso
+                    parent[new_state] = parent_state  # Aggiorno il parent per poter ricostruire il percorso
                     to_visit.append(new_state)  # Aggiungo il nuovo nodo alla coda BFS
 
             count_moves += 1
