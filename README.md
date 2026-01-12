@@ -12,17 +12,17 @@ La griglia evolve nel tempo, rendendo il gioco più dinamico
 <table style="width:100%; table-layout: fixed;">
   <tr valign="top">
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/738707d8-c8cb-4290-adcb-549e6fb4361f" height="300px" alt="Start_Screen" />
+      <img src="screenshots/Start_Screen.PNG" height="300px" alt="Start_Screen" />
       <br />
       <b>Menù Principale</b>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/3de5935a-8627-4107-89cd-2a2b6dab4e5e" height="300px" alt="Game_View" />
+      <img src="screenshots/Game_View.PNG" height="300px" alt="Game_View" />
       <br />
       <b>Gioco</b>
     </td>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/be9d73d3-230a-4a42-ba69-9bbe4b657466" height="300px" alt="Leaderboard" />
+      <img src="screenshots/Leaderboard.PNG" height="300px" alt="Leaderboard" />
       <br />
       <b>Classifica</b>
     </td>
