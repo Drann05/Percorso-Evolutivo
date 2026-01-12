@@ -1,7 +1,7 @@
 from breezypythongui import EasyDialog
 
 
-class RestartDialog(EasyDialog):
+class SaveScoreDialog(EasyDialog):
     """Finestra di dialogo per confermare il salvataggio."""
 
     def __init__(self, parent, title="Salva Partita"):

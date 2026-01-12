@@ -27,24 +27,24 @@ class Grid:
     PUNTO_DI_PARTENZA = 'P'
     CELLA_VUOTA = '.'
 
-    def __init__(self, width: int, height: int):
+    def __init__(self, rows: int, cols: int):
         """
         Inizializza la griglia con le dimensioni specificate
 
-        :param width: numero di colonne che compongono la griglia
-        :param height: numero di righe che compongono la griglia
+        :param cols: numero di colonne che compongono la griglia
+        :param rows: numero di righe che compongono la griglia
         """
 
-        self._width = width
-        self._height = height
-        self.grid = [[Cell(row, col, self.MURO) for row in range(self._height)] for col in range(self._width)]
-        self._grid_dimension = width * height
+        self._columns = cols
+        self._rows = rows
+        self.grid = [[Cell(row, col, self.MURO) for row in range(self._rows)] for col in range(self._columns)]
+        self._grid_dimension = cols * rows
         self._safe_zone = []
         self._spawn_position = None
         self._target_position = None
 
         self._positions = {
-            self.MURO: {(r, c) for r in range(self._height) for c in range(self._width)},
+            self.MURO: {(r, c) for r in range(self._rows) for c in range(self._columns)},
             self.RISORSA: set(),
             self.TRAPPOLA: set(),
             self.CELLA_VUOTA: set()
@@ -128,7 +128,7 @@ class Grid:
             neighbors = []
             for dx, dy in [(2, 0), (-2, 0), (0, 2), (0, -2)]:  # vicini a distanza 2
                 nx, ny = x + dx, y + dy
-                if 0 <= nx < self._height and 0 <= ny < self._width:
+                if 0 <= nx < self._rows and 0 <= ny < self._columns:
                     if (nx, ny) not in visited:
                         neighbors.append((nx, ny))
 
@@ -281,12 +281,12 @@ class Grid:
     def is_valid_movement(self, position: tuple[int,int]):
         """Verifica se un movimento in direzione cardinale è valido"""
         row, col = position
-        if not (0 <= row < self._height and 0 <= col < self._width):
+        if not (0 <= row < self._rows and 0 <= col < self._columns):
             return False
-        return self.grid[row][col].is_walkable() and 0 <= row < self._height and 0 <= col < self._width
+        return self.grid[row][col].is_walkable() and 0 <= row < self._rows and 0 <= col < self._columns
 
     def get_grid_dimension(self):
-        return self._height, self._width
+        return self._rows, self._columns
 
     #----------------------#
     #    SERIALIZATION     #
@@ -300,8 +300,8 @@ class Grid:
             for row in self.grid
         ]
         return {
-            "rows": self._height,
-            "cols": self._width,
+            "rows": self._rows,
+            "cols": self._columns,
             "grid": grid_data,
             "spawn_position": self.spawn_position,
             "target_position": self.target_position
@@ -319,11 +319,11 @@ class Grid:
 
     @property
     def height(self):
-        return self._height
+        return self._rows
 
     @property
     def width(self):
-        return self._width
+        return self._columns
 
     @staticmethod
     def get_neighbors(position: tuple[int,int]):
@@ -340,8 +340,8 @@ class Grid:
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
     def print_grid(self):
-        for i in range(0, self._height):
-            for j in range(0, self._width):
+        for i in range(0, self._rows):
+            for j in range(0, self._columns):
                 print(self.grid[i][j].type, end=" ")
             print("")
 

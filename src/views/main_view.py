@@ -6,7 +6,7 @@ from .start_screen import StartScreen
 from .base_view import BaseView
 from .game_instructions import GameInstructions
 from .difficulty_dialog import DifficultyDialog
-from .restart_dialog import RestartDialog
+from .save_score_dialog import SaveScoreDialog
 from .game_view import GameView
 
 
@@ -109,7 +109,7 @@ class MainView(EasyFrame):
             self.current_view.display_game_over(won, reason)
 
     def show_restart_dialog(self):
-        self.restart_dialog = RestartDialog(self)
+        self.restart_dialog = SaveScoreDialog(self)
 
     def setup_menu(self):
         """Crea la menu bar"""
