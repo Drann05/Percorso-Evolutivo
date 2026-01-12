@@ -1,4 +1,5 @@
 from .cell import Cell
+from ..services.pathfinder import Pathfinder
 import random
 
 
@@ -49,7 +50,7 @@ class Grid:
             self.TRAPPOLA: set(),
             self.CELLA_VUOTA: set()
         }
-    def generate_grid(self, difficulty: str):
+    def generate_grid(self, difficulty: str, score: int, max_breakable_walls: int, max_convertible_traps: int, pathfinder_service: Pathfinder):
         """
         Genera la griglia di gioco in base alla difficoltà scelta:
 
@@ -60,20 +61,35 @@ class Grid:
         - Facile: 15% Muri, 12% Risorse, 3% Trappole
         - Medio: 20% Muri, 10% Risorse, 5% Trappole
         - Difficile: 25% Muri, 8% Risorse, 7% Trappole
+
+        :param pathfinder_service: utilizza un algoritmo bfs che opera sugli stati
+        per valutare se la griglia generata ha un percorso valido o meno
         """
 
         difficulty = difficulty.lower()
-        self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
 
-        walls_target = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100)
-        resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
-        traps_target = int(self.DIFFICULTY[difficulty]["Trappole"] * self._grid_dimension / 100)
+        valid_map = False
+        attempts = 0
+        max_attempts = 10
 
-        self._adjust_cells(self.MURO, walls_target)
-        self._adjust_cells(self.RISORSA, resources_target)
-        self._adjust_cells(self.TRAPPOLA, traps_target)
-        self._place_special_cells()
+        while not valid_map and attempts < max_attempts:
+            attempts += 1
 
+            self.generative_dfs()  # Algoritmo per generare la griglia con almeno una strada percorribile
+
+            walls_target = int(self.DIFFICULTY[difficulty]["Muri"] * self._grid_dimension / 100)
+            resources_target = int(self.DIFFICULTY[difficulty]["Risorse"] * self._grid_dimension / 100)
+            traps_target = int(self.DIFFICULTY[difficulty]["Trappole"] * self._grid_dimension / 100)
+
+            self._adjust_cells(self.MURO, walls_target)
+            self._adjust_cells(self.RISORSA, resources_target)
+            self._adjust_cells(self.TRAPPOLA, traps_target)
+            self._place_special_cells()
+
+            valid_map, _ = pathfinder_service.is_reachable(self._spawn_position, self._target_position, score, max_breakable_walls, max_convertible_traps)
+
+        if not valid_map:
+            raise RuntimeError("Impossibile generare una mappa valida")
 
 
         """self._spawn_position = (0,0)

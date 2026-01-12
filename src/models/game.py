@@ -78,29 +78,19 @@ class Game:
     def setup_game(self):
         """Inizializza una nuova sessione garantendo una mappa risolvibile"""
 
-        valid_map = False
-        attempts = 0
-        max_attempts = 10
+        # Istanzia il giocatore, se non esiste già
+        if not self.player:
+            self.player = Player(self._player_name)
 
-        while not valid_map and attempts < max_attempts:
-            attempts += 1
 
-            self.grid = Grid(20, 20)
-            self.grid.generate_grid(self._difficulty)
+        self.grid = Grid(20, 20)
+        self._pathfinder = Pathfinder(self.grid)    # Istanzia il pathfinder per determinare se esiste un percorso valido
+        self.grid.generate_grid(self._difficulty, self.player.score, self.player.remove_wall_count, self.player.convert_trap_count, self._pathfinder)
+        spawn_point = self.grid.spawn_position
 
-            spawn_point = self.grid.spawn_position
-            self._pathfinder = Pathfinder(self.grid)
-
-            if not self.player:
-                self.player = Player(self._player_name, spawn_point)
-            else:
-                self.player.position = spawn_point
-                self.player.reset_all_stats()
-
-            valid_map,_ = self.can_reach()
-
-        if not valid_map:
-            raise RuntimeError("Impossibile generare una mappa valida")
+        # Imposta i valori iniziali del giocatore
+        self.player.position = spawn_point
+        self.player.reset_all_stats()
 
     def start_game(self):
         """Avvia la partita e il cronometro"""
