@@ -68,7 +68,7 @@ class StartScreen(BaseView):
         self.instructions_button.grid_configure(pady=5)
 
         # Pulsante Istruzioni
-        self.instructions_button = self.btn_area.addButton(text="ISTRUZIONI", row=2, column=0, command=lambda: self._parent_view.show_instructions())
+        self.instructions_button = self.btn_area.addButton(text="ISTRUZIONI", row=2, column=0, command=self._controller.handle_instruction_request)
         self.style_button(self.instructions_button, is_primary=False)
         self.instructions_button.grid_configure(pady=5)
 
