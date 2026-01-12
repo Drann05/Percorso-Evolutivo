@@ -11,7 +11,7 @@ class Pathfinder:
     - trappole convertibili
     """
 
-    DEBUG = True
+    DEBUG = False
 
     """ Guida alla lettura del type-hinting:
     State: ((position), broken_walls, converted_traps, score)
