@@ -1,5 +1,6 @@
 from .player import Player
 from .grid import Grid
+from .cell import Cell
 from .timer import Timer
 from ..services.pathfinder import Pathfinder
 
@@ -119,15 +120,14 @@ class Game:
         # Esecuzione movimento
         self.player.move_to(direction)
         self.player.change_score(self.SCORES["movement"])
-        cell_data = self.grid.get_cell_data(self.player.position)
-        self._apply_cell_effect(cell_data)
+        self._handle_cell(self.grid.get_cell(self.player.position)) # Passa il riferimento della cella
 
         # Evoluzione della griglia ogni 'MOVES_BEFORE_EVOLUTION' moves
         if self.player.moves % self.MOVES_BEFORE_EVOLUTION == 0:
             self.grid.step(self.player.position)
             self._is_objective_unreachable = not self.can_reach()[0]
             if self._is_objective_unreachable:
-                return self._move_result(True, cell_data, True)
+                return self._move_result(True, self.grid.get_cell_data(self.player.position), True)
 
 
         # Controllo terminazione (viene fatto prima di step per evitare l'evoluzione della griglia a fine partita)
@@ -135,7 +135,7 @@ class Game:
         if game_over:
             self.end_game()
 
-        return self._move_result(True, cell_data, game_over)
+        return self._move_result(True, self.grid.get_cell_data(self.player.position), game_over)
 
     def use_special_action(self, action: str, target_position: tuple[int, int]):
         """Gestisce l'uso di abilità speciali alle celle adiacenti (N, S, O, E)"""
@@ -182,16 +182,14 @@ class Game:
             max_convertible_traps= self.player.convert_trap_count
         )
 
-    def _apply_cell_effect(self, cell_data: dict):
+    def _handle_cell(self, cell: Cell):
         """Applica i bonus/malus della cella calpestata"""
-        cell_type = cell_data["type"].upper()
-        points = self.SCORES.get(cell_type, 0)
 
-        if points != 0:
-            self.player.change_score(points)
+        self.player.change_score(cell.get_score_modifier())
 
-        if cell_type == self.grid.RISORSA:
-            self.grid.set_cell(cell_data["position"], self.grid.CELLA_VUOTA)
+        if cell.type == self.grid.RISORSA:
+            print(cell.position)
+            self.grid.set_cell(cell.position, self.grid.CELLA_VUOTA)
 
     def _is_neighbor_reachable(self, direction: str):
         """Verifica se la cella adiacente è raggiungibile"""
