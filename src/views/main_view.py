@@ -119,7 +119,7 @@ class MainView(EasyFrame):
         game_menu = tk.Menu(self.menubar, tearoff=0)
         game_menu.add_command(label="Nuova partita", command=self.controller.handle_restart_game_request)
         game_menu.add_separator()
-        game_menu.add_command(label="Torna al menu", command=self.controller.init_start_screen)
+        game_menu.add_command(label="Torna al menu", command=lambda: self._switch_to(StartScreen, self._title))
         game_menu.add_command(label="Esci", command=root.quit)
         self.menubar.add_cascade(label="Gioco", menu=game_menu)
 
