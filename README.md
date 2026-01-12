@@ -43,5 +43,5 @@ Nello specifico di questo progetto:
 ## Diagramma UML
 Per capire al meglio la struttura del progetto, è stato redatto il diagramma UML delle classi. Questo documento descrive dettagliatamente le relazioni tra le classi, insieme ai loro attributi e metodi rendendo esplicita l'implementazione del Pattern MVC
 
-<img width="5063" height="6767" alt="Class Diagram" src="https://github.com/user-attachments/assets/61518042-af3b-46a5-9573-0a2f3bd5195a" />
+<img width="5063" height="6767" alt="Class Diagram" src="docs/Class Diagram.png" />
 
